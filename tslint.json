@@ -1,0 +1,26 @@
+{
+  "defaultSeverity": "warning",
+  "extends": [
+      "tslint:recommended"
+  ],
+  "rules": {
+    "member-access": [false],
+    "object-literal-sort-keys": [false],
+    "only-arrow-functions": [false],
+    "quotemark": [
+      true,
+      "single",
+      "jsx-double"
+    ],
+    "space-before-function-paren": [
+      true,
+      {
+        "anonymous": "always",
+        "asyncArrow": "always",
+        "constructor": "never",
+        "method": "never",
+        "named": "never"
+      }
+    ]
+  }
+}

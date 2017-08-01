@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2015",
+    "lib": [
+      "dom",
+      "es2017"
+    ],
+    "sourceMap": true,
+    "rootDir": "../",
+    "outDir": "../build/",
+    "jsx": "react",
+    "noImplicitAny": false,
+    "noUnusedLocals": true
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

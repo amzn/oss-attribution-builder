@@ -1,0 +1,33 @@
+@import './bootstrap-overrides.scss';
+@import '~bootstrap/scss/bootstrap.scss';
+
+@import '~font-awesome/css/font-awesome.css';
+@import '~react-select/scss/default.scss';
+
+/*** Project styles ***/
+
+.EditableText {
+  border-bottom: 1px dashed #bebebe;
+
+  &:hover {
+    background-color: #e3e3e3;
+    cursor: pointer;
+  }
+}
+
+.line-highlight {
+  background-color: $brand-warning;
+}
+
+dd.fixed-text {
+  margin-left: 20px;
+  max-height: 100px;
+  overflow-y: auto;
+  font-family: monospace;
+  white-space: pre;
+
+  > div {
+    border: 1px dashed rgb(142, 175, 204);
+    padding: 3px 5px;
+  }
+}

@@ -1,0 +1,164 @@
+/* Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License").
+ * You may not use this file except in compliance with the License.
+ * A copy of the License is located at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * or in the "license" file accompanying this file. This file is distributed
+ * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing
+ * permissions and limitations under the License.
+ */
+
+import * as bodyParser from 'body-parser';
+import * as express from 'express';
+import * as winston from 'winston';
+
+import { jwtMiddleware } from '../auth/util';
+import * as licenseAPI from './licenses';
+import * as packageAPI from './packages';
+import * as projectAPI from './projects';
+import * as projectValidators from './projects/validators';
+
+export let router = express.Router();
+
+// protect everything here with JWT middleware
+// *DO NOT MOVE THIS* -- everything below here uses this middleware
+router.use(jwtMiddleware as any);
+
+router.use(bodyParser.json());
+router.use(bodyParser.urlencoded({
+  extended: true,
+}));
+
+/**
+ * Send API call results, calling error middleware on failure.
+ */
+function pack(promise: Promise<any>, res: any | undefined, next: any | undefined) {
+  if (!res || !next) throw new Error('Missing response or next middleware parameters');
+  return promise
+    .then((x) => {
+      if (x === null) {
+        res.status(404).send('Object not found');
+      } else {
+        res.send(x);
+      }
+    })
+    .catch(next);
+}
+
+/*** Projects ***/
+
+/**
+ * List all projects filtered by access.
+ */
+router.get('/projects', (req, res, next) => {
+  pack(projectAPI.searchProjects(req), res, next);
+});
+
+/**
+ * Create a new project.
+ */
+router.post('/projects/new', projectValidators.createProject, (req, res, next) => {
+  pack(projectAPI.createProject(req, req.body), res, next);
+});
+
+/**
+ * Get a particular project.
+ */
+router.get('/projects/:projectId', (req, res, next) => {
+  pack(projectAPI.getProject(req, req.params.projectId), res, next);
+});
+
+/**
+ * Edit a project's basic details.
+ */
+router.patch('/projects/:projectId', projectValidators.patchProject, (req, res, next) => {
+  pack(projectAPI.patchProject(req, req.params.projectId, req.body), res, next);
+});
+
+/**
+ * Attach a package to a project, optionally creating or updating the package.
+ */
+router.post('/projects/:projectId/attach', projectValidators.attachPackage, (req, res, next) => {
+  pack(projectAPI.attachPackage(req, req.params.projectId, req.body), res, next);
+});
+
+/**
+ * Detach a package from a project.
+ */
+router.post('/projects/:projectId/detach', (req, res, next) => {
+  pack(projectAPI.detachPackage(req, req.params.projectId, req.body.packageId), res, next);
+});
+
+/**
+ * Replace a package instance with another, without changing the usage.
+ */
+router.post('/projects/:projectId/replace', projectValidators.replacePackage, (req, res, next) => {
+  pack(projectAPI.replacePackage(req, req.params.projectId, req.body.oldId, req.body.newId), res, next);
+});
+
+/**
+ * Build an attribution document. Return the document along
+ * with any warnings.
+ */
+router.get('/projects/:projectId/build', (req, res, next) => {
+  pack(projectAPI.generateAttributionDocument(req, req.params.projectId), res, next);
+});
+
+/**
+ * Building a document using POST will trigger a store & download.
+ */
+router.post('/projects/:projectId/build', (req, res, next) => {
+  pack(projectAPI.generateAttributionDocument(req, req.params.projectId, true), res, next);
+});
+
+/*** Packages ***/
+
+/**
+ * Search all packages by name/version.
+ */
+router.post('/packages/', (req, res, next) => {
+  pack(packageAPI.searchPackages(req, req.body.query), res, next);
+});
+
+/**
+ * Admin action: fetch the package verification queue.
+ */
+router.get('/packages/verification', (req, res, next) => {
+  pack(packageAPI.getVerificationQueue(req), res, next);
+});
+
+/**
+ * Get a single package.
+ */
+router.get('/packages/:packageId', (req, res, next) => {
+  pack(packageAPI.getPackage(req, req.params.packageId, req.query.extended != null), res, next);
+});
+
+/**
+ * Verify (accept/reject with comments) a single package.
+ */
+router.post('/packages/:packageId/verify', (req, res, next) => {
+  pack(packageAPI.verifyPackage(req, req.params.packageId, req.body.verified, req.body.comments), res, next);
+});
+
+/*** Licenses ***/
+router.get('/licenses/', (req, res, next) => {
+  res.send({licenses: licenseAPI.listLicenses()});
+});
+
+// error handling for all of the above
+router.use(function (err: any, req: any, res: any, next: any) {
+  if (err.name === 'UnauthorizedError'
+      || err.name === 'AccessError'
+      || err.name === 'RequestError') {
+    res.status(err.status).send({error: err.message});
+    return;
+  }
+
+  winston.error(err.stack ? err.stack : err);
+  res.status(500).send({error: 'Internal error.'});
+});
