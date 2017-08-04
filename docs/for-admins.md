@@ -16,10 +16,10 @@ You may designate an additional group in the configuration as "verifiers". Verif
 
 Selecting a package will open a form with information about the package. A verifier can audit this information, and if everything looks OK they can check all of the boxes and save. If something looked wrong or needed corrections, they can be noted in the comments box and saved.
 
-((IMAGE))
+![screenshots/package-verify-form.png](https://raw.github.com/amzn/oss-attribution-builder/screenshots/package-verify-form.png)
 
 So why do this? Well, on a project page, anyone using that revision of a package (see above -- there may be multiple revisions of package version) will see a checkmark or a thumbs-down icon, indicating that the information about a package was correct or that it needs to be fixed.
 
-((IMAGE))
+![screenshots/package-card-wrong.png](https://raw.github.com/amzn/oss-attribution-builder/screenshots/package-card-wrong.png)
 
 Clicking on the icon will reveal who verified the information and any comments entered. Using this functionally you can effectively audit and curate the local information entered into your company's attribution documents.
