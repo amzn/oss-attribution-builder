@@ -42,11 +42,18 @@ The attribution builder has support for two types of license definitions:
 
 SPDX identifiers are just used for pre-filling the license selector, but do not (currently) have texts. The more useful type of license is a "known" license, where **you** (the administrator) supply the text of the license and any tags you'd like to apply.
 
+For information on adding your own "known" licenses, see [the license README](server/licenses/known/README.md). There are two existing licenses in the same directory you can look at for examples.
+
 #### Tags
 
 Tags allow you to add arbitrary validation rules to a license. They can be useful for:
 
 * Verifying a license is being used in the right way (e.g., LGPL and how a package was linked)
+* Annotating a particular license as needing follow up, if your business has special processes
+* Providing guidance on attribution for licenses with many variants
+* Modifying the how a license is displayed in an attribution document
+
+For information on what tags can do and how to create your own, see [the tags README](server/licenses/tags/README.md).
 
 ### Authentication module
 

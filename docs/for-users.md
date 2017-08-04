@@ -31,7 +31,6 @@ To add a package, click the blue "Add Package" button. You'll see a form with a 
 
 As it suggests, start typing in the name of an open source package used in your project. If the exact version already exists in our database, select it. If not, select the option to create a new package. You will need to fill out information about the package. If you were lucky, some of these fields will already be filled out.
 
-((IMAGE))
 ![screenshots/package-detail-fields.png](https://raw.github.com/amzn/oss-attribution-builder/screenshots/package-detail-fields.png)
 
 When picking a license, you might not have to paste in the text of the license if we already have it stored. If you're unsure what the name of the license is, paste the text into the larger box below the dropdown instead.
