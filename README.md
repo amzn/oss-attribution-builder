@@ -2,11 +2,20 @@
 
 OSS Attribution Builder is a website that helps teams create attribution documents for software products. An attribution document is a text file, web page, or screen in just about every software application that lists the software components used and their licenses. They're often in the About screens, and are sometimes labeled "Open Source Notices", "Credits", or other similar jargon.
 
+[Screenshot](https://raw.github.com/amzn/oss-attribution-builder/screenshots/attribution-builder-project-example.png)
+
 ## Quickstart
 
 1. Install [Docker](https://www.docker.com/)
 2. Clone this repository
 3. Run `docker-compose up`
+
+## Using the Website
+
+See documentation:
+
+* [For users](docs/for-users.md)
+* [For administrators](docs/for-admins.md)
 
 ## Caveats
 
@@ -69,13 +78,6 @@ To start up the server, you should run `build/server/localserver.js` after build
 * `CONFIG_NAME` should be set to the basename (no extension) of your configuration file you created above. The default is "default".
 
 The server runs in HTTP only. You probably want to put a thin HTTPS web server or proxy in front of it.
-
-## Using the Website
-
-See documentation:
-
-* [For users](docs/for-users.md)
-* [For administrators](docs/for-admins.md)
 
 ## Contributing
 
