@@ -65,6 +65,7 @@ function mapProjectShortInfo(dbData) {
     projectId: dbData.project_id,
     title: dbData.title,
     createdOn: dbData.created_on,
+    version: dbData.version,
   };
 }
 

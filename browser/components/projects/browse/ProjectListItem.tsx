@@ -19,6 +19,7 @@ import { Link } from 'react-router';
 interface Props {
   projectId: string;
   title: string;
+  version: string;
   createdOn: string;
 }
 
@@ -28,7 +29,7 @@ export default class ProjectListItem extends Component<Props, {}> {
     return (
       <li className="list-group-item">
         <Link to={`/projects/${this.props.projectId}`}>
-          {this.props.title}
+          {this.props.title} {this.props.version}
         </Link>
         <small className="ml-1">
           created on {this.props.createdOn}
