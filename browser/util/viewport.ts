@@ -27,7 +27,7 @@ export function inViewport(el: HTMLElement) {
  *
  * Detatches the event listener afterwards.
  */
-export function triggerOnVisible(el: HTMLElement, fn: Function) {
+export function triggerOnVisible(el: HTMLElement, fn: () => void) {
   if (inViewport(el)) {
     fn();
     return;

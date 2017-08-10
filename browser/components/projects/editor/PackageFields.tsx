@@ -28,7 +28,7 @@ interface Props {
   initial?: Partial<WebPackage>;
   onChange?: (usage: PkgOutput) => void;
 
-  dispatch: any;
+  dispatch: (action: any) => any;
   completions: WebPackage[];
   packages: PackageActions.PackageSet;
   licenses: any[];
@@ -40,6 +40,7 @@ interface State {
 }
 
 class PackageFields extends React.Component<Props, State> {
+
   licenseOptions: any[] = [];
   licenseMap: {[name: string]: any} = {};
 
@@ -83,7 +84,8 @@ class PackageFields extends React.Component<Props, State> {
     const { licenses } = this.props;
 
     for (const license of licenses) {
-      const entry = {label: license.name, value: license.name, tags: license.tags, fixed: license.tags.includes('fixed-text')};
+      const entry = {label: license.name, value: license.name,
+        tags: license.tags, fixed: license.tags.includes('fixed-text')};
       this.licenseOptions.push(entry);
       this.licenseMap[license.name] = entry;
     }
@@ -271,7 +273,8 @@ class PackageFields extends React.Component<Props, State> {
           />
           {needsFullLicense || <span className="form-text text-muted">
             We already have the full text for this license.
-            If your license is different from the standard {pkg.license} text, clear the box above and then you can paste the license text here.
+            If your license is different from the standard {pkg.license} text,
+            clear the box above and then you can paste the license text here.
           </span>}
         </div>
         {needsFullLicense ? (
@@ -293,12 +296,16 @@ class PackageFields extends React.Component<Props, State> {
         <div className={largeCopyrightStatement ? 'form-group has-warning' : 'form-group'}>
           <label htmlFor="packageCopyright">Copyright statement / notice</label>{' '}
           <i className="fa fa-question-circle" data-toggle="tooltip"
-            title="A copyright statement usually looks like 'Copyright (c) 20xx Some Person' and is generally only 1-5 lines. Some packages include extra information in a NOTICE file, which you should include here as well." />
+            title={'A copyright statement usually looks like \'Copyright (c) 20xx Some Person\' ' +
+            'and is generally only 1-5 lines. Some packages include extra information in a NOTICE file, ' +
+            'which you should include here as well.'} />
           <textarea name="copyright" id="packageCopyright" className="form-control"
             onChange={this.handleChange} value={pkg.copyright}
             placeholder="Paste any copyright statements or NOTICE files here." />
           {largeCopyrightStatement && <span className="form-text text-muted">
-            This copyright statement (or notice file) looks a little long. This is fine if it's correct, but please double-check that it isn't the license text instead. Licenses should go in the previous section.
+            This copyright statement (or notice file) looks a little long.
+            This is fine if it's correct, but please double-check that it isn't the license text instead.
+            Licenses should go in the previous section.
           </span>}
         </div>
       </div>

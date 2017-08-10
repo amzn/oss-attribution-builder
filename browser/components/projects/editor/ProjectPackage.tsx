@@ -32,7 +32,7 @@ const DeltaFields: Array<[keyof WebPackage, string]> = [
 interface Props {
   usage: PackageUsage;
 
-  dispatch: Function;
+  dispatch: (action: any) => any;
   project: any;
   packages: PackageActions.PackageSet;
 }

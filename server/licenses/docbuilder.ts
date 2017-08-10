@@ -18,15 +18,12 @@ import { mapLicense, mapTag } from './index';
 
 export default class DocBuilder {
 
-  _buckets = new Map();
-  _annotations = [];
-  _openAnnotations = {};
-  _lineNum = 0;
-  _chunks = [];
-  _warnings = [];
-
-  constructor() {
-  }
+  private buckets = new Map();
+  private openAnnotations = {};
+  private finalAnnotations = [];
+  private lineNum = 0;
+  private chunks = [];
+  private finalWarnings = [];
 
   addPackage(pkg: Package, usage) {
     // see if it's a known license
@@ -54,23 +51,23 @@ export default class DocBuilder {
     tags.push('all');
 
     // create or add to a bucket
-    const bucket = this._buckets.get(key) || {name, text, tags, packages: []};
+    const bucket = this.buckets.get(key) || {name, text, tags, packages: []};
     bucket.packages.push({pkg, usage});
-    this._buckets.set(key, bucket);
+    this.buckets.set(key, bucket);
   }
 
   build() {
-    this._chunks = [];
-    this._lineNum = 0;
+    this.chunks = [];
+    this.lineNum = 0;
 
     // go through each bucket (packages with same license)
-    const sortedBuckets = Array.from(this._buckets.keys()).sort();
+    const sortedBuckets = Array.from(this.buckets.keys()).sort();
     for (const key of sortedBuckets) {
-      const { name, text, tags, packages } = this._buckets.get(key);
+      const { name, text, tags, packages } = this.buckets.get(key);
 
       const mappedTags = tags.map((tagName) => {
         const mod = mapTag(tagName);
-        this._addWarnings(mod.validateSelf(name, text, tags), {license: key, name});
+        this.addWarnings(mod.validateSelf(name, text, tags), {license: key, name});
         return mod;
       });
 
@@ -84,7 +81,7 @@ export default class DocBuilder {
 
         for (const mod of mappedTags) {
           // attach any package-level warnings
-          this._addWarnings(mod.validateUsage(pkg, usage), {packageId: pkg.package_id});
+          this.addWarnings(mod.validateUsage(pkg, usage), {packageId: pkg.package_id});
 
           // mangle the notice statement
           if (mod.transformCopyright != null) {
@@ -97,9 +94,9 @@ export default class DocBuilder {
           statement += `\n${notice}`;
         }
 
-        this._startAnnotation('package', {packageId: pkg.package_id});
-        this._addChunk(statement);
-        this._endAnnotation('package');
+        this.startAnnotation('package', {packageId: pkg.package_id});
+        this.addChunk(statement);
+        this.endAnnotation('package');
       }
 
       // add on the license text
@@ -110,45 +107,45 @@ export default class DocBuilder {
         }
       }
 
-      this._addChunk('');
-      this._startAnnotation('license', {license: key});
-      this._addChunk(fullText);
-      this._endAnnotation('license');
+      this.addChunk('');
+      this.startAnnotation('license', {license: key});
+      this.addChunk(fullText);
+      this.endAnnotation('license');
 
-      this._addChunk('\n-----\n');
+      this.addChunk('\n-----\n');
     }
 
     // chop off the last chunk and join up
-    return this._chunks.slice(0, -1).join('\n');
+    return this.chunks.slice(0, -1).join('\n');
   }
 
-  _addChunk(str) {
+  private addChunk(str) {
     const len = str.split(/\r?\n/).length;
-    this._lineNum += len;
-    this._chunks.push(str);
+    this.lineNum += len;
+    this.chunks.push(str);
   }
 
-  _addWarnings(warnings, extra) {
+  private addWarnings(warnings, extra) {
     if (warnings != null) {
       if (!Array.isArray(warnings)) {
         throw new Error('Bug: Validator output should return an array of messages');
       }
       for (const w of warnings) {
-        this._warnings.push(Object.assign({}, w, extra));
+        this.finalWarnings.push(Object.assign({}, w, extra));
       }
     }
   }
 
-  _startAnnotation(type, extra) {
-    this._openAnnotations[type] = Object.assign({lines: [this._lineNum, null]}, extra);
+  private startAnnotation(type, extra) {
+    this.openAnnotations[type] = Object.assign({lines: [this.lineNum, null]}, extra);
   }
 
-  _endAnnotation(type) {
-    const open = this._openAnnotations[type];
+  private endAnnotation(type) {
+    const open = this.openAnnotations[type];
     open.type = type;
-    open.lines[1] = this._lineNum;
-    this.annotations.push(open);
-    delete this._openAnnotations[type];
+    open.lines[1] = this.lineNum;
+    this.finalAnnotations.push(open);
+    delete this.openAnnotations[type];
   }
 
   /**
@@ -156,17 +153,17 @@ export default class DocBuilder {
    *   {lines: [start inclusive, end exclusive], type: type, ...extras}
    */
   get annotations() {
-    return this._annotations;
+    return this.finalAnnotations;
   }
 
   get warnings() {
-    return this._warnings;
+    return this.finalWarnings;
   }
 
   get summary() {
     const licenses = {};
     const tags = {};
-    this._buckets.forEach((b, key) => {
+    this.buckets.forEach((b, key) => {
       licenses[key] = {
         packages: b.packages.map((p) => [p.pkg.name, p.pkg.version]),
         tags: b.tags,

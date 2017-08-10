@@ -37,7 +37,8 @@ export default class AttributionDocWarning extends Component<Props, {}> {
     }
 
     // build a message based on severity
-    let title, css;
+    let title;
+    let css;
     switch (level) {
       case 0:
         title = `Problem in ${thing}`;

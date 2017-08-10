@@ -12,6 +12,8 @@
  * permissions and limitations under the License.
  */
 
+// tslint:disable:no-var-requires no-console
+
 import winston = require('winston');
 
 if (process.env.NODE_ENV === 'development') {

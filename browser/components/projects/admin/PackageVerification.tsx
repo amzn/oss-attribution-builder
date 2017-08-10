@@ -20,7 +20,7 @@ import * as PackageActions from '../../../modules/packages';
 import PackageCard from '../packages/PackageCard';
 
 interface Props {
-  dispatch: any;
+  dispatch: (action: any) => any;
   params: any;
   packages: PackageActions.PackageSet;
 }

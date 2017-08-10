@@ -20,7 +20,7 @@ import * as ProjectActions from '../../../modules/projects';
 import ProjectOnboardingForm from './ProjectOnboardingForm';
 
 interface Props {
-  dispatch: any;
+  dispatch: (action: any) => any;
   claims?: any;
 }
 

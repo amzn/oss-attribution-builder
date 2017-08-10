@@ -14,10 +14,16 @@
 
 // Meta-tag; see "all"
 
+// tslint:disable:no-empty
+
 export function validateSelf(name, text, tags) {
   const proper = name != null ? `${name}` : 'This license';
   return [
-    {level: 1, message: `${proper} is not known by our system. Review this license carefully to ensure you comply with its terms.`},
+    {
+      level: 1,
+      message: `${proper} is not known by our system. ` +
+      'Review this license carefully to ensure you comply with its terms.',
+    },
   ];
 }
 

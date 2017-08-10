@@ -12,9 +12,11 @@
  * permissions and limitations under the License.
  */
 
+// tslint:disable:no-console
+
 import webdriver = require('selenium-webdriver');
 
-export default function () {
+export default function() {
   try {
     return new webdriver.Builder()
       .forBrowser(process.env.SELENIUM_DRIVER || 'chrome')

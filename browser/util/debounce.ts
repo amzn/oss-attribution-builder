@@ -12,7 +12,7 @@
  * permissions and limitations under the License.
  */
 
-export default function debounce(fn: Function, time: number) {
+export default function debounce(fn: (...args: any[]) => void, time: number) {
   let timeout;
   return (...args) => {
     clearTimeout(timeout);

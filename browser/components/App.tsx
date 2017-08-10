@@ -22,7 +22,7 @@ import ErrorModal from './util/ErrorModal';
 import ToggleLink from './util/ToggleLink';
 
 interface Props {
-  dispatch: any;
+  dispatch: (action: any) => any;
   generalError?: any;
   claims: any;
 }

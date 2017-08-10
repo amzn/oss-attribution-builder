@@ -15,6 +15,7 @@
 import config from '../config';
 import AuthBase from './base';
 
+// tslint:disable-next-line:no-var-requires
 const impl = require(`./impl/${config.modules.auth}`).default;
 
 export default new impl() as AuthBase;

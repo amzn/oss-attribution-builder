@@ -15,6 +15,9 @@ require manual edits to pluggable interfaces.
   change everything about a project.
 - Users on a project contact list implicitly have "viewer" permissions unless otherwire specified.
 
+### Fixed
+- Some lingering Bootstrap CSS issues were cleaned up.
+
 ## 0.8.0 - 2017-08-04
 
 - Initial release.

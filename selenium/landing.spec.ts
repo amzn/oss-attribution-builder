@@ -15,7 +15,6 @@
 import {By, until} from 'selenium-webdriver';
 import build from './driver';
 
-
 describe('landing page', function () {
   let driver;
   beforeAll(async function (done) {

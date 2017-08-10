@@ -37,7 +37,9 @@ router.use(bodyParser.urlencoded({
  * Send API call results, calling error middleware on failure.
  */
 function pack(promise: Promise<any>, res: any | undefined, next: any | undefined) {
-  if (!res || !next) throw new Error('Missing response or next middleware parameters');
+  if (!res || !next) {
+    throw new Error('Missing response or next middleware parameters');
+  }
   return promise
     .then((x) => {
       if (x === null) {

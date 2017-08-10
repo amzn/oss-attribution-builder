@@ -14,6 +14,8 @@
 
 // NOTE: this tag is referenced from the UI
 
+// tslint:disable:no-empty
+
 export function validateSelf(name, text, tags) {
 }
 
@@ -24,6 +26,10 @@ export function validateUsage(usage) {
   }
 
   return [
-    {level: 0, message: `The ${usage.license} license's text is standardized -- if the text is actually different, you may have a different license.`},
+    {
+      level: 0,
+      message: `The ${usage.license} license's text is standardized -- ` +
+               'if the text is actually different, you may have a different license.',
+    },
   ];
 }

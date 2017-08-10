@@ -24,7 +24,7 @@ import AddPackageForm from './AddPackageForm';
 import ProjectPackage from './ProjectPackage';
 
 interface Props {
-  dispatch: any;
+  dispatch: (action: any) => any;
   params: any;
   project: WebProject;
 }

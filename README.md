@@ -21,16 +21,13 @@ See documentation:
 
 The attribution builder was originally an Amazon-internal tool. Some portions had to be removed to make this a sensible open source project. As such, there are some warts:
 
-* Projects have ACLs, but they aren't properly enforced. The `owner` level is the only one that currently has any effect.
-* Projects also have contact lists, but at the moment the UI only supports one contact (the legal contact).
+* Projects have contact lists, but at the moment the UI only supports one contact (the legal contact).
 * There are only two sample license texts included. Texts from SPDX licenses need to be imported.
-* The UI was recently migrated from Bootstrap 3 to 4. Some styles might be messy.
 * The default auth backend (`nullauth`) is a useful demo, but not useful as an authentication solution. Do **not** launch into production without implementing an authentication backend fitting your environment.
 * JWTs are used for sessions. These are going to be removed and replaced with something more maintainable (Passport or equivalent).
 * Selenium tests are likely very broken. These were created for use in an Amazon environment and have not yet been updated.
 * The website needs Node 6.x to build, due to usage of Gulp 3. It should still _run_ on 8, however.
 * Other dependencies are fairly out of date as well.
-* tslint rules are included, but a lot of files do not pass style checks. These rules were recently updated.
 
 These will all be fixed in time, but be aware that some things might be weird for a while.
 

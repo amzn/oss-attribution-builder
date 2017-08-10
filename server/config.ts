@@ -18,6 +18,7 @@
  */
 
 const name = process.env.CONFIG_NAME || 'default';
+// tslint:disable-next-line:no-var-requires
 const actual = require(`../config/${name}.js`);
 
 export let config = actual.config;

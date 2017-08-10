@@ -31,7 +31,7 @@ export default class FreeformSelect extends Component<Props, {}> {
     this.props.onChange(selected);
   }
 
-  _filterOptions(options, filter) {
+  private filterOptions(options, filter) {
     if (!filter || filter.length === 0) {
       return options;
     }
@@ -45,7 +45,7 @@ export default class FreeformSelect extends Component<Props, {}> {
     ];
   }
 
-  _optionRenderer = (option) => {
+  private optionRenderer = (option) => {
     const { optionRenderer } = this.props;
 
     if (option && option.create) {
@@ -67,8 +67,8 @@ export default class FreeformSelect extends Component<Props, {}> {
         options={this.props.options}
         placeholder={this.props.placeholder}
         onChange={this.onChange}
-        filterOptions={this._filterOptions}
-        optionRenderer={this._optionRenderer}
+        filterOptions={this.filterOptions}
+        optionRenderer={this.optionRenderer}
       />
     );
   }

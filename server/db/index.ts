@@ -18,6 +18,7 @@ const options = {};
 
 // note: pg-monitor isn't installed in prod; this doesn't work there intentionally.
 if (process.env.DEBUG_SQL) {
+  // tslint:disable-next-line:no-var-requires
   const monitor = require('pg-monitor');
   monitor.attach(options);
 }

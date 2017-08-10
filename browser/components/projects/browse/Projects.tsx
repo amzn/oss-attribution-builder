@@ -20,7 +20,7 @@ import * as ProjectActions from '../../../modules/projects';
 import ProjectList from './ProjectList';
 
 interface Props {
-  dispatch: any;
+  dispatch: (action: any) => any;
   location?: any;
   projects: any[];
 }

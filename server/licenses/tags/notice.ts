@@ -16,6 +16,8 @@
 // these notices will be rendered under the license text.
 // largely Apache-2.0 specific.
 
+// tslint:disable:no-empty
+
 export function validateSelf(name, text, tags) {
 }
 

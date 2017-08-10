@@ -22,7 +22,7 @@ import AttributionDocWarning from './AttributionDocWarning';
 import TextAnnotator from './TextAnnotator';
 
 interface Props {
-  dispatch: any;
+  dispatch: (action: any) => any;
   params: any;
   attributionDoc: any;
   project: any;
@@ -72,7 +72,7 @@ class AttributionDocBuilder extends Component<Props, State> {
     }
 
     if (found == null) {
-      return () => {};
+      return () => null;
     }
 
     return (event) => {
@@ -108,7 +108,10 @@ class AttributionDocBuilder extends Component<Props, State> {
         </p>
 
         <p>
-          <strong>To store a permanent copy, click the Save button below.</strong> You can create as many copies as you want and make edits after storing a copy. When you have a final version, save it here. You'll get a download as a text file and we'll store a rendered copy in our database.
+          <strong>To store a permanent copy, click the Save button below.</strong>{' '}
+          You can create as many copies as you want and make edits after storing a copy.
+          When you have a final version, save it here.
+          You'll get a download as a text file and we'll store a rendered copy in our database.
         </p>
         <button type="submit" className="btn btn-success" onClick={this.saveAndDownload}>Save &amp; Download</button>
 

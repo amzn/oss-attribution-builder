@@ -82,7 +82,10 @@ export default class UsageFields extends React.Component<Props, State> {
         <label className="col-md-3">
           Linkage{' '}
           <i className="fa fa-question-circle" data-toggle="tooltip"
-            title="If this doesn't apply to your product, pick the closest option. Generally, static linking is when your code is bundled together by a compiler/minifier into a single file, and dynamic linking keeps the library in a separate file." />
+            title={'If this doesn\'t apply to your product, pick the closest option. ' +
+                   'Generally, static linking is when your code is bundled together by a ' +
+                   'compiler/minifier into a single file, and dynamic linking keeps the ' +
+                   'library in a separate file.'} />
         </label>
         <div className="col-md-9">
           <div className="form-check form-check-inline">

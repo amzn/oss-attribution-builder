@@ -15,7 +15,7 @@
 import React = require('react');
 
 interface Props {
-  onClick: Function;
+  onClick: (event: any) => any;
 }
 
 interface State {

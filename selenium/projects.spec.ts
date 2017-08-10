@@ -15,7 +15,6 @@
 import {By, Key, until} from 'selenium-webdriver';
 import build from './driver';
 
-
 const projectName = 'Automated Test Project ' + new Date().getTime();
 const packageName = 'ZZZ Automated Test Package ' + new Date().getTime();
 
@@ -156,7 +155,8 @@ describe('project management', function () {
     driver.findElement(By.css('#package-container .Select-placeholder')).click();
     driver.findElement(By.css('#package-container .Select-input input')).sendKeys(packageName);
     // wait for results to load (should be one that isn't the create option)
-    await driver.wait(until.elementLocated(By.xpath('//*[@id="package-container"]//*[contains(@class, "Select-option")][not(contains(text(), "Create"))]')));
+    await driver.wait(until.elementLocated(By.xpath(
+      '//*[@id="package-container"]//*[contains(@class, "Select-option")][not(contains(text(), "Create"))]')));
     const existingOption = await driver.findElement(By.css('#package-container .Select-option:first-child'));
 
     const existingText = await existingOption.getText();

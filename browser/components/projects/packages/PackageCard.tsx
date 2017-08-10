@@ -23,7 +23,7 @@ import PackageCardUsage, { Props as UsageProps } from './PackageCardUsage';
 import PackageVerificationMark from './PackageVerificationMark';
 
 interface Props {
-  dispatch: any;
+  dispatch: (action: any) => any;
   packageId: number;
   packages: PackageSet;
   usage?: UsageProps;

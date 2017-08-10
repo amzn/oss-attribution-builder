@@ -18,6 +18,8 @@
  * Validation that checks for the presence/abscence of other tags can be set up here.
  */
 
+// tslint:disable:no-empty
+
 export function validateSelf(name, text, tags) {
   // if it's an unknown license, the unknown tag will cover this case anyway
   if (tags.includes('unknown')) {

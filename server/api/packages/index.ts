@@ -112,7 +112,8 @@ export async function storePackage(req: any, packageId: number, info: Pick<WebPa
   let newId: number;
   if (shouldInsert) {
     const createdBy = req.user.user;
-    newId = await db.createPackageRevision(info.name, info.version, info.website, info.license, info.copyright, info.licenseText, createdBy);
+    newId = await db.createPackageRevision(info.name, info.version, info.website,
+      info.license, info.copyright, info.licenseText, createdBy);
     winston.info('Created a new package revision with ID %s (previous revision at %s) by %s',
       newId, packageId ? packageId : '[none]', createdBy);
   } else {
@@ -141,7 +142,7 @@ export async function getVerificationQueue(req: any): Promise<{queue: Array<Part
     packageId: item.package_id,
     name: item.name,
     version: item.version,
-    extra: { stats: { numProjects: parseInt(item.count) } },
+    extra: { stats: { numProjects: parseInt(item.count, 10) } },
   }));
   return {queue};
 }

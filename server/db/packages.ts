@@ -36,7 +36,8 @@ export interface PackageVerify {
 
 export function searchPackages(search: string, limit: number): Promise<Package[]> {
   return pg().query(
-    'select distinct on (name, version) * from packages where name ilike $1 order by name, version, package_id desc limit $2',
+    'select distinct on (name, version) * from packages ' +
+    'where name ilike $1 order by name, version, package_id desc limit $2',
     [`%${search}%`, limit],
   );
 }
@@ -66,7 +67,8 @@ export async function createPackageRevision(name: string, version: string, websi
   }
 
   const result = await pg().one(
-    'insert into packages(name, version, website, license, copyright, license_text, created_by) values ($1, $2, $3, $4, $5, $6, $7) returning package_id',
+    'insert into packages(name, version, website, license, copyright, license_text, created_by) ' +
+    'values ($1, $2, $3, $4, $5, $6, $7) returning package_id',
     [name, version, website, license, copyright, licenseText, createdBy],
   );
   return result.package_id;
@@ -79,7 +81,8 @@ export function getUnverifiedPackages(limit: number = 25) {
     'select pkg.package_id, pkg.name, pkg.version, count(pkg.package_id) as count from packages pkg ' +
     // joining against projects using each package by inspecting the JSONB
     // packages_used field (@> is a postgres JSON search operator),
-    'join projects pj on pj.packages_used @> json_build_array(json_build_object(\'package_id\', pkg.package_id))::jsonb ' +
+    'join projects pj on pj.packages_used @> ' +
+    'json_build_array(json_build_object(\'package_id\', pkg.package_id))::jsonb ' +
     // excluding unverified packages,
     'where verified is null ' +
     // and grouped by package id for the count() in select, which is then sorted.

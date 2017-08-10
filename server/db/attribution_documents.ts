@@ -32,9 +32,12 @@ export function findDocumentsForProject(projectId: string): Promise<AttributionD
   );
 }
 
-export async function storeAttributionDocument(projectId: string, projectVersion: string, content: string, createdBy: string): Promise<number> {
+export async function storeAttributionDocument(projectId: string, projectVersion: string,
+                                               content: string, createdBy: string):
+                                               Promise<number> {
   const doc = await pg().one(
-    'insert into attribution_documents(project_id, project_version, content, created_by) values ($1, $2, $3, $4) returning doc_id',
+    'insert into attribution_documents(project_id, project_version, content, created_by) ' +
+    'values ($1, $2, $3, $4) returning doc_id',
     [projectId, projectVersion, content, createdBy],
   );
   return doc.doc_id;

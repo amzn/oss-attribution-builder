@@ -22,9 +22,9 @@ import PackageFields, { PkgOutput } from './PackageFields';
 import UsageFields from './UsageFields';
 
 interface Props {
-  onCompleted: Function;
+  onCompleted: () => any;
 
-  dispatch: any;
+  dispatch: (action: any) => any;
   project: WebProject;
 }
 
@@ -115,14 +115,18 @@ class AddPackageForm extends Component<Props, Partial<State>> {
                 <small>(This message is only shown once per session.)</small>
 
                 <p style={{textAlign: 'center'}}>
-                  <img src="/assets/images/copyright-vs-license.png" className="img-rounded" alt="Copyright/license example" style={{ width: '100%', maxWidth: '700px' }} />
+                  <img src="/assets/images/copyright-vs-license.png" className="img-rounded"
+                    alt="Copyright/license example" style={{ width: '100%', maxWidth: '700px' }} />
                 </p>
                 <p>
                   Note that projects may do things differently.
-                  A copyright statement may not always be in these files; it may be present in the headers of the source code instead. Sometimes it is present in the README.
+                  A copyright statement may not always be in these files;
+                  it may be present in the headers of the source code instead.
+                  Sometimes it is present in the README.
                 </p>
                 <p>
-                  If the package you're using has a NOTICE file, it often includes a copyright statement. You can include the NOTICE file in same box below.
+                  If the package you're using has a NOTICE file, it often includes a copyright statement.
+                 Yo u can include the NOTICE file in same box below.
                 </p>
 
                 <h5>Identifying a License</h5>

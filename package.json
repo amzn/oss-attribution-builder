@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "trap 'docker-compose -f docker-compose-dev.yml stop' SIGINT SIGHUP EXIT; docker-compose -f docker-compose-dev.yml up -d; CONFIG_NAME=dev gulp dev",
     "start": "export NODE_ENV=production; gulp; node ./build/server/localserver.js",
-    "test": "gulp test"
+    "test": "gulp test",
+    "lint": "tslint -c tslint.json 'browser/**/*.ts?(x)' 'server/**/*.ts' 'selenium/**/*.ts' --fix"
   },
   "author": "Jacob Peddicord <peddicor@amazon.com>",
   "license": "Apache-2.0",

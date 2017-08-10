@@ -21,7 +21,7 @@ import { WebPackage } from '../../../../server/api/packages/interfaces';
 import { fetchVerificationQueue } from '../../../modules/packages';
 
 interface Props {
-  dispatch: any;
+  dispatch: (action: any) => any;
   queue: Array<Partial<WebPackage>>;
 }
 
