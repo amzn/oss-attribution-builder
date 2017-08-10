@@ -118,12 +118,18 @@ class ProjectView extends Component<Props, State> {
     return (
       <div className="pb-5">
         <h2 id="project-heading">
-          <EditableText value={project.title} onChange={this.makeChangeEvent('title')}>
+          <EditableText
+            value={project.title}
+            enabled={project.access.canEdit}
+            onChange={this.makeChangeEvent('title')}>
             {project.title}
           </EditableText>
           {' '}
           <small id="project-version">
-            <EditableText value={project.version} onChange={this.makeChangeEvent('version')}>
+            <EditableText
+              value={project.version}
+              enabled={project.access.canEdit}
+              onChange={this.makeChangeEvent('version')}>
               version {project.version}
             </EditableText>
           </small>
@@ -133,8 +139,10 @@ class ProjectView extends Component<Props, State> {
 
         <p className="lead" id="project-description">
           <EditableText
-            value={project.description} editor={<textarea/>}
-            onChange={this.makeChangeEvent('description')}>
+            value={project.description}
+            enabled={project.access.canEdit}
+            onChange={this.makeChangeEvent('description')}
+            editor={<textarea/>}>
             {project.description}
           </EditableText>
         </p>
@@ -142,21 +150,32 @@ class ProjectView extends Component<Props, State> {
         <dl className="row">
           <dt className="col-md-3">Planned release date</dt>
           <dd className="col-md-9" id="project-release-date">
-            <EditableText value={project.plannedRelease.format('YYYY-MM-DD')} onChange={this.makeChangeEvent('plannedRelease')} editor={<input type="date" pattern="\d{4}\-\d{2}-\d{2}"/>}>
+            <EditableText
+              value={project.plannedRelease.format('YYYY-MM-DD')}
+              enabled={project.access.canEdit}
+              onChange={this.makeChangeEvent('plannedRelease')}
+              editor={<input type="date" pattern="\d{4}\-\d{2}-\d{2}"/>}>
               {project.plannedRelease.format('ddd, MMMM Do YYYY')}
             </EditableText>
           </dd>
 
           <dt className="col-md-3">Legal contact</dt>
           <dd className="col-md-9" id="project-lawyer">
-            <EditableText value={legalContact} onChange={this.makeChangeEvent('contacts', false, 'legal')}>
+            <EditableText
+              value={legalContact}
+              enabled={project.access.canEdit}
+              onChange={this.makeChangeEvent('contacts', false, 'legal')}>
               {legalContact}
             </EditableText>
           </dd>
 
           <dt className="col-md-3">Open sourcing</dt>
           <dd className="col-md-9" id="project-open-sourcing">
-            <EditableText value={project.metadata.open_sourcing.toString()} onChange={this.makeChangeEvent('meta', true, 'open_sourcing')} editor={selectYesNo}>
+            <EditableText
+              value={project.metadata.open_sourcing.toString()}
+              enabled={project.access.canEdit}
+              onChange={this.makeChangeEvent('meta', true, 'open_sourcing')}
+              editor={selectYesNo}>
               {project.metadata.open_sourcing ? 'Yes' : 'No'}
             </EditableText>
           </dd>
@@ -168,11 +187,14 @@ class ProjectView extends Component<Props, State> {
         ) || noPackagesBanner }
 
         <div>
-          {showAddPackageForm
-            ? <AddPackageForm onCompleted={() => this.showAddPackageForm(false)} />
-            : <button id="add-package" className="btn btn-primary" onClick={() => this.showAddPackageForm(true)}>
-                <i className="fa fa-plus"/> Add Package
-              </button>}
+          {project.access.canEdit &&
+            (showAddPackageForm
+              ? <AddPackageForm onCompleted={() => this.showAddPackageForm(false)} />
+              : <button id="add-package" className="btn btn-primary" onClick={() => this.showAddPackageForm(true)}>
+                  <i className="fa fa-plus"/> Add Package
+                </button>
+            )
+          }
 
           {showAddPackageForm || project.packagesUsed.length === 0 ? '' :
             <div className="pull-right" id="build-buttons">

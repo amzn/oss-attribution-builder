@@ -12,6 +12,7 @@
  * permissions and limitations under the License.
  */
 
+import { AccessLevel } from '../api/projects/interfaces';
 import generateID from '../util/idgen';
 import pg from './index';
 import { addAuditItem } from './projects_audit';
@@ -26,7 +27,7 @@ export interface DbProject {
   // contact type: [list of contacts]
   contacts: {[key: string]: string[]};
   // resource (user/group) name: access level
-  acl: {[key: string]: string};
+  acl: {[key: string]: AccessLevel};
   packages_used: any[];
   metadata?: object;
 }
@@ -56,8 +57,11 @@ export async function createProject(project: ProjectInput, who: string): Promise
 
   // add the entry itself
   await pg().none(
-    'insert into projects(project_id, title, version, description, planned_release, contacts, acl, metadata, packages_used) values($1, $2, $3, $4, $5, $6, $7, $8, \'[]\'::jsonb)',
-    [projectId, project.title, project.version, project.description, project.planned_release, project.contacts, project.acl, project.metadata],
+    'insert into projects(' +
+    'project_id, title, version, description, planned_release, contacts, acl, metadata, packages_used' +
+    ') values($1, $2, $3, $4, $5, $6, $7, $8, \'[]\'::jsonb)',
+    [projectId, project.title, project.version, project.description, project.planned_release,
+      project.contacts, project.acl, project.metadata],
   );
 
   // add auditing info
@@ -79,7 +83,10 @@ export async function patchProject(projectId: string, changes: Partial<DbProject
   const patchStr = patches.join(' ');
 
   // insert them all
-  await pg().none(`update projects set ${patchStr} where project_id = $(projectId)`, Object.assign({projectId}, changes));
+  await pg().none(
+    `update projects set ${patchStr} where project_id = $(projectId)`,
+    Object.assign({projectId}, changes),
+  );
 
   // audit the change
   await addAuditItem(projectId, who, changes);

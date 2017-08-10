@@ -16,6 +16,7 @@ import auth from '../../auth';
 import * as packagedb from '../../db/packages';
 import * as db from '../../db/projects';
 import { RequestError } from '../../errors';
+import { effectivePermission, ProjectAccess } from './auth';
 
 export async function createProject(req, res, next) {
   try {
@@ -30,10 +31,9 @@ export async function createProject(req, res, next) {
     };
     ensureFieldsExist(fields, req.body);
 
-    // check contacts
+    // check contacts & ACLs for sanity
     await validateContacts(req.body.contacts);
-
-    // TODO: validate ACL
+    await validateAcl(req, {acl: req.body.acl, contacts: req.body.contacts});
   } catch (e) {
     return next(e);
   }
@@ -54,7 +54,11 @@ export async function patchProject(req, res, next) {
       await validateContacts(req.body.contacts);
     }
 
-    // TODO: validate ACL
+    if (req.body.hasOwnProperty('acl')) {
+      // contact list doesn't matter for the sake of validating an updated ACL,
+      // since we only care about losing owner permissions. contacts only have viewer.
+      await validateAcl(req, {acl: req.body.acl, contacts: {}});
+    }
   } catch (e) {
     return next(e);
   }
@@ -69,6 +73,13 @@ async function validateContacts(contacts) {
         throw new RequestError(`Contact ${contact} could not be found.`);
       }
     }
+  }
+}
+
+async function validateAcl(req: any, project: ProjectAccess) {
+  const effective = effectivePermission(req, project);
+  if (effective !== 'owner') {
+    throw new RequestError('You cannot remove yourself from project permissions.');
   }
 }
 
@@ -90,8 +101,12 @@ export async function attachPackage(req, res, next) {
     }
 
     // coerce undefined/emptyish keys to null
-    if (req.body.license == null || req.body.license.trim().length === 0) req.body.license = null;
-    if (req.body.licenseText == null || req.body.licenseText.trim().length === 0) req.body.licenseText = null;
+    if (req.body.license == null || req.body.license.trim().length === 0) {
+      req.body.license = null;
+    }
+    if (req.body.licenseText == null || req.body.licenseText.trim().length === 0) {
+      req.body.licenseText = null;
+    }
 
     // either the license name or the full license text must be specified
     if (!isValid(req.body, 'license') && !isValid(req.body, 'licenseText')) {

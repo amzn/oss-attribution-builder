@@ -20,9 +20,13 @@ export interface WebProject {
   plannedRelease: any;
   createdOn: any;
   contacts: {[key: string]: string[]};
-  acl: {[key: string]: 'owner' | 'editor' | 'viewer'};
+  acl: {[key: string]: AccessLevel};
   packagesUsed: PackageUsage[];
   metadata: {[key: string]: any};
+  access: {
+    level: AccessLevel;
+    canEdit: boolean;
+  };
 }
 
 export interface PackageUsage {
@@ -31,3 +35,10 @@ export interface PackageUsage {
   link: 'dynamic' | 'static';
   notes?: string;
 }
+
+export const AccessLevelStrength: {[key: string]: number} = {
+  viewer: 1,
+  editor: 2,
+  owner: 3,
+};
+export type AccessLevel = 'owner' | 'editor' | 'viewer' | null;

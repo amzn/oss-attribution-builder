@@ -12,10 +12,10 @@
  * permissions and limitations under the License.
  */
 
-import * as winston from 'winston';
 import { isAdmin, isUserInGroup } from '../../auth/util';
 import { DbProject } from '../../db/projects';
 import { AccessError } from '../../errors';
+import { AccessLevel, AccessLevelStrength } from './interfaces';
 
 /**
  * Check if the request's user is the project's contact list.
@@ -30,44 +30,53 @@ export function isInContacts(req: any, project: Pick<DbProject, 'contacts'>) {
   return false;
 }
 
-type DbProjectAccess = Pick<DbProject, 'contacts' | 'acl' | 'project_id'>;
-
-/**
- * Check if a request's user has access to a project.
- */
-export function hasProjectAccess(req: any, project: DbProjectAccess) {
-  // TODO: this only pays attention to 'owner' at the moment.
-  // this function should eventually be replaced by effectivePermission below.
-  for (const entity of Object.keys(project.acl))
-    if (project.acl[entity] === 'owner' && isUserInGroup(req, entity)) {
-    return true;
-  }
-
-  // TODO: contacts should probably only have read access unless otherwise granted
-  if (isInContacts(req, project)) {
-    return true;
-  }
-
-  if (isAdmin(req)) {
-    return true;
-  }
-
-  winston.warn('User %s has no access to project %s', req.user.user, project.project_id);
-  return false;
-}
+export type ProjectAccess = Pick<DbProject, 'contacts' | 'acl'>;
 
 /**
  * Throw an error if the request's user has no access.
  */
-export function assertProjectAccess(req: any, project: DbProjectAccess) {
-  if (project == null || !hasProjectAccess(req, project)) {
-    throw new AccessError('This project does not exist or you do not have access to it.');
+export function assertProjectAccess(req: any, project: ProjectAccess, level: AccessLevel): void {
+  if (project != null) {
+    const effective = effectivePermission(req, project);
+    if (effective != null) {
+      if (AccessLevelStrength[effective] >= AccessLevelStrength[level]) {
+        return;
+      }
+    }
   }
-  return true;
+
+  throw new AccessError('This project does not exist or you do not have access to it.');
 }
 
-export function effectivePermission(project: DbProject) {
-  // TODO: check global list
-  // TODO: check project list
-  // TODO: deprecate/replace hasProjectAccess
+export function effectivePermission(req: any, project: ProjectAccess): AccessLevel {
+  // start by checking the global list
+  // TODO: make global list ACL-like too
+  if (isAdmin(req)) {
+    return 'owner';
+  }
+
+  // then check the project ACL
+  let effective: AccessLevel = null;
+  let effectiveStrength = 0;
+  for (const entity of Object.keys(project.acl)) {
+    // skip groups that aren't relevant for the requester
+    if (!isUserInGroup(req, entity)) {
+      continue;
+    }
+
+    // if we find a level with stronger access, use that
+    const level = project.acl[entity];
+    const strength = AccessLevelStrength[level];
+    if (strength > effectiveStrength) {
+      effective = level;
+      effectiveStrength = strength;
+    }
+  }
+
+  // then check the contact list (defaults to view permissions)
+  if (effectiveStrength < AccessLevelStrength.viewer && isInContacts(req, project)) {
+    effective = 'viewer';
+  }
+
+  return effective;
 }

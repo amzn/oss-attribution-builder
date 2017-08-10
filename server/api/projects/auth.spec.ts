@@ -13,7 +13,8 @@
  */
 
 import config from '../../config';
-import { assertProjectAccess } from './auth';
+import { assertProjectAccess, effectivePermission } from './auth';
+import { AccessLevel } from './interfaces';
 
 describe('projects auth', function () {
 
@@ -36,8 +37,8 @@ describe('projects auth', function () {
         ],
       },
       acl: {
-        wallet: 'owner',
-      },
+        wallet: 'owner' as AccessLevel,
+      } as any,
     };
   }
 
@@ -51,16 +52,14 @@ describe('projects auth', function () {
     const req = makeReq();
     const proj = makeProj();
     req.user.groups.push('wallet');
-    const result = assertProjectAccess(req, proj);
-    expect(result).toBe(true);
+    expect(() => assertProjectAccess(req, proj, 'owner')).not.toThrow();
   });
 
-  it('should allow legal contact to edit', function () {
+  it('should allow legal contact to view', function () {
     const req = makeReq();
     const proj = makeProj();
     req.user.user = 'lawyer';
-    const result = assertProjectAccess(req, proj);
-    expect(result).toBe(true);
+    expect(() => assertProjectAccess(req, proj, 'viewer')).not.toThrow();
   });
 
   it('should allow admins to edit', function () {
@@ -69,13 +68,11 @@ describe('projects auth', function () {
 
     // just admin flag is not enough...
     req.user.admin = true;
-    const func = assertProjectAccess.bind(null, req, proj);
-    expect(func).toThrowError(/do not have access/);
+    expect(() => assertProjectAccess(req, proj, 'owner')).toThrowError(/do not have access/);
 
     // ...as it double-checks the admin groups
     req.user.groups.push('admin-users');
-    const result2 = assertProjectAccess(req, proj);
-    expect(result2).toBe(true);
+    expect(() => assertProjectAccess(req, proj, 'owner')).not.toThrow();
   });
 
   it('should block anyone else', function () {
@@ -83,6 +80,46 @@ describe('projects auth', function () {
     const proj = makeProj();
     const func = assertProjectAccess.bind(null, req, proj);
     expect(func).toThrowError(/do not have access/);
+  });
+
+  describe('effectivePermission', function () {
+
+    it('should return null for a single-entry ACL that does not match', function () {
+      const req = makeReq();
+      const proj = makeProj();
+      const level = effectivePermission(req, proj);
+      expect(level).toBeNull();
+    });
+
+    it('should return an access level for a single-entry ACL that does match', function () {
+      const req = makeReq();
+      const proj = makeProj();
+      req.user.groups.push('wallet');
+      const level = effectivePermission(req, proj);
+      expect(level).toEqual('owner');
+    });
+
+    it('should return a stronger level for multiple matching ACLs', function () {
+      const req = makeReq();
+      const proj = makeProj();
+      proj.acl.wallet = 'viewer';
+      proj.acl.dog = 'editor';
+      req.user.groups.push('wallet');
+      req.user.groups.push('dog');
+      const level = effectivePermission(req, proj);
+      expect(level).toEqual('editor');
+    });
+
+    it('should return a lower level when the higher does not match', function () {
+      const req = makeReq();
+      const proj = makeProj();
+      proj.acl.wallet = 'viewer';
+      proj.acl.dog = 'editor';
+      req.user.groups.push('wallet');
+      const level = effectivePermission(req, proj);
+      expect(level).toEqual('viewer');
+    });
+
   });
 
 });
