@@ -51,7 +51,7 @@ export default class DetatchButton extends React.Component<Props, State> {
       }, 500);
     } else if (mode === ConfirmState.Confirm) {
       clearTimeout(this.timeout);
-      this.props.onClick();
+      this.props.onClick(null);
     }
   }
 
