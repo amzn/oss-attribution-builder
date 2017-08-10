@@ -137,7 +137,10 @@ class ProjectPackage extends React.Component<Props, State> {
       <p>
         If this looks correct, you can apply these changes to your project:
       </p>
-      <button className="btn btn-xs btn-success" onClick={() => this.replacePackage(newPkg.packageId)}>Accept changes</button>
+      <button className="btn btn-sm btn-success"
+        onClick={() => this.replacePackage(newPkg.packageId)}>
+        Accept changes
+      </button>
     </div>;
   }
 

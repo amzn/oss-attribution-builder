@@ -87,7 +87,7 @@ export default class ProjectOnboardingForm extends Component<Props, State> {
 
     return (
       <div className="container">
-        <form id="onboarding-form" className="form-horizontal" onSubmit={sub}>
+        <form id="onboarding-form" onSubmit={sub}>
 
           <div className="form-group row">
             <label htmlFor="title" className="col-md-3 col-form-label">Title</label>

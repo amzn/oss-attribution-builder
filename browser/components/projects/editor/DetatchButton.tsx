@@ -58,7 +58,7 @@ export default class DetatchButton extends React.Component<Props, State> {
   render() {
     const { mode } = this.state;
     return <button
-      className={`btn btn-default package-remove-button ${mode === ConfirmState.Confirm && 'btn-danger'}`}
+      className={`btn btn-secondary package-remove-button ${mode === ConfirmState.Confirm && 'btn-danger'}`}
       onClick={this.clicked}
       disabled={mode === ConfirmState.Lockout}>
       {mode === ConfirmState.Confirm ? 'Delete?'

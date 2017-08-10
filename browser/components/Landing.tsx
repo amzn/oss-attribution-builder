@@ -49,16 +49,18 @@ class Landing extends React.Component<Props, State> {
         <p>
           This tool helps you build an attribution document to use in a distributed product.
         </p>
-        We organize attribution documents by project. You can create a new project or browse your projects below.
-        We'll ask you for some basic details about your product, such as who your legal contact is and when you plan to distribute or launch.
+        We organize attribution documents by project.
+        You can create a new project or browse your projects below.
+        We'll ask you for some basic details about your product,
+        such as who your legal contact is and when you plan to distribute or launch.
         Then you'll build a list of all of the open source packages you use and their licenses.
         These packages and their licenses will form your attribution document.
         <br/><br/>
         <p>
           <Link to="/projects/new" className="btn btn-primary btn-lg">New Project</Link>{' '}
-          <Link to="/projects/" className="btn btn-default btn-lg">My Projects</Link>{' '}
+          <Link to="/projects/" className="btn btn-secondary btn-lg">My Projects</Link>{' '}
           {admin ?
-            <Link to="/projects/?all=1" className="btn btn-default btn-sm">All Projects</Link>
+            <Link to="/projects/?all=1" className="btn btn-secondary btn-sm">All Projects</Link>
           : ''}
         </p>
       </div>

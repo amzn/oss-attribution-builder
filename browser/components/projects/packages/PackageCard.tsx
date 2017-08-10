@@ -81,7 +81,7 @@ class PackageCard extends Component<Props, {}> {
 
             <div className="btn-toolbar">
               <div className="btn-group btn-group-sm">
-                <a className="btn btn-default btn-link" href={pkg.website} target="_blank">Website</a>
+                <a className="btn btn-link" href={pkg.website} target="_blank">Website</a>
               </div>
 
               <div className="btn-group btn-group-sm">

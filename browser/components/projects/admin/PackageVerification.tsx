@@ -106,11 +106,11 @@ class PackageVerification extends Component<Props, State> {
               <textarea className="form-control" id="comments" name="comments"
                         onChange={this.changeEvent('comments')} value={this.state.comments} />
             </div>
-            <div className="btn-group pull-right">
+            <div className="btn-group float-right">
               <button className="btn btn-primary" type="submit" disabled={!valid}>Save</button>
             </div>
             {valid || (
-              <div className="help-block">
+              <div className="form-text text-muted">
                 You must verify all items are valid, or provide comments explaining which are incorrect.
               </div>
             )}
