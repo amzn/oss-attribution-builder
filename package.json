@@ -2,6 +2,10 @@
   "name": "amazon-oss-attribution-builder",
   "version": "0.8.0",
   "description": "A website to help you create attribution documents for product releases",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/amzn/oss-attribution-builder"
+  },
   "main": "server/app.js",
   "scripts": {
     "dev": "trap 'docker-compose -f docker-compose-dev.yml stop' SIGINT SIGHUP EXIT; docker-compose -f docker-compose-dev.yml up -d; CONFIG_NAME=dev gulp dev",
