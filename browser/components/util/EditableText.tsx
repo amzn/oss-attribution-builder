@@ -27,9 +27,6 @@ interface State {
 }
 
 export default class EditableText extends Component<Props, State> {
-  static contextTypes = {
-    canEdit: React.PropTypes.bool,
-  };
 
   constructor() {
     super();
@@ -42,10 +39,6 @@ export default class EditableText extends Component<Props, State> {
   get enabled() {
     if (this.props.enabled != null) {
       return this.props.enabled;
-    }
-
-    if (this.context.canEdit != null) {
-      return this.context.canEdit;
     }
 
     return true;
