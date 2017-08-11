@@ -29,7 +29,7 @@ let plugins = [
   new webpack.ProvidePlugin({
     $: 'jquery',
     jQuery: 'jquery',
-    Tether: 'tether',
+    Popper: ['popper.js', 'default'],
   }),
   new webpack.optimize.CommonsChunkPlugin({name: 'vendor', filename: 'vendor.bundle.js'}),
   new ExtractTextPlugin('[name].css'),
@@ -76,7 +76,7 @@ module.exports = {
 
   entry: {
     app: ['./browser/app.tsx'],
-    vendor: ['core-js/shim', 'bootstrap', 'history', 'jquery', 'moment', 'react', 'react-dom', 'react-redux', 'react-router', 'react-select', 'redux', 'tether', 'whatwg-fetch'],
+    vendor: ['core-js/shim', 'bootstrap', 'history', 'jquery', 'moment', 'popper.js', 'react', 'react-dom', 'react-redux', 'react-router', 'react-select', 'redux', 'whatwg-fetch'],
     style: ['./styles/style.scss'],
   },
 

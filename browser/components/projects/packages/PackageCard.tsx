@@ -75,7 +75,7 @@ class PackageCard extends Component<Props, {}> {
 
     return (
       <div className="card package-card mb-2" ref={(r) => this.ref = r}>
-        <div className="card-block">
+        <div className="card-body">
 
           <div className="float-right">
 

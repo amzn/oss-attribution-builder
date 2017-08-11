@@ -134,7 +134,7 @@ class AttributionDocBuilder extends Component<Props, State> {
 
         <h3 className="mt-4">Document Preview</h3>
         <div id="attribution-document-text" className="card">
-          <div className="card-block">
+          <div className="card-body">
             <TextAnnotator highlights={highlights}>{lines}</TextAnnotator>
           </div>
         </div>

@@ -109,7 +109,7 @@ class AddPackageForm extends Component<Props, Partial<State>> {
       <div className="row">
         <div className="col-md-12">
           <div className="card">
-            <div className="card-block">
+            <div className="card-body">
               <h5 className="card-heading">How to identify licenses and copyrights</h5>
               <div className="card-text">
                 <small>(This message is only shown once per session.)</small>

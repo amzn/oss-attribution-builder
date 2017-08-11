@@ -1,17 +1,27 @@
-$brand-primary:             #088F95;
-$brand-success:             #395AAB;
-$brand-info:                #4AADB1;
-$brand-warning:             #FFC141;
-$brand-danger:              #F7790C;
-$brand-inverse:             #00585C;
+$white:                     #fff;
+$gray-100:                  #f8f9fa;
+$gray-200:                  #e9ecef;
+$gray-300:                  #dee2e6;
+$gray-400:                  #ced4da;
+$gray-500:                  #adb5bd;
+$gray-600:                  #868e96;
+$gray-700:                  #495057;
+$gray-800:                  #343a40;
+$gray-900:                  #212529;
+$black:                     #000;
 
-$gray-dark:                 #292929;
-$gray:                      #464646;
-$gray-light:                #6c6c6c;
-$gray-lighter:              #e8e8e8;
-$gray-lightest:             #f7f7f7;
+$theme-colors: (
+  primary:                  #088F95,
+  secondary:                $gray-400,
+  success:                  #395AAB,
+  info:                     #4AADB1,
+  warning:                  #FFC141,
+  danger:                   #F7790C,
+  light:                    $gray-200,
+  dark:                     #00585C
+);
 
-$body-bg:                   $gray-lightest;
+$body-bg:                   $gray-100;
 
 $border-radius:             .15rem;
 $border-radius-lg:          .18rem;
@@ -19,9 +29,9 @@ $border-radius-sm:          .12rem;
 
 $font-size-base:            0.9rem;
 
-$font-size-h1:              2.2rem;
-$font-size-h2:              1.9rem;
-$font-size-h3:              1.6rem;
-$font-size-h4:              1.3rem;
-$font-size-h5:              1.1rem;
-$font-size-h6:              1rem;
+$h1-font-size:              2.2rem;
+$h2-font-size:              1.9rem;
+$h3-font-size:              1.6rem;
+$h4-font-size:              1.3rem;
+$h5-font-size:              1.1rem;
+$h6-font-size:              1rem;

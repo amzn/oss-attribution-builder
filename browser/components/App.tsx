@@ -67,7 +67,7 @@ class App extends Component<Props, {}> {
     const { generalError, claims } = this.props;
     return (
       <div>
-        <nav className="navbar navbar-toggleable-sm navbar-light bg-faded">
+        <nav className="navbar navbar-expand-sm navbar-light bg-light">
           <IndexLink to="/" className="navbar-brand">
             Attribution Builder
           </IndexLink>
@@ -85,15 +85,15 @@ class App extends Component<Props, {}> {
 
         { generalError != null ? this.mapError(generalError) : '' }
 
-        <div className="container mt-3">
+        <div className="container mt-4">
           <div className="row">
-            <div className="offset-lg-1 col-lg-10">
+            <div className="mx-auto col-lg-10">
               {this.props.children}
             </div>
           </div>
 
           <div className="row mt-4">
-            <div className="offset-lg-1 col-lg-10">
+            <div className="mx-auto col-lg-10">
               {claims && claims.admin != null ?
                 <div className="pull-right">
                   <ToggleLink state={claims.admin} onClick={this.toggleAdmin}>Admin</ToggleLink>
