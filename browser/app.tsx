@@ -17,32 +17,19 @@ import 'core-js/shim';
 import * as React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { browserHistory, IndexRoute, Route, Router } from 'react-router';
+import { Route, Router } from 'react-router-dom';
 
 import App from './components/App';
-import Landing from './components/Landing';
-import PackageVerification from './components/projects/admin/PackageVerification';
-import PackageVerificationQueue from './components/projects/admin/PackageVerificationQueue';
-import Projects from './components/projects/browse/Projects';
-import Onboarding from './components/projects/editor/Onboarding';
-import ProjectView from './components/projects/editor/ProjectView';
-import AttributionDocBuilder from './components/projects/render/AttributionDocBuilder';
+import history from './history';
 import store from './store';
 
 // routes listed here should point to redux-enabled containers
 window.addEventListener('DOMContentLoaded', () => {
+  // see components/App.tsx for the rest of the routes
   render(
     <Provider store={store}>
-      <Router history={browserHistory}>
-        <Route path="/" component={App}>
-          <IndexRoute component={Landing} />
-          <Route path="projects" component={Projects} />
-          <Route path="projects/new" component={Onboarding} />
-          <Route path="projects/:projectId" component={ProjectView} />
-          <Route path="projects/:projectId/build" component={AttributionDocBuilder} />
-          <Route path="packages/verify" component={PackageVerificationQueue} />
-          <Route path="packages/verify/:packageId" component={PackageVerification} />
-        </Route>
+      <Router history={history}>
+        <Route component={App} />
       </Router>
     </Provider>,
     document.getElementById('content'),

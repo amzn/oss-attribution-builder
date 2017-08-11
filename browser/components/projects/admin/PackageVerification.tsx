@@ -21,7 +21,7 @@ import PackageCard from '../packages/PackageCard';
 
 interface Props {
   dispatch: (action: any) => any;
-  params: any;
+  match: any;
   packages: PackageActions.PackageSet;
 }
 
@@ -68,7 +68,7 @@ class PackageVerification extends Component<Props, State> {
   }
 
   submitForm = (e: any) => {
-    const { dispatch, params: { packageId } } = this.props;
+    const { dispatch, match: { params: { packageId } } } = this.props;
     e.preventDefault();
     dispatch(PackageActions.verifyPackage(packageId, this.allChecked, this.state.comments));
   }
@@ -82,7 +82,7 @@ class PackageVerification extends Component<Props, State> {
   }
 
   render() {
-    const { params: { packageId } } = this.props;
+    const { match: { params: { packageId } } } = this.props;
 
     const valid = this.validate();
 

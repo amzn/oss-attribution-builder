@@ -13,9 +13,9 @@
  */
 
 import * as moment from 'moment';
-import { browserHistory } from 'react-router';
 
 import { WebProject } from '../../server/api/projects/interfaces';
+import history from '../history';
 import { fetchAuth, reqJSON } from '../util';
 import { downloadText } from '../util/download';
 
@@ -138,7 +138,7 @@ export function fetchProjectDetail(projectId) {
 export function createProject(details: Partial<WebProject>) {
   return (dispatch) => {
     return reqJSON('/api/projects/new', details)
-      .then((json) => browserHistory.push(`/projects/${json.projectId}`));
+      .then((json) => history.push(`/projects/${json.projectId}`));
   };
 }
 

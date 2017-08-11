@@ -15,7 +15,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import { WebProject } from '../../../../server/api/projects/interfaces';
 import * as ProjectActions from '../../../modules/projects';
@@ -25,7 +25,7 @@ import ProjectPackage from './ProjectPackage';
 
 interface Props {
   dispatch: (action: any) => any;
-  params: any;
+  match: any;
   project: WebProject;
 }
 
@@ -40,17 +40,17 @@ class ProjectView extends Component<Props, State> {
   };
 
   componentWillMount() {
-    const { dispatch, params } = this.props;
+    const { dispatch, match: { params } } = this.props;
     dispatch(ProjectActions.fetchProjectDetail(params.projectId));
   }
 
   componentWillUpdate(nextProps) {
-    const { dispatch, params } = this.props;
-    if (params.projectId === nextProps.params.projectId) {
+    const { dispatch, match: { params } } = this.props;
+    if (params.projectId === nextProps.match.params.projectId) {
       return;
     }
 
-    dispatch(ProjectActions.fetchProjectDetail(nextProps.params.projectId));
+    dispatch(ProjectActions.fetchProjectDetail(nextProps.match.params.projectId));
   }
 
   showAddPackageForm = (show = true) => {
@@ -92,7 +92,7 @@ class ProjectView extends Component<Props, State> {
   }
 
   render() {
-    const { project, params } = this.props;
+    const { project, match: { params } } = this.props;
     const { showAddPackageForm } = this.state;
 
     // don't show the UI if the project data is stale and hasn't loaded
@@ -117,6 +117,10 @@ class ProjectView extends Component<Props, State> {
 
     return (
       <div className="pb-5">
+        <nav className="breadcrumb">
+          <span className="breadcrumb-item active">Project Editor</span>
+        </nav>
+
         <h2 id="project-heading">
           <EditableText
             value={project.title}

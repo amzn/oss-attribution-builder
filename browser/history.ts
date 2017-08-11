@@ -12,30 +12,9 @@
  * permissions and limitations under the License.
  */
 
-import * as React from 'react';
-import { Component } from 'react';
-import { Link } from 'react-router-dom';
+import createBrowserHistory from 'history/createBrowserHistory';
 
-interface Props {
-  projectId: string;
-  title: string;
-  version: string;
-  createdOn: string;
-}
+// manually export our own history to make navigation outside react (i.e., in
+// redux actions) easier.
 
-export default class ProjectListItem extends Component<Props, {}> {
-
-  render() {
-    return (
-      <li className="list-group-item">
-        <Link to={`/projects/${this.props.projectId}`}>
-          {this.props.title} {this.props.version}
-        </Link>
-        <small className="ml-1">
-          created on {this.props.createdOn}
-        </small>
-      </li>
-    );
-  }
-
-}
+export default createBrowserHistory();

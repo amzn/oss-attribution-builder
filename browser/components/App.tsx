@@ -15,9 +15,16 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { IndexLink, Link } from 'react-router';
+import { NavLink, Route, Switch } from 'react-router-dom';
 
 import { fetchUserData, setGeneralError } from '../modules/common';
+import Landing from './Landing';
+import PackageVerification from './projects/admin/PackageVerification';
+import PackageVerificationQueue from './projects/admin/PackageVerificationQueue';
+import Projects from './projects/browse/Projects';
+import Onboarding from './projects/editor/Onboarding';
+import ProjectView from './projects/editor/ProjectView';
+import AttributionDocBuilder from './projects/render/AttributionDocBuilder';
 import ErrorModal from './util/ErrorModal';
 import ToggleLink from './util/ToggleLink';
 
@@ -68,27 +75,35 @@ class App extends Component<Props, {}> {
     return (
       <div>
         <nav className="navbar navbar-expand-sm navbar-light bg-light">
-          <IndexLink to="/" className="navbar-brand">
+          <NavLink exact to="/" className="navbar-brand" activeClassName="active">
             Attribution Builder
-          </IndexLink>
+          </NavLink>
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav mr-auto">
               <li className="nav-item">
-                <Link to="/projects/" className="nav-link">My Projects</Link>
+                <NavLink exact to="/projects/" className="nav-link" activeClassName="active">My Projects</NavLink>
               </li>
               <li className="nav-item">
-                <Link to="/projects/new" className="nav-link">New Project</Link>
+                <NavLink exact to="/projects/new" className="nav-link" activeClassName="active">New Project</NavLink>
               </li>
             </ul>
           </div>
         </nav>
 
-        { generalError != null ? this.mapError(generalError) : '' }
+        { generalError != null && this.mapError(generalError) }
 
         <div className="container mt-4">
           <div className="row">
             <div className="mx-auto col-lg-10">
-              {this.props.children}
+              <Switch>
+                <Route exact path="/" component={Landing} />
+                <Route exact path="/projects" component={Projects} />
+                <Route exact path="/projects/new" component={Onboarding} />
+                <Route exact path="/projects/:projectId" component={ProjectView} />
+                <Route exact path="/projects/:projectId/build" component={AttributionDocBuilder} />
+                <Route exact path="/packages/verify" component={PackageVerificationQueue} />
+                <Route exact path="/packages/verify/:packageId" component={PackageVerification} />
+              </Switch>
             </div>
           </div>
 

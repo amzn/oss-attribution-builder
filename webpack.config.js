@@ -76,7 +76,7 @@ module.exports = {
 
   entry: {
     app: ['./browser/app.tsx'],
-    vendor: ['core-js/shim', 'bootstrap', 'history', 'jquery', 'moment', 'popper.js', 'react', 'react-dom', 'react-redux', 'react-router', 'react-select', 'redux', 'whatwg-fetch'],
+    vendor: ['core-js/shim', 'bootstrap', 'history', 'jquery', 'moment', 'popper.js', 'react', 'react-dom', 'react-redux', 'react-router-dom', 'react-select', 'redux', 'whatwg-fetch'],
     style: ['./styles/style.scss'],
   },
 

@@ -15,7 +15,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import * as ProjectActions from '../../../modules/projects';
 import AttributionDocWarning from './AttributionDocWarning';
@@ -23,7 +23,7 @@ import TextAnnotator from './TextAnnotator';
 
 interface Props {
   dispatch: (action: any) => any;
-  params: any;
+  match: any;
   attributionDoc: any;
   project: any;
 }
@@ -39,7 +39,7 @@ class AttributionDocBuilder extends Component<Props, State> {
   };
 
   componentWillMount() {
-    const { dispatch, params } = this.props;
+    const { dispatch, match: { params } } = this.props;
     const activeProjectId = this.props.project.projectId;
     dispatch(ProjectActions.buildAttributionDoc(params.projectId));
 
@@ -96,12 +96,12 @@ class AttributionDocBuilder extends Component<Props, State> {
 
     return (
       <div>
-        <h2>{title} <small>version {version}</small></h2>
-
         <nav className="breadcrumb">
           <Link to={`/projects/${projectId}`} className="breadcrumb-item">Project Editor</Link>
           <span className="breadcrumb-item active">Attribution Document</span>
         </nav>
+
+        <h2>{title} <small>version {version}</small></h2>
 
         <p>
           Below is a preview of your attribution document.

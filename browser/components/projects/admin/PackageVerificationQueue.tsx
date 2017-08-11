@@ -15,7 +15,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 import { WebPackage } from '../../../../server/api/packages/interfaces';
 import { fetchVerificationQueue } from '../../../modules/packages';
