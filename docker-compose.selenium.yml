@@ -13,3 +13,11 @@ services:
     image: postgres
     volumes:
     - ./sql:/docker-entrypoint-initdb.d
+  selenium:
+    # use standalone-chrome-debug if you want to VNC in and watch
+    image: selenium/standalone-chrome
+    ports:
+    - 4444:4444
+    - 5900:5900
+    links:
+    - web

@@ -45,6 +45,10 @@ export default class NullAuth implements AuthBase {
       res.cookie('nullauth-dummy-user', req.user);
       res.redirect('/');
     });
+    // selenium needs a page with no authentication to set a cookie on
+    app.get('/dummy-no-auth', (req, res) => {
+      res.sendStatus(200);
+    });
     // and cookie auth for the rest
     app.use(cookieParser());
     app.use(passport.authenticate('cookie', {session: false, failureRedirect: '/dummy-login'}));
@@ -56,6 +60,10 @@ export default class NullAuth implements AuthBase {
   }
 
   async getDisplayName(user: string): Promise<string> {
+    // special test case; this user will never "exist"
+    if (user === 'nobody') {
+      return null;
+    }
     return user;
   }
 

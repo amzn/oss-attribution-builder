@@ -8,9 +8,10 @@
   },
   "main": "server/app.js",
   "scripts": {
-    "dev": "trap 'docker-compose -f docker-compose-dev.yml stop' SIGINT SIGHUP EXIT; docker-compose -f docker-compose-dev.yml up -d; CONFIG_NAME=dev gulp dev",
+    "dev": "trap 'docker-compose -f docker-compose.dev.yml stop' SIGINT SIGHUP EXIT; docker-compose -f docker-compose.dev.yml up -d && CONFIG_NAME=dev gulp dev",
     "start": "export NODE_ENV=production; gulp; node ./build/server/localserver.js",
     "test": "gulp test",
+    "test-ui": "trap 'docker-compose -f docker-compose.selenium.yml stop' SIGINT SIGHUP EXIT; docker-compose -f docker-compose.selenium.yml up -d --build && gulp build-selenium && jasmine 'build/selenium/*.spec.js'",
     "lint": "tslint -c tslint.json 'browser/**/*.ts?(x)' 'server/**/*.ts' 'selenium/**/*.ts' --fix"
   },
   "author": "Jacob Peddicord <peddicor@amazon.com>",
@@ -25,7 +26,6 @@
     "@types/history": "^4.6.0",
     "@types/jasmine": "^2.5.40",
     "@types/jquery": "^3.2.10",
-    "@types/ldapjs": "^1.0.0",
     "@types/mockery": "^1.4.29",
     "@types/mz": "0.0.31",
     "@types/node": "^6.0.72",
@@ -56,7 +56,6 @@
     "mockery": "^2.1.0",
     "node-sass": "^4.5.3",
     "pg-monitor": "^0.8.2",
-    "phantomjs-prebuilt": "^2.1.7",
     "popper.js": "^1.11.1",
     "react": "^15.6.1",
     "react-dom": "^15.6.1",

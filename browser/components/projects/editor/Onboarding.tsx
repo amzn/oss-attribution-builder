@@ -21,19 +21,19 @@ import ProjectOnboardingForm from './ProjectOnboardingForm';
 
 interface Props {
   dispatch: (action: any) => any;
-  claims?: any;
+  info: any;
 }
 
 class Onboarding extends Component<Props, {}> {
 
   render() {
-    const { dispatch, claims } = this.props;
+    const { dispatch, info } = this.props;
     return (
       <div>
         <h2>Tell us about your project</h2>
         <ProjectOnboardingForm
           createProject={(details) => dispatch(ProjectActions.createProject(details))}
-          groups={claims != null ? claims.groups : []}
+          groups={info != null && info.groups != null ? info.groups : []}
         />
       </div>
     );

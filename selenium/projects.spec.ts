@@ -13,13 +13,13 @@
  */
 
 import {By, Key, until} from 'selenium-webdriver';
-import build from './driver';
+import build, { CustomDriver } from './driver';
 
 const projectName = 'Automated Test Project ' + new Date().getTime();
 const packageName = 'ZZZ Automated Test Package ' + new Date().getTime();
 
 describe('project management', function () {
-  let driver;
+  let driver: CustomDriver;
   beforeAll(async function (done) {
     driver = await build();
     await driver.manage().timeouts().implicitlyWait(1000);
@@ -31,7 +31,7 @@ describe('project management', function () {
   });
 
   it('loads the form', async function (done) {
-    driver.get('http://0.0.0.0:8000/projects/new');
+    driver.getRelative('/projects/new');
     await driver.wait(until.elementLocated(By.id('onboarding-form')));
     done();
   });
@@ -42,17 +42,19 @@ describe('project management', function () {
     driver.findElement(By.id('version')).sendKeys('0.0.0-integration-test');
     driver.findElement(By.id('description')).sendKeys('An automated test project of little significance');
     driver.findElement(By.css('input[name="openSourcing"][value="false"]')).click();
-    driver.findElement(By.id('businessLawyer')).sendKeys('not a real person');
+    driver.findElement(By.id('legalContact')).sendKeys('nobody');
     driver.findElement(By.id('plannedRelease')).sendKeys('1111-11-11');
 
     // pick an owner from the fancy dropdown
     driver.findElement(By.css('#ownerGroup-container .Select-placeholder')).click();
-    driver.findElement(By.css('#ownerGroup-container .Select-option[data-reactid*="everyone"]')).click();
+    driver.findElement(
+      By.xpath('//*[@id="ownerGroup-container"]//div[@class="Select-menu"]//div[text()="everyone"]')).click();
 
     // try to submit the form
     driver.findElement(By.css('form#onboarding-form button[type="submit"]')).click();
+    driver.sleep(500); // modal animation
     const errorText = await driver.findElement(By.css('#error-modal .modal-body')).getText();
-    expect(errorText).toContain('\'not a real person\' doesn\'t exist');
+    expect(errorText).toContain('Contact nobody could not be found');
     await driver.findElement(By.css('#error-modal button.btn-primary')).click(); // close button
 
     done();
@@ -60,9 +62,9 @@ describe('project management', function () {
 
   it('accepts a corrected form and loads the project', async function (done) {
     // correct the BLL field & submit
-    const bllField = driver.findElement(By.id('businessLawyer'));
+    const bllField = driver.findElement(By.id('legalContact'));
     bllField.clear();
-    bllField.sendKeys('peddicor'); // I'm still vain
+    bllField.sendKeys('a-real-person');
     driver.findElement(By.css('form#onboarding-form button[type="submit"]')).click();
 
     // see that the project page loaded
@@ -118,6 +120,7 @@ describe('project management', function () {
 
   it('gets an error about the url', async function (done) {
     driver.findElement(By.css('#add-package-form button[type="submit"]')).click();
+    driver.sleep(500); // modal animation
     const text = await driver.findElement(By.css('#error-modal .modal-body')).getText();
     expect(text).toContain('not a real URL');
     await driver.findElement(By.css('#error-modal button.btn-primary')).click(); // close button

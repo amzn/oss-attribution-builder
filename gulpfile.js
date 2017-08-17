@@ -62,7 +62,7 @@ gulp.task('copy-config', () => {
     .pipe(gulp.dest('build/config'));
 });
 
-gulp.task('test-server', ['build-server'], () => {
+gulp.task('test', ['build-server'], () => {
   require('source-map-support/register');
   require('core-js/shim');
   const winston = require('winston');
@@ -71,19 +71,6 @@ gulp.task('test-server', ['build-server'], () => {
   return gulp.src('build/server/**/*.spec.js')
     .pipe(jasmine());
 });
-
-gulp.task('test-ui', ['default', 'build-selenium', 'local-server'], () => {
-  require('source-map-support/register');
-  require('core-js/shim');
-  process.on('unhandledRejection', err => {console.error('\nUnhandled rejection:', err.stack)});
-  return gulp.src('build/selenium/**/*.spec.js')
-    .pipe(jasmine({config: {random: false}}))
-    .on('end', () => {
-      node.kill();
-    });
-});
-
-gulp.task('test', ['test-server']);
 
 let node;
 gulp.task('local-server', ['build-server'], done => {
