@@ -12,19 +12,21 @@
  * permissions and limitations under the License.
  */
 
-import config from '../../config';
-import { assertProjectAccess, effectivePermission } from './auth';
+import * as mockery from 'mockery';
+
 import { AccessLevel } from './interfaces';
 
 describe('projects auth', function () {
+  let mock: any;
+  let assertProjectAccess: any;
+  let effectivePermission: any;
 
   function makeReq() {
     return {
       user: {
         user: 'someone',
-        groups: ['one', 'two'],
-        admin: undefined,
       },
+      get: () => undefined,
     } as any;
   }
 
@@ -42,82 +44,134 @@ describe('projects auth', function () {
     };
   }
 
-  beforeAll(function () {
-    config.admin = {
-      groups: new Set(['admin-users']),
+  beforeEach(function () {
+    mockery.enable({useCleanCache: true, warnOnUnregistered: false});
+
+    mock = {
+      auth: {
+        getGroups: jasmine.createSpy('getGroups').and.returnValue(Promise.resolve(['a-nobody'])),
+      },
+      config: {
+        admin: {
+          groups: new Set(['admin-users']),
+        },
+      },
     };
+
+    mockery.registerMock('../../auth', {default: mock.auth});
+    mockery.registerMock('../config', {config: mock.config});
+
+    mockery.registerAllowable('./auth');
+    const auth = require('./auth');
+    assertProjectAccess = auth.assertProjectAccess;
+    effectivePermission = auth.effectivePermission;
   });
 
-  it('should allow owners to edit', function () {
+  afterEach(function () {
+    mockery.deregisterAll();
+    mockery.disable();
+  });
+
+  it('should allow owners to edit', async function (done) {
     const req = makeReq();
     const proj = makeProj();
-    req.user.groups.push('wallet');
-    expect(() => assertProjectAccess(req, proj, 'owner')).not.toThrow();
+    mock.auth.getGroups = jasmine.createSpy('getGroups').and.returnValue(Promise.resolve(['wallet']));
+    try {
+      await assertProjectAccess(req, proj, 'owner');
+    } catch (e) {
+      fail(e);
+    }
+    done();
   });
 
-  it('should allow legal contact to view', function () {
+  it('should allow legal contact to view', async function (done) {
     const req = makeReq();
     const proj = makeProj();
     req.user.user = 'lawyer';
-    expect(() => assertProjectAccess(req, proj, 'viewer')).not.toThrow();
+    try {
+      await assertProjectAccess(req, proj, 'viewer');
+    } catch (e) {
+      fail(e);
+    }
+    done();
   });
 
-  it('should allow admins to edit', function () {
+  it('should allow admins to edit', async function (done) {
     const req = makeReq();
     const proj = makeProj();
 
-    // just admin flag is not enough...
-    req.user.admin = true;
-    expect(() => assertProjectAccess(req, proj, 'owner')).toThrowError(/do not have access/);
+    // an admin account is not enough...
+    mock.auth.getGroups = jasmine.createSpy('getGroups').and.returnValue(Promise.resolve(['admin-users']));
+    try {
+      await assertProjectAccess(req, proj, 'owner');
+    } catch (e) {
+      expect(e.message).toMatch(/do not have access/);
+    }
 
-    // ...as it double-checks the admin groups
-    req.user.groups.push('admin-users');
-    expect(() => assertProjectAccess(req, proj, 'owner')).not.toThrow();
+    // ...as you also need to set the header
+    req.get = (h) => (h === 'X-Admin' ? '1' : undefined);
+    try {
+      await assertProjectAccess(req, proj, 'owner');
+    } catch (e) {
+      fail(e);
+    }
+
+    // ...as it checks the admin groups
+    done();
   });
 
-  it('should block anyone else', function () {
+  it('should block anyone else', async function (done) {
     const req = makeReq();
     const proj = makeProj();
-    const func = assertProjectAccess.bind(null, req, proj);
-    expect(func).toThrowError(/do not have access/);
+
+    try {
+      await assertProjectAccess(req, proj, 'viewer');
+      fail();
+    } catch (err) {
+      expect(err.message).toMatch(/do not have access/);
+    }
+    done();
   });
 
   describe('effectivePermission', function () {
 
-    it('should return null for a single-entry ACL that does not match', function () {
+    it('should return null for a single-entry ACL that does not match', async function (done) {
       const req = makeReq();
       const proj = makeProj();
-      const level = effectivePermission(req, proj);
+      const level = await effectivePermission(req, proj);
       expect(level).toBeNull();
+      done();
     });
 
-    it('should return an access level for a single-entry ACL that does match', function () {
+    it('should return an access level for a single-entry ACL that does match', async function (done) {
       const req = makeReq();
       const proj = makeProj();
-      req.user.groups.push('wallet');
-      const level = effectivePermission(req, proj);
+      mock.auth.getGroups = jasmine.createSpy('getGroups').and.returnValue(Promise.resolve(['wallet']));
+      const level = await effectivePermission(req, proj);
       expect(level).toEqual('owner');
+      done();
     });
 
-    it('should return a stronger level for multiple matching ACLs', function () {
+    it('should return a stronger level for multiple matching ACLs', async function (done) {
       const req = makeReq();
       const proj = makeProj();
       proj.acl.wallet = 'viewer';
       proj.acl.dog = 'editor';
-      req.user.groups.push('wallet');
-      req.user.groups.push('dog');
-      const level = effectivePermission(req, proj);
+      mock.auth.getGroups = jasmine.createSpy('getGroups').and.returnValue(Promise.resolve(['wallet', 'dog']));
+      const level = await effectivePermission(req, proj);
       expect(level).toEqual('editor');
+      done();
     });
 
-    it('should return a lower level when the higher does not match', function () {
+    it('should return a lower level when the higher does not match', async function (done) {
       const req = makeReq();
       const proj = makeProj();
       proj.acl.wallet = 'viewer';
       proj.acl.dog = 'editor';
-      req.user.groups.push('wallet');
-      const level = effectivePermission(req, proj);
+      mock.auth.getGroups = jasmine.createSpy('getGroups').and.returnValue(Promise.resolve(['wallet']));
+      const level = await effectivePermission(req, proj);
       expect(level).toEqual('viewer');
+      done();
     });
 
   });

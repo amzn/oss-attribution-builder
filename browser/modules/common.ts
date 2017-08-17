@@ -12,27 +12,40 @@
  * permissions and limitations under the License.
  */
 
-import { getClaims, getToken } from '../util/auth';
+import { fetchAuth } from '../util/index';
 
 export const SET_GENERAL_ERROR = 'app/common/set-general-error';
-export const RECEIVE_USER_DATA = 'app/common/receive-user-data';
+export const RECEIVE_SITE_INFO = 'app/common/receive-site-info';
+export const SET_ADMIN_MODE = 'app/common/set-admin-mode';
+
+export const ADMIN_SESSION_KEY = 'admin-enabled';
 
 const initial = {
   generalError: null as string,
-  claims: null as any,
+  info: {} as any,
+  admin: sessionStorage.getItem(ADMIN_SESSION_KEY) === '1',
 };
 
 export default function reducer(state = initial, action: any = {}) {
   switch (action.type) {
     case SET_GENERAL_ERROR:
-      return Object.assign({}, state, {
+      return {
+        ...state,
         generalError: action.message,
-      });
+      };
 
-    case RECEIVE_USER_DATA:
-      return Object.assign({}, state, {
-        claims: action.claims,
-      });
+    case RECEIVE_SITE_INFO:
+      return {
+        ...state,
+        info: action.info,
+      };
+
+    case SET_ADMIN_MODE:
+      action.enabled ? sessionStorage.setItem(ADMIN_SESSION_KEY, '1') : sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      return {
+        ...state,
+        admin: action.enabled,
+      };
 
     default:
       return state;
@@ -50,18 +63,24 @@ export function setGeneralError(error: {message: string} | string) {
   };
 }
 
-export function receiveUserData(claims: any) {
-  claims.groups.sort();
+export function receiveSiteInfo(info: any) {
   return {
-    type: RECEIVE_USER_DATA,
-    claims,
+    type: RECEIVE_SITE_INFO,
+    info,
   };
 }
 
-export function fetchUserData(query?: any) {
+export function fetchSiteInfo(query?: any) {
   return async (dispatch: any) => {
-    await getToken(query);
-    const claims = getClaims();
-    dispatch(receiveUserData(claims));
+    const info = await fetchAuth('/api/info');
+    const data = await info.json();
+    dispatch(receiveSiteInfo(data));
+  };
+}
+
+export function setAdminMode(enabled: boolean) {
+  return {
+    type: SET_ADMIN_MODE,
+    enabled,
   };
 }

@@ -14,16 +14,19 @@
 
 import * as winston from 'winston';
 
+import auth from '../../auth';
 import { isAdmin, isUserInAnyGroup } from '../../auth/util';
 import { config } from '../../config';
 import { AccessError } from '../../errors';
 
-export function canValidate(req) {
-  if (isUserInAnyGroup(req, config.admin.verifiers)) {
+export async function canValidate(req) {
+  const groups = await auth.getGroups(req.user.user);
+
+  if (isUserInAnyGroup(groups, config.admin.verifiers)) {
     return true;
   }
 
-  if (isAdmin(req)) {
+  if (isAdmin(req, groups)) {
     return true;
   }
 
@@ -31,8 +34,8 @@ export function canValidate(req) {
   return false;
 }
 
-export function assertCanValidate(req) {
-  if (!canValidate(req)) {
+export async function assertCanValidate(req) {
+  if (!(await canValidate(req))) {
     throw new AccessError('You do not have access to validate package metadata.');
   }
 }

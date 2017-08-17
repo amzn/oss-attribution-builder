@@ -12,12 +12,47 @@
  * permissions and limitations under the License.
  */
 
-import AuthBase from '../base';
+import * as cookieParser from 'cookie-parser';
+import { Express } from 'express';
+import { PassportStatic } from 'passport';
+import * as CookieStrategy from 'passport-cookie';
+import { BasicStrategy } from 'passport-http';
+
+import AuthBase, { AuthUser } from '../base';
 
 export default class NullAuth implements AuthBase {
 
+  /**
+   * We use both cookies and HTTP basic auth here:
+   *
+   * Basic auth is used for a user-visible dummy login page, which sets a cookie.
+   * HTTP Basic/digest auth can't be used in AJAX requests, hence the cookie strategy.
+   *
+   * If you're lucky, your environment might involve an authenticating reverse proxy
+   * and you won't need to do any of this -- just check a header.
+   */
+  initialize(app: Express, passport: PassportStatic) {
+    // register cookies and http basic strategies
+    passport.use(new CookieStrategy({cookieName: 'nullauth-dummy-user'}, (token, done) => {
+      done(null, {user: token} as AuthUser);
+    }));
+    passport.use(new BasicStrategy((user, pass, done) => {
+      done(null, user);
+    }));
+
+    // configure dummy login page
+    app.get('/dummy-login', passport.authenticate('basic', {session: false}), (req, res) => {
+      res.cookie('nullauth-dummy-user', req.user);
+      res.redirect('/');
+    });
+    // and cookie auth for the rest
+    app.use(cookieParser());
+    app.use(passport.authenticate('cookie', {session: false, failureRedirect: '/dummy-login'}));
+  }
+
   extractRequestUser(request: any): string {
-    return request.get('X-REMOTE-USER') || request.get('X-FORWARDED-USER') || process.env.USER || 'unknown';
+    return request.get('X-REMOTE-USER') || request.get('X-FORWARDED-USER')
+      || request.user.user || process.env.USER || 'unknown';
   }
 
   async getDisplayName(user: string): Promise<string> {

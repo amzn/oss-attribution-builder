@@ -13,11 +13,10 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
 import { connect } from 'react-redux';
 import { NavLink, Route, Switch } from 'react-router-dom';
 
-import { fetchUserData, setGeneralError } from '../modules/common';
+import { fetchSiteInfo, setAdminMode, setGeneralError } from '../modules/common';
 import Landing from './Landing';
 import PackageVerification from './projects/admin/PackageVerification';
 import PackageVerificationQueue from './projects/admin/PackageVerificationQueue';
@@ -30,14 +29,16 @@ import ToggleLink from './util/ToggleLink';
 
 interface Props {
   dispatch: (action: any) => any;
-  generalError?: any;
-  claims: any;
+  generalError: any;
+  canAdmin: boolean;
+  admin: boolean;
 }
 
-class App extends Component<Props, {}> {
+class App extends React.Component<Props, {}> {
+
   componentWillMount() {
     const { dispatch } = this.props;
-    dispatch(fetchUserData());
+    dispatch(fetchSiteInfo());
   }
 
   dismissError = () => {
@@ -65,13 +66,12 @@ class App extends Component<Props, {}> {
   }
 
   toggleAdmin = () => {
-    const { dispatch, claims } = this.props;
-    const query = claims.admin ? 'admin=false' : 'admin=true';
-    dispatch(fetchUserData(query));
+    const { dispatch, admin } = this.props;
+    dispatch(setAdminMode(!admin));
   }
 
   render() {
-    const { generalError, claims } = this.props;
+    const { generalError, canAdmin, admin } = this.props;
     return (
       <div>
         <nav className="navbar navbar-expand-sm navbar-light bg-light">
@@ -109,11 +109,11 @@ class App extends Component<Props, {}> {
 
           <div className="row mt-4">
             <div className="mx-auto col-lg-10">
-              {claims && claims.admin != null ?
+              {canAdmin &&
                 <div className="pull-right">
-                  <ToggleLink state={claims.admin} onClick={this.toggleAdmin}>Admin</ToggleLink>
+                  <ToggleLink state={admin} onClick={this.toggleAdmin}>Admin</ToggleLink>
                 </div>
-              : ''}
+              }
             </div>
           </div>
         </div>
@@ -125,4 +125,8 @@ class App extends Component<Props, {}> {
 
 }
 
-export default connect((state) => state.common)(App);
+export default connect((state) => ({
+  generalError: state.common.generalError,
+  canAdmin: state.common.info.permissions && state.common.info.permissions.admin,
+  admin: state.common.admin,
+}))(App);

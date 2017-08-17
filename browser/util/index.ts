@@ -14,7 +14,7 @@
 
 import 'whatwg-fetch';
 
-import { getToken } from './auth';
+import { ADMIN_SESSION_KEY } from '../modules/common';
 
 /**
  * Convenience function for sending/receiving JSON for API calls.
@@ -36,14 +36,19 @@ export function reqJSON(url: string, obj?: any, method: string = 'POST') {
  *
  * Will throw on non 2xx responses.
  */
-export async function fetchAuth(url: string, options?: any) {
+export function fetchAuth(url: string, options?: any) {
   options = options || {};
   const headers = options.headers || {};
-  const token = await getToken();
-  headers.Authorization = `Bearer ${token}`;
+
+  // add admin header if enabled in store
+  if (sessionStorage.getItem(ADMIN_SESSION_KEY) === '1') {
+    headers['X-Admin'] = '1';
+  }
+
   return fetch(url, {
     ...options,
     headers,
+    credentials: 'same-origin',
   }).then(async (response) => {
     if (response.ok) {
       return response;

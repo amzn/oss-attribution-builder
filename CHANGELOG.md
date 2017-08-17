@@ -9,6 +9,14 @@ require manual edits to pluggable interfaces.
 
 ## Unreleased
 
+### Added
+- Auth backends can now specify how a user should be authenticated, via Passport. They should
+  provide an `initialize` method that is called during app start-up. This can be used to register
+  Passport strategies, login URLs, or any other session activities.
+
+### Removed
+- JWT sessions are no longer in use. See the above addition about auth backends for an alternative.
+
 ### Changed
 - Project ACLs are now sanely validated, with levels of "owner", "editor", and "viewer". A viewer
   can only view a project. An editor can change project details, except for the ACL. An owner can

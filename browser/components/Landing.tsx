@@ -16,36 +16,29 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { getClaims, getToken } from '../util/auth';
+import { fetchSiteInfo } from '../modules/common';
 
 interface Props {
-  dispactch: any;
+  dispatch: any;
   admin?: boolean;
+  displayName?: string;
 }
 
-interface State {
-  user: any;
-}
-
-class Landing extends React.Component<Props, State> {
-  state = {
-    user: null,
-  };
+class Landing extends React.Component<Props, {}> {
 
   componentWillMount() {
+    const { dispatch } = this.props;
     // this is a little dumb... but in order to display the current user,
     // we need to authenticate.
-    getToken().then(() => {
-      this.setState({user: getClaims().user});
-    });
+    dispatch(fetchSiteInfo());
   }
 
   render() {
-    const { admin } = this.props;
+    const { admin, displayName } = this.props;
 
     return (
       <div className="jumbotron">
-        <h3>{this.state.user ? `Hello, ${this.state.user}` : 'Hello'}</h3>
+        <h3>{displayName ? `Hello, ${displayName}` : 'Hello'}</h3>
         <p>
           This tool helps you build an attribution document to use in a distributed product.
         </p>
@@ -69,5 +62,6 @@ class Landing extends React.Component<Props, State> {
 }
 
 export default connect((state) => ({
-  admin: state.common.claims != null ? state.common.claims.admin as boolean : null,
+  displayName: state.common.info.displayName,
+  admin: state.common.admin,
 }))(Landing as any);

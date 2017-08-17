@@ -20,16 +20,9 @@ config.modules = {
   auth: 'nullauth',
 };
 
-config.jwt = {
-  secret: () => 'CHANGEME',
-  issuer: 'attrbuilder',
-  expiration: '2 hour',
-  renewInSeconds: 5 * 60,
-};
-
 config.admin = {
-  groups: new Set([]),
-  verifiers: new Set(['everyone']),
+  groups: new Set(['self:admin']),
+  verifiers: new Set(['self:verifier']),
 };
 
 // load once asked for

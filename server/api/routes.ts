@@ -16,17 +16,13 @@ import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as winston from 'winston';
 
-import { jwtMiddleware } from '../auth/util';
+import { userInfo } from '../auth';
 import * as licenseAPI from './licenses';
 import * as packageAPI from './packages';
 import * as projectAPI from './projects';
 import * as projectValidators from './projects/validators';
 
 export let router = express.Router();
-
-// protect everything here with JWT middleware
-// *DO NOT MOVE THIS* -- everything below here uses this middleware
-router.use(jwtMiddleware as any);
 
 router.use(bodyParser.json());
 router.use(bodyParser.urlencoded({
@@ -50,6 +46,11 @@ function pack(promise: Promise<any>, res: any | undefined, next: any | undefined
     })
     .catch(next);
 }
+
+/*** User/session/general info ***/
+router.get('/info', (req, res, next) => {
+  pack(userInfo(req), res, next);
+});
 
 /*** Projects ***/
 

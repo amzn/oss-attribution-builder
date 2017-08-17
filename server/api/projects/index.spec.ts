@@ -14,9 +14,6 @@
 
 import * as mockery from 'mockery';
 
-// importing for unmocked use of some methods
-import * as auth from './auth';
-
 describe('projects', function () {
   let api: any;
   let validators: any;
@@ -29,6 +26,7 @@ describe('projects', function () {
       auth: {},
       packagedb: {},
       assertProjectAccess: jasmine.createSpy('assertProjectAccess'),
+      effectivePermission: jasmine.createSpy('effectivePermission'),
     };
 
     // project module mocks
@@ -37,7 +35,7 @@ describe('projects', function () {
     mockery.registerMock('../../db/packages', mock.packagedb);
     mockery.registerMock('./auth', {
       assertProjectAccess: mock.assertProjectAccess,
-      effectivePermission: auth.effectivePermission,
+      effectivePermission: mock.effectivePermission,
     });
 
     // re-silence winston (since this is a clean cache)
@@ -61,7 +59,7 @@ describe('projects', function () {
       mock.db.getProject = jasmine.createSpy('getProject').and.returnValue(makeFakeDBProject());
       mock.auth.getDisplayName = jasmine.createSpy('getDisplayName');
 
-      await api.getProject({user: {groups: []}}, 'abcd');
+      await api.getProject({user: {user: 'bob'}}, 'abcd');
 
       expect(mock.assertProjectAccess).toHaveBeenCalled();
 

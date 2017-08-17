@@ -19,11 +19,11 @@ import * as path from 'path';
 
 import * as compression from 'compression';
 import * as express from 'express';
+import * as passport from 'passport';
 import * as winston from 'winston';
 
 import { router as apiRoutes } from './api/routes';
-import { router as authRoutes } from './auth/routes';
-import { loadJWTSecret } from './auth/util';
+import auth from './auth';
 import { config, load } from './config';
 import { connect } from './db';
 
@@ -56,13 +56,19 @@ if (cspEnabled) {
   });
 }
 
-app.use('/auth', authRoutes);
+// auth
+app.use(passport.initialize());
+auth.initialize(app, passport);
+
+// api/logic
 app.use('/api', apiRoutes);
 
+// static stuff
 app.use(compression());
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 app.use('/res', express.static(path.join(__dirname, '../res')));
 
+// catch-all for client-side routes
 app.use('/', (req, res) => {
   res.sendFile(__dirname + '/assets/template.html');
 });
@@ -90,9 +96,6 @@ export const start = async function (port, hostname) {
     password: config.database.password(),
     ssl: config.database.ssl,
   });
-
-  // put secrets where they need to be
-  loadJWTSecret();
 
   winston.info('Configuration ready; launching HTTP server');
 

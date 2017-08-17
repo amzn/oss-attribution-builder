@@ -12,6 +12,7 @@
  * permissions and limitations under the License.
  */
 
+import auth from '../../auth';
 import { isAdmin, isUserInGroup } from '../../auth/util';
 import { DbProject } from '../../db/projects';
 import { AccessError } from '../../errors';
@@ -35,9 +36,9 @@ export type ProjectAccess = Pick<DbProject, 'contacts' | 'acl'>;
 /**
  * Throw an error if the request's user has no access.
  */
-export function assertProjectAccess(req: any, project: ProjectAccess, level: AccessLevel): void {
+export async function assertProjectAccess(req: any, project: ProjectAccess, level: AccessLevel): Promise<void> {
   if (project != null) {
-    const effective = effectivePermission(req, project);
+    const effective = await effectivePermission(req, project);
     if (effective != null) {
       if (AccessLevelStrength[effective] >= AccessLevelStrength[level]) {
         return;
@@ -48,10 +49,12 @@ export function assertProjectAccess(req: any, project: ProjectAccess, level: Acc
   throw new AccessError('This project does not exist or you do not have access to it.');
 }
 
-export function effectivePermission(req: any, project: ProjectAccess): AccessLevel {
+export async function effectivePermission(req: any, project: ProjectAccess): Promise<AccessLevel> {
+  const reqGroups = await auth.getGroups(req.user.user);
+
   // start by checking the global list
   // TODO: make global list ACL-like too
-  if (isAdmin(req)) {
+  if (isAdmin(req, reqGroups)) {
     return 'owner';
   }
 
@@ -60,7 +63,7 @@ export function effectivePermission(req: any, project: ProjectAccess): AccessLev
   let effectiveStrength = 0;
   for (const entity of Object.keys(project.acl)) {
     // skip groups that aren't relevant for the requester
-    if (!isUserInGroup(req, entity)) {
+    if (!isUserInGroup(entity, reqGroups)) {
       continue;
     }
 

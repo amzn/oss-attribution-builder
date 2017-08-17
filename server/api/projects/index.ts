@@ -12,11 +12,15 @@
  * permissions and limitations under the License.
  */
 
+import { Request } from 'express';
 import * as winston from 'winston';
 
+import auth from '../../auth';
+import { isAdmin } from '../../auth/util';
 import * as documentdb from '../../db/attribution_documents';
 import * as packagedb from '../../db/packages';
 import * as db from '../../db/projects';
+import { AccessError } from '../../errors/index';
 import DocBuilder from '../../licenses/docbuilder';
 import { storePackage } from '../packages';
 import { assertProjectAccess, effectivePermission } from './auth';
@@ -24,10 +28,10 @@ import { AccessLevelStrength, WebProject } from './interfaces';
 
 type ProjectIdPromise = Promise<Pick<WebProject, 'projectId'>>;
 
-export async function getProject(req: any, projectId: string): Promise<WebProject> {
+export async function getProject(req: Request, projectId: string): Promise<WebProject> {
   const project = await db.getProject(projectId);
-  assertProjectAccess(req, project, 'viewer');
-  const accessLevel = effectivePermission(req, project);
+  await assertProjectAccess(req, project, 'viewer');
+  const accessLevel = await effectivePermission(req, project);
 
   // map DB types to a public API
   return {
@@ -55,16 +59,21 @@ export async function getProject(req: any, projectId: string): Promise<WebProjec
   };
 }
 
-export function searchProjects(req): Promise<Array<Partial<WebProject>>> {
+export async function searchProjects(req: Request): Promise<Array<Partial<WebProject>>> {
+  const groups = await auth.getGroups(req.user.user);
+
   // all projects
-  if (req.query.all && req.user.admin === true) {
-    return db.searchProjects()
-      .then((projects) => projects.map(mapProjectShortInfo));
+  if (req.query.all) {
+    if (!isAdmin(req, groups)) {
+      throw new AccessError('Cannot access all projects');
+    }
+    const projects = await db.searchProjects();
+    return projects.map(mapProjectShortInfo);
   }
 
   // "my" projects
-  return db.searchOwnProjects(req.user.groups)
-    .then((projects) => projects.map(mapProjectShortInfo));
+  const ownProjects = await db.searchOwnProjects(groups);
+  return ownProjects.map(mapProjectShortInfo);
 }
 
 function mapProjectShortInfo(dbData): Partial<WebProject> {
@@ -76,7 +85,7 @@ function mapProjectShortInfo(dbData): Partial<WebProject> {
   };
 }
 
-export async function createProject(req, body: WebProject): ProjectIdPromise {
+export async function createProject(req: Request, body: WebProject): ProjectIdPromise {
   const projectId = await db.createProject({
     title: body.title,
     version: body.version,
@@ -91,9 +100,9 @@ export async function createProject(req, body: WebProject): ProjectIdPromise {
   return {projectId};
 }
 
-export async function patchProject(req, projectId, changes): ProjectIdPromise {
+export async function patchProject(req: Request, projectId, changes): ProjectIdPromise {
   const project = await db.getProject(projectId);
-  assertProjectAccess(req, project, 'editor');
+  await assertProjectAccess(req, project, 'editor');
 
   // map API names to DB columns
   const internalMap = {
@@ -109,7 +118,7 @@ export async function patchProject(req, projectId, changes): ProjectIdPromise {
   for (const k of Object.keys(changes)) {
     // validate that requester is an owner for ACL changes
     if (k === 'acl') {
-      assertProjectAccess(req, project, 'owner');
+      await assertProjectAccess(req, project, 'owner');
     }
     mappedChanges[internalMap[k]] = changes[k];
   }
@@ -120,13 +129,13 @@ export async function patchProject(req, projectId, changes): ProjectIdPromise {
   return {projectId};
 }
 
-export async function attachPackage(req, projectId, info) {
+export async function attachPackage(req: Request, projectId, info) {
   const { packageId, name, version, website, copyright, modified, link, notes } = info;
   const { license, licenseText } = info;
 
   // access check
   const project = await db.getProject(projectId);
-  assertProjectAccess(req, project, 'editor');
+  await assertProjectAccess(req, project, 'editor');
 
   // see if we need to edit the existing package
   const newId = await storePackage(req, packageId, {
@@ -153,9 +162,9 @@ export async function attachPackage(req, projectId, info) {
   return {packageId: addedPackageId};
 }
 
-export async function detachPackage(req, projectId, packageId): ProjectIdPromise {
+export async function detachPackage(req: Request, projectId, packageId): ProjectIdPromise {
   const project = await db.getProject(projectId);
-  assertProjectAccess(req, project, 'editor');
+  await assertProjectAccess(req, project, 'editor');
 
   const newUsage = project.packages_used.filter((item) => {
     return item.package_id !== packageId;
@@ -166,9 +175,9 @@ export async function detachPackage(req, projectId, packageId): ProjectIdPromise
   return {projectId};
 }
 
-export async function replacePackage(req, projectId: string, oldId: number, newId: number): ProjectIdPromise {
+export async function replacePackage(req: Request, projectId: string, oldId: number, newId: number): ProjectIdPromise {
   const project = await db.getProject(projectId);
-  assertProjectAccess(req, project, 'editor');
+  await assertProjectAccess(req, project, 'editor');
 
   const usage = project.packages_used;
   for (const u of usage) {
@@ -182,9 +191,9 @@ export async function replacePackage(req, projectId: string, oldId: number, newI
   return {projectId};
 }
 
-export async function generateAttributionDocument(req: any, projectId: string, store: boolean = false) {
+export async function generateAttributionDocument(req: Request, projectId: string, store: boolean = false) {
   const project = await db.getProject(projectId);
-  assertProjectAccess(req, project, 'viewer');
+  await assertProjectAccess(req, project, 'viewer');
 
   const packageIds = project.packages_used.map((usage) => usage.package_id);
   const packageList = await packagedb.getPackages(packageIds);

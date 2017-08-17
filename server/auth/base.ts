@@ -12,6 +12,9 @@
  * permissions and limitations under the License.
  */
 
+import { Express } from 'express';
+import { PassportStatic } from 'passport';
+
 /**
  * An interface for handling back-end user look-up.
  *
@@ -21,6 +24,27 @@
  * For a sample implementation, see `nullauth`.
  */
 interface AuthBase {
+
+  /**
+   * Given an Express request object and a Passport instance, register any
+   * needed routes & middleware to authenticate.
+   *
+   * Typically this means calling passport.use and app.use with some auth
+   * strategy:
+   *
+   *     passport.use(new MyStrategy((cookie, headers) => {
+   *        // some verification here
+   *     }));
+   *     app.use(passport.authenticate('my-strategy', {session: false}));
+   *
+   * Your strategy should return a user object that looks like AuthUser.
+   * This usually means calling `done(null, {user: username})` in your
+   * strategy function.
+   * You may assume passport.initialize has already been called.
+   *
+   * See http://passportjs.org/ for a list of strategies.
+   */
+  initialize(app: Express, passport: PassportStatic): void;
 
   /**
    * Given an Express request object, return the username of the current user.
@@ -37,6 +61,7 @@ interface AuthBase {
    * does not exist.
    *
    * For example, you could look up a user's full name in LDAP/AD.
+   * Consider caching this method.
    */
   getDisplayName(user: string): Promise<string>;
 
@@ -48,9 +73,14 @@ interface AuthBase {
    * separate these appropriately.
    *
    * For example, you could return `['ldap:group1', 'ldap:group2', 'custom:another-group']`.
+   * Consider caching this method.
    */
   getGroups(user: string): Promise<string[]>;
 
 }
 
 export default AuthBase;
+
+export interface AuthUser {
+  user?: string;
+}

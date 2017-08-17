@@ -13,7 +13,7 @@
  */
 
 import config from '../config';
-import { attachAdminClaim, canHaveAdmin, isAdmin, isUserInGroup } from './util';
+import { canHaveAdmin, isAdmin, isUserInGroup } from './util';
 
 describe('auth util', function () {
 
@@ -29,51 +29,27 @@ describe('auth util', function () {
         groups: ['abc', 'xyz'],
       },
     };
-    expect(isUserInGroup(req, 'xyz')).toBe(true);
-    expect(isUserInGroup(req, 'qwerty')).toBe(false);
+    expect(isUserInGroup('xyz', req.user.groups)).toBe(true);
+    expect(isUserInGroup('qwerty', req.user.groups)).toBe(false);
   });
 
   it('should validate user groups against configured admin set', function () {
-    expect(canHaveAdmin({groups: ['employees', 'admins']})).toBe(true);
-    expect(canHaveAdmin({groups: ['admins']})).toBe(true);
-    expect(canHaveAdmin({groups: ['employees']})).toBe(false);
-    expect(canHaveAdmin({groups: []})).toBe(false);
+    expect(canHaveAdmin(['employees', 'admins'])).toBe(true);
+    expect(canHaveAdmin(['admins'])).toBe(true);
+    expect(canHaveAdmin(['employees'])).toBe(false);
+    expect(canHaveAdmin([])).toBe(false);
   });
 
-  it('should grant admin only if requested via token', function () {
-    const req = {
-      user: {
-        groups: ['admins'],
-        admin: false,
-      },
+  it('should only authorize admin actions when header is set', function () {
+    const request = {
+      get: (h) => undefined,
+    } as any;
+    expect(isAdmin(request, ['admins'])).toBe(false);
+    request.get = (h) => {
+      return h === 'X-Admin' ? '1' : undefined;
     };
-    expect(isAdmin(req)).toBe(false);
-    req.user.admin = true;
-    expect(isAdmin(req)).toEqual(true);
-  });
-
-  it('should attach an admin claim', function () {
-    const req = {
-      query: {
-        admin: undefined,
-      },
-    } as any;
-    const claims = {
-      user: 'bob',
-      groups: ['nobody'],
-      admin: undefined,
-    } as any;
-
-    attachAdminClaim(req, claims);
-    expect(claims.admin).toBe(undefined);
-
-    claims.groups = ['admins'];
-    attachAdminClaim(req, claims);
-    expect(claims.admin).toBe(false);
-
-    req.query.admin = 'true';
-    attachAdminClaim(req, claims);
-    expect(claims.admin).toBe(true);
+    expect(isAdmin(request, ['admins'])).toBe(true);
+    expect(isAdmin(request, ['blah'])).toBe(false);
   });
 
 });
