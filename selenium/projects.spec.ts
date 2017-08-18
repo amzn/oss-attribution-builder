@@ -52,10 +52,11 @@ describe('project management', function () {
 
     // try to submit the form
     driver.findElement(By.css('form#onboarding-form button[type="submit"]')).click();
-    driver.sleep(500); // modal animation
+    driver.sleep(1000); // modal animation
     const errorText = await driver.findElement(By.css('#error-modal .modal-body')).getText();
     expect(errorText).toContain('Contact nobody could not be found');
-    await driver.findElement(By.css('#error-modal button.btn-primary')).click(); // close button
+    driver.findElement(By.css('#error-modal button.btn-primary')).click(); // close button
+    await driver.wait(until.elementIsNotVisible(driver.findElement(By.css('#error-modal'))));
 
     done();
   });
@@ -120,10 +121,11 @@ describe('project management', function () {
 
   it('gets an error about the url', async function (done) {
     driver.findElement(By.css('#add-package-form button[type="submit"]')).click();
-    driver.sleep(500); // modal animation
+    driver.sleep(1000); // modal animation
     const text = await driver.findElement(By.css('#error-modal .modal-body')).getText();
     expect(text).toContain('not a real URL');
-    await driver.findElement(By.css('#error-modal button.btn-primary')).click(); // close button
+    driver.findElement(By.css('#error-modal button.btn-primary')).click(); // close button
+    await driver.wait(until.elementIsNotVisible(driver.findElement(By.css('#error-modal'))));
 
     done();
   });

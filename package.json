@@ -8,10 +8,10 @@
   },
   "main": "server/app.js",
   "scripts": {
-    "dev": "trap 'docker-compose -f docker-compose.dev.yml stop' SIGINT SIGHUP EXIT; docker-compose -f docker-compose.dev.yml up -d && CONFIG_NAME=dev gulp dev",
+    "dev": "trap 'docker-compose -f docker-compose.dev.yml stop' INT HUP EXIT; docker-compose -f docker-compose.dev.yml up -d && CONFIG_NAME=dev gulp dev",
     "start": "export NODE_ENV=production; gulp; node ./build/server/localserver.js",
     "test": "gulp test",
-    "test-ui": "trap 'docker-compose -f docker-compose.selenium.yml stop' SIGINT SIGHUP EXIT; docker-compose -f docker-compose.selenium.yml up -d --build && gulp build-selenium && jasmine 'build/selenium/*.spec.js'",
+    "test-ui": "trap 'docker-compose -f docker-compose.selenium.yml stop' INT HUP EXIT; docker-compose -f docker-compose.selenium.yml up -d --build && gulp build-selenium && jasmine 'build/selenium/*.spec.js'",
     "lint": "tslint -c tslint.json 'browser/**/*.ts?(x)' 'server/**/*.ts' 'selenium/**/*.ts' --fix"
   },
   "author": "Jacob Peddicord <peddicor@amazon.com>",
