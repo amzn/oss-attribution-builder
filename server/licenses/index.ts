@@ -28,6 +28,10 @@ interface TagModule {
   validateUsage: (pkg: any, usage: any) => ValidationResult[];
   transformCopyright?: (original: string) => string;
   transformLicense?: (original: string, packages) => string;
+  presentation?: {
+    sortFirst?: boolean;
+    showText?: string;
+  };
 }
 
 type LicenseMap = Immutable.Map<string, Immutable.Map<string, any>>;
@@ -83,6 +87,7 @@ async function loadLicenses(): Promise<LicenseMap> {
 function processKnownLicense(id: string, spdxData: any) {
   const info = require(`./known/${id}`);
   let text = info.text;
+  const tags = info.tags;
 
   // overwriting an SPDX license?
   if (spdxData.hasOwnProperty(id)) {
@@ -90,6 +95,7 @@ function processKnownLicense(id: string, spdxData: any) {
     if (info.text === true) {
       winston.info('Re-using %s license text', id);
       text = spdxData[id].text;
+      tags.push('spdx'); // restore spdx tag if opting in to text
     }
   }
 
@@ -97,8 +103,8 @@ function processKnownLicense(id: string, spdxData: any) {
     throw new Error(`License ${id} neither supplied license text, nor referenced SPDX text`);
   }
 
-  return Immutable.fromJS({
-    tags: info.tags,
-    text: text.replace(/^\n+|\n+$/g, ''),
-  });
+  // trim excess newlines from start and end
+  text = text.replace(/^\n+|\n+$/g, '');
+
+  return Immutable.fromJS({tags, text});
 }
