@@ -1,4 +1,7 @@
 export const tags = [];
+
+// text could also be assigned to true to use the SPDX text, but in this example
+// we're just supplying it ourselves
 export const text = `
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

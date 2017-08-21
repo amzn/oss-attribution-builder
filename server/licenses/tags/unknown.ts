@@ -27,6 +27,5 @@ export function validateSelf(name, text, tags) {
   ];
 }
 
-export function validateUsage(usage) {
-
+export function validateUsage(pkg, usage) {
 }

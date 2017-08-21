@@ -87,7 +87,8 @@
     "source-map-support": "^0.4.0",
     "whatwg-fetch": "^2.0.3",
     "winston": "^2.2.0",
-    "winston-daily-rotate-file": "^1.4.3"
+    "winston-daily-rotate-file": "^1.4.3",
+    "wordwrap": "^1.0.0"
   },
   "optionalDependencies": {
     "cookie-parser": "^1.4.3",

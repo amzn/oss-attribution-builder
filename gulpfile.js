@@ -1,17 +1,18 @@
 /* Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License").
- * You may not use this file except in compliance with the License.
- * A copy of the License is located at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * or in the "license" file accompanying this file. This file is distributed
- * on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
- * express or implied. See the License for the specific language governing
- * permissions and limitations under the License.
- */
+*
+* Licensed under the Apache License, Version 2.0 (the "License").
+* You may not use this file except in compliance with the License.
+* A copy of the License is located at
+*
+*     http://www.apache.org/licenses/LICENSE-2.0
+*
+* or in the "license" file accompanying this file. This file is distributed
+* on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+* express or implied. See the License for the specific language governing
+* permissions and limitations under the License.
+*/
 
+// @ts-nocheck
 'use strict';
 
 const spawn = require('child_process').spawn;
@@ -25,7 +26,7 @@ const webpackStream = require('webpack-stream');
 const WebpackDevServer = require('webpack-dev-server');
 
 const tsProject = ts.createProject('server/tsconfig.json');
-gulp.task('build-server', ['copy-config'], () => {
+gulp.task('build-server', ['copy-config', 'copy-data'], () => {
   return gulp.src(['server/**/*.ts'])
     .pipe(plumber())
     .pipe(sourcemaps.init())
@@ -51,7 +52,6 @@ gulp.task('build-browser', () => {
     .pipe(gulp.dest('build/res'));
 });
 
-
 gulp.task('copy-assets', () => {
   return gulp.src('assets/**/*')
     .pipe(gulp.dest('build/server/assets'));
@@ -60,6 +60,11 @@ gulp.task('copy-assets', () => {
 gulp.task('copy-config', () => {
   return gulp.src('config/**/*')
     .pipe(gulp.dest('build/config'));
+});
+
+gulp.task('copy-data', () => {
+  return gulp.src('data/**/*.json')
+    .pipe(gulp.dest('build/data'));
 });
 
 gulp.task('test', ['build-server'], () => {

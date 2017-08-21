@@ -19,27 +19,20 @@ export const RECEIVE_CLAS = 'app/licenses/receive-clas';
 
 const initial = {
   list: [],
-  clas: [],
-  map: {},
+  map: new Map(),
 };
 
 export default function reducer(state = initial, action: any = {}) {
   switch (action.type) {
     case RECEIVE_LICENSES:
-      return Object.assign({}, state, {
+      return {
         ...state,
         list: action.licenses,
         map: action.licenses.reduce((map, curr) => {
           map.set(curr.name, curr);
           return map;
-        }, new Map()),
-      });
-
-    case RECEIVE_CLAS:
-      return Object.assign({}, state, {
-        ...state,
-        clas: action.clas,
-      });
+        }, state.map),
+      };
 
     default:
       return state;
@@ -51,14 +44,7 @@ export default function reducer(state = initial, action: any = {}) {
 export function receiveLicenses(licenses) {
   return {
     type: RECEIVE_LICENSES,
-    licenses: licenses.licenses,
-  };
-}
-
-export function receiveClas(clas) {
-  return {
-    type: RECEIVE_CLAS,
-    clas: clas.clas,
+    licenses,
   };
 }
 
@@ -69,13 +55,5 @@ export function fetchLicenses() {
     return fetchAuth('/api/licenses/')
       .then((response) => response.json())
       .then((json) => dispatch(receiveLicenses(json)));
-  };
-}
-
-export function fetchClas() {
-  return (dispatch) => {
-    return fetchAuth('/api/clas')
-      .then((response) => response.json())
-      .then((json) => dispatch(receiveClas(json)));
   };
 }

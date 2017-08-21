@@ -12,16 +12,24 @@
  * permissions and limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+// tslint:disable:no-empty
 
-import commonReducer from './modules/common';
-import licenseReducer from './modules/licenses';
-import packageReducer from './modules/packages';
-import projectReducer from './modules/projects';
+import * as wordwrap from 'wordwrap';
 
-export default combineReducers({
-  common: commonReducer,
-  licenses: licenseReducer,
-  packages: packageReducer,
-  projects: projectReducer,
-});
+// This tag notes that the license was pulled from SPDX sources.
+
+export function validateSelf(name, text, tags) {
+}
+
+export function validateUsage(pkg, usage) {
+}
+
+export function transformLicense(original, packages) {
+  let text = original;
+
+  // SPDX BSD texts include a stub copyright line for some reason. remove those.
+  // see the `all` tag for a general warning applied to these.
+  text = text.replace(/^\s*Copyright.*<(year|owner)>.*[\r\n]*/i, '');
+
+  return wordwrap(80)(text);
+}

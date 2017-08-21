@@ -12,16 +12,12 @@
  * permissions and limitations under the License.
  */
 
-import { combineReducers } from 'redux';
+// Meta-tag; see "all"
 
-import commonReducer from './modules/common';
-import licenseReducer from './modules/licenses';
-import packageReducer from './modules/packages';
-import projectReducer from './modules/projects';
+// tslint:disable:no-empty
 
-export default combineReducers({
-  common: commonReducer,
-  licenses: licenseReducer,
-  packages: packageReducer,
-  projects: projectReducer,
-});
+export function validateSelf(name, text, tags) {
+}
+
+export function validateUsage(pkg, usage) {
+}

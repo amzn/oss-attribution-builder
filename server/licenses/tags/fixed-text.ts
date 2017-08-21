@@ -17,19 +17,16 @@
 // tslint:disable:no-empty
 
 export function validateSelf(name, text, tags) {
+  if (tags.includes('user-supplied')) {
+    return [
+      {
+        level: 0,
+        message: `The ${name} license's text is standardized -- ` +
+        'if the text is actually different, you may have a different license.',
+      },
+    ];
+  }
 }
 
-export function validateUsage(usage) {
-  // if text was not supplied, that's perfect
-  if (usage.license_text == null || usage.license_text.length === 0) {
-    return;
-  }
-
-  return [
-    {
-      level: 0,
-      message: `The ${usage.license} license's text is standardized -- ` +
-               'if the text is actually different, you may have a different license.',
-    },
-  ];
+export function validateUsage(pkg, usage) {
 }

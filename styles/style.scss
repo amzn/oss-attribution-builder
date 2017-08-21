@@ -31,3 +31,11 @@ dd.fixed-text {
     padding: 3px 5px;
   }
 }
+
+.document-warning {
+  cursor: pointer;
+
+  &:hover {
+    border: 1px solid #555;
+  }
+}

@@ -21,7 +21,7 @@
 export function validateSelf(name, text, tags) {
 }
 
-export function validateUsage(usage) {
+export function validateUsage(pkg, usage) {
 }
 
 // we strip out the original copyright text up top

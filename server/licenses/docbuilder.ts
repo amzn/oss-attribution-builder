@@ -14,21 +14,39 @@
 
 import { createHash } from 'crypto';
 import { Package } from '../db/packages';
-import { mapLicense, mapTag } from './index';
+import { licenses, mapTag } from './index';
+
+interface BarePackageUsage {
+  package_id: number;
+  notes: string | null;
+}
+
+interface PackagePair {
+  pkg: Package;
+  usage: BarePackageUsage;
+}
+
+interface LicenseBucket {
+  name: string;
+  text: string;
+  tags: string[];
+  packages: PackagePair[];
+}
 
 export default class DocBuilder {
 
-  private buckets = new Map();
+  private buckets = new Map<string, LicenseBucket>();
   private openAnnotations = {};
   private finalAnnotations = [];
   private lineNum = 0;
-  private chunks = [];
+  private chunks: string[] = [];
   private finalWarnings = [];
 
-  addPackage(pkg: Package, usage) {
+  addPackage(pkg: Package, usage: BarePackageUsage) {
     // see if it's a known license
     const name = pkg.license;
-    const license = mapLicense(name);
+    const licenseImmutable = licenses.get(name);
+    const license = licenseImmutable ? licenseImmutable.toJS() : null;
 
     // prefer package's license text
     let text = '';
@@ -47,11 +65,12 @@ export default class DocBuilder {
     const key = license != null ? `${prefix}~${hash}` : `~${prefix}~${hash}`;
 
     // determine tags
-    const tags = license != null ? license.tags : ['unknown'];
+    const tags: string[] = license != null ? license.tags : ['unknown'];
     tags.push('all');
 
     // create or add to a bucket
     const bucket = this.buckets.get(key) || {name, text, tags, packages: []};
+
     bucket.packages.push({pkg, usage});
     this.buckets.set(key, bucket);
   }
@@ -131,13 +150,13 @@ export default class DocBuilder {
         throw new Error('Bug: Validator output should return an array of messages');
       }
       for (const w of warnings) {
-        this.finalWarnings.push(Object.assign({}, w, extra));
+        this.finalWarnings.push({...w, ...extra});
       }
     }
   }
 
   private startAnnotation(type, extra) {
-    this.openAnnotations[type] = Object.assign({lines: [this.lineNum, null]}, extra);
+    this.openAnnotations[type] = {lines: [this.lineNum, null], ...extra};
   }
 
   private endAnnotation(type) {
@@ -161,23 +180,23 @@ export default class DocBuilder {
   }
 
   get summary() {
-    const licenses = {};
-    const tags = {};
+    const usedLicenses = {};
+    const usedTags = {};
     this.buckets.forEach((b, key) => {
-      licenses[key] = {
+      usedLicenses[key] = {
         packages: b.packages.map((p) => [p.pkg.name, p.pkg.version]),
         tags: b.tags,
       };
       for (const t of b.tags) {
-        const partialTags = tags[t] || [];
+        const partialTags = usedTags[t] || [];
         partialTags.push(key);
-        tags[t] = partialTags;
+        usedTags[t] = partialTags;
       }
     });
 
     return {
-      licenses,
-      tags,
+      usedLicenses,
+      usedTags,
     };
   }
 

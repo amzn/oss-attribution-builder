@@ -12,28 +12,26 @@
  * permissions and limitations under the License.
  */
 
-import { knownLicenses, mapLicense } from './index';
+import { licenses } from './index';
 
 describe('known licenses', function () {
 
   it('declare required properties', function () {
-    knownLicenses.forEach((name) => {
-      const license = mapLicense(name);
+    for (const [name, data] of (licenses as any).entries()) {
+      const license = (name);
       expect(license).toBeDefined();
 
-      expect(Array.isArray(license.tags)).toBe(true);
-      expect(typeof license.text).toEqual('string');
-    });
+      expect(data.get('tags')).toBe(true);
+      expect(typeof data.get('text')).toEqual('string');
+    }
   });
 
   it('used tags must exist', function () {
-    knownLicenses.forEach((name) => {
-      const license = mapLicense(name);
-
-      for (const tag of license.tags) {
+    for (const data of (licenses as any).values()) {
+      for (const tag of data.get('tags')) {
         require(`./tags/${tag}`);
       }
-    });
+    }
   });
 
 });

@@ -12,47 +12,38 @@
  * permissions and limitations under the License.
  */
 
-import * as fs from 'fs';
+import * as fs from 'mz/fs';
 import * as path from 'path';
 
 import * as Immutable from 'immutable';
+import * as winston from 'winston';
 
-export const knownLicenses = new Set();
-fs.readdir(path.join(__dirname, 'known'), (err, files) => {
-  if (err) {
-    throw err;
-  }
-
-  for (const f of files) {
-    if (f.endsWith('.js')) {
-      knownLicenses.add(path.basename(f, '.js'));
-    }
-  }
-});
-
-const licenseCache = new Map();
-
-export function mapLicense(name) {
-  if (!knownLicenses.has(name)) {
-    return null;
-  }
-
-  let cached = licenseCache.get(name);
-  if (cached == null) {
-    const info = require(`./known/${name}`);
-    cached = Immutable.Map({
-      tags: Immutable.List(info.tags),
-      text: info.text.replace(/^\n+|\n+$/g, ''),
-    });
-    licenseCache.set(name, cached);
-  }
-
-  return cached.toJS();
+interface ValidationResult {
+  level: 0 | 1 | 2;
+  message: string;
 }
 
-const tagCache = new Map();
+interface TagModule {
+  validateSelf: (name: string, text: string, tags: string[]) => ValidationResult[];
+  validateUsage: (pkg: any, usage: any) => ValidationResult[];
+  transformCopyright?: (original: string) => string;
+  transformLicense?: (original: string, packages) => string;
+}
 
-export function mapTag(name) {
+type LicenseMap = Immutable.Map<string, Immutable.Map<string, any>>;
+
+const tagCache = new Map<string, any>();
+
+export let licenses: LicenseMap;
+loadLicenses()
+  .then((l) => {
+    licenses = l;
+  })
+  .catch((e) => {
+    throw e;
+  });
+
+export function mapTag(name): TagModule {
   let mod = tagCache.get(name);
   if (mod == null) {
     mod = require(`./tags/${name}`);
@@ -60,4 +51,54 @@ export function mapTag(name) {
   }
 
   return mod;
+}
+
+async function loadLicenses(): Promise<LicenseMap> {
+  const licenseMap = new Map<string, Immutable.Map<string, any>>();
+
+  // start with SPDX licenses
+  const spdxData = require('../../data/spdx-license-data.json');
+  for (const id of Object.keys(spdxData)) {
+    licenseMap.set(id, Immutable.fromJS({
+      tags: ['spdx'],
+      text: spdxData[id].text,
+    }));
+  }
+  winston.info('Loaded %s SPDX licenses', licenseMap.size);
+
+  // then load known/custom license data
+  // overwriting SPDX is OK
+  const files = await fs.readdir(path.join(__dirname, 'known'));
+  for (const f of files) {
+    if (f.endsWith('.js')) {
+      const id = path.basename(f, '.js');
+      licenseMap.set(id, processKnownLicense(id, spdxData));
+    }
+  }
+  winston.info('Loaded %s total licenses', licenseMap.size);
+
+  return Immutable.fromJS(licenseMap);
+}
+
+function processKnownLicense(id: string, spdxData: any) {
+  const info = require(`./known/${id}`);
+  let text = info.text;
+
+  // overwriting an SPDX license?
+  if (spdxData.hasOwnProperty(id)) {
+    winston.info('Overwriting SPDX license %s', id);
+    if (info.text === true) {
+      winston.info('Re-using %s license text', id);
+      text = spdxData[id].text;
+    }
+  }
+
+  if (typeof text !== 'string') {
+    throw new Error(`License ${id} neither supplied license text, nor referenced SPDX text`);
+  }
+
+  return Immutable.fromJS({
+    tags: info.tags,
+    text: text.replace(/^\n+|\n+$/g, ''),
+  });
 }

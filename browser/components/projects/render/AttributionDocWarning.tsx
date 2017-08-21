@@ -55,7 +55,7 @@ export default class AttributionDocWarning extends Component<Props, {}> {
     }
 
     return (
-      <div className={`alert alert-${css}`} style={{cursor: 'pointer'}} onClick={onClick}>
+      <div className={`document-warning alert alert-${css}`} onClick={onClick}>
         <h5 className="alert-heading">{title}</h5>
         <p className="mb-0">{message}</p>
       </div>

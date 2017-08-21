@@ -21,15 +21,48 @@
 // tslint:disable:no-empty
 
 export function validateSelf(name, text, tags) {
-  // if it's an unknown license, the unknown tag will cover this case anyway
-  if (tags.includes('unknown')) {
-    return;
+  const warnings = [];
+  const nicename = name ? name : 'The provided license';
+
+  // look for excessively long lines, but ignore SPDX-tagged licenses.
+  // those are word wrapped after this validation happens
+  // (keen eyes will note that this will never match SPDX-supplied texts since
+  // the `text` parameter is user-supplied, but it _does_ match e.g. picking BSD-3-Clause
+  // and pasting the license text in.)
+  if (text.match(/.{100,}/) && !tags.includes('spdx')) {
+    warnings.push({
+      level: 1,
+      message: `${nicename} contains long lines. Consider word-wrapping the text.`,
+    });
   }
 
-  return [
-    {level: 2, message: 'This sample message is applied to all known licenses.'},
-  ];
+  // look for template markers
+  if (text.match(/<<var/i)) {
+    warnings.push({
+      level: 0,
+      message: `${nicename} appears to be a license template. Ensure you have the correct license text.`,
+    });
+  }
+
+  // scan for stub lines from copy-paste mishaps
+  if (text.match(/^\s*Copyright.*<(year|owner)>/i)) {
+    // for some reason, BSD SPDX licenses include these, so they'll get removed in
+    // that tag's transformLicense function. add a note that we're doing that.
+    if (tags.includes('spdx')) {
+      warnings.push({
+        level: 1,
+        message: `${nicename} had a stub copyright line (with "<year>", or "<owner>" markers) removed.`,
+      });
+    } else {
+      warnings.push({
+        level: 2,
+        message: `${nicename} has a stub copyright line (with "<year>", or "<owner>" markers).`,
+      });
+    }
+  }
+
+  return warnings;
 }
 
-export function validateUsage(usage) {
+export function validateUsage(pkg, usage) {
 }

@@ -150,7 +150,7 @@ router.post('/packages/:packageId/verify', (req, res, next) => {
 
 /*** Licenses ***/
 router.get('/licenses/', (req, res, next) => {
-  res.send({licenses: licenseAPI.listLicenses()});
+  pack(licenseAPI.listLicenses(), res, next);
 });
 
 // error handling for all of the above

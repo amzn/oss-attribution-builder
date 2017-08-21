@@ -12,46 +12,24 @@
  * permissions and limitations under the License.
  */
 
-import * as winston from 'winston';
+import { licenses } from '../../licenses';
 
-import { knownLicenses, mapLicense } from '../../licenses';
-import spdxLicenses from '../../licenses/spdx-ids';
+const cachedLicenses: PartialLicenseItem[] = [];
 
-let cachedLicenses: LicenseItem[];
-
-export function listLicenses() {
-  if (cachedLicenses == null) {
-    cachedLicenses = buildLicenses();
+export async function listLicenses(): Promise<PartialLicenseItem[]> {
+  if (cachedLicenses.length === 0) {
+    for (const [id, data] of (licenses as any).entries()) {
+      cachedLicenses.push({
+        name: id,
+        tags: data.get('tags'),
+      });
+    }
   }
 
   return cachedLicenses;
 }
 
-interface LicenseItem {
+interface PartialLicenseItem {
   name: string;
   tags: string[];
-}
-
-export function buildLicenses(): LicenseItem[] {
-  const list: LicenseItem[] = [];
-
-  knownLicenses.forEach((license) => {
-    const mapped = mapLicense(license);
-    list.push({name: license, tags: mapped.tags});
-  });
-
-  spdxLicenses.forEach((license) => {
-    if (knownLicenses.has(license)) {
-      return;
-    }
-    list.push({name: license, tags: ['unknown']});
-  });
-
-  winston.info('Built license cache with %s items (spdx: %s, known: %s)',
-    list.length, spdxLicenses.length, knownLicenses.size);
-  return list;
-}
-
-export function getLicenseTitles() {
-  return spdxLicenses;
 }
