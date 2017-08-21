@@ -13,6 +13,7 @@ require manual edits to pluggable interfaces.
 - Auth backends can now specify how a user should be authenticated, via Passport. They should
   provide an `initialize` method that is called during app start-up. This can be used to register
   Passport strategies, login URLs, or any other session activities.
+- SPDX license texts are now shipped with the attribution builder.
 
 ### Removed
 - JWT sessions are no longer in use. See the above addition about auth backends for an alternative.
@@ -25,6 +26,7 @@ require manual edits to pluggable interfaces.
 
 ### Fixed
 - Some lingering Bootstrap CSS issues were cleaned up.
+- The `validateUsage` function (used in tags) was incorrectly documented.
 
 ## 0.8.0 - 2017-08-04
 

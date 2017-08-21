@@ -24,9 +24,6 @@ See documentation:
 The attribution builder was originally an Amazon-internal tool. Some portions had to be removed to make this a sensible open source project. As such, there are some warts:
 
 * Projects have contact lists, but at the moment the UI only supports one contact (the legal contact).
-* There are only two sample license texts included. Texts from SPDX licenses need to be imported.
-* The default auth backend (`nullauth`) is a useful demo, but not useful as an authentication solution. Do **not** launch into production without implementing an authentication backend fitting your environment.
-* Selenium tests are likely very broken. These were created for use in an Amazon environment and have not yet been updated.
 * The website needs Node 6.x to build, due to usage of Gulp 3. It should still _run_ on 8, however.
 
 These will all be fixed in time, but be aware that some things might be weird for a while.
