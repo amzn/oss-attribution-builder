@@ -16,6 +16,7 @@ import React = require('react');
 import { connect } from 'react-redux';
 import Select = require('react-select');
 
+import { WebLicense, LicensePresentation } from '../../../../server/api/licenses/interfaces';
 import { WebPackage } from '../../../../server/api/packages/interfaces';
 import * as LicenseActions from '../../../modules/licenses';
 import * as PackageActions from '../../../modules/packages';
@@ -31,7 +32,7 @@ interface Props {
   dispatch: (action: any) => any;
   completions: WebPackage[];
   packages: PackageActions.PackageSet;
-  licenses: any[];
+  licenses: WebLicense[];
 }
 
 interface State {
@@ -39,10 +40,15 @@ interface State {
   selectedPackage: any;
 }
 
+interface LicenseOption extends Select.Option {
+  tags: string[];
+  presentation: LicensePresentation;
+}
+
 class PackageFields extends React.Component<Props, State> {
 
-  licenseOptions: any[] = [];
-  licenseMap: {[name: string]: any} = {};
+  licenseOptions: LicenseOption[] = [];
+  licenseMap: {[name: string]: LicenseOption} = {};
 
   static defaultProps = {
     initial: {},
@@ -85,7 +91,7 @@ class PackageFields extends React.Component<Props, State> {
 
     for (const license of licenses) {
       const entry = {label: license.name, value: license.name,
-        tags: license.tags, fixed: license.tags.includes('fixed-text')};
+        tags: license.tags, presentation: license.presentation};
       this.licenseOptions.push(entry);
       this.licenseMap[license.name] = entry;
     }
@@ -190,10 +196,10 @@ class PackageFields extends React.Component<Props, State> {
     }});
   }
 
-  handleLicenseChange = (selected) => {
+  handleLicenseChange = (selected: LicenseOption) => {
     this.propagateState({pkg: {
       ...this.state.pkg,
-      license: selected ? selected.value : null,
+      license: selected ? selected.value as string : null,
     }});
   }
 
@@ -207,14 +213,17 @@ class PackageFields extends React.Component<Props, State> {
     }
 
     // dont require text if the license is fixed
-    if (sel.fixed) {
+    if (sel.presentation && sel.presentation.fixedText) {
       return false;
     }
 
     return true;
   }
 
-  licenseOptionRenderer = (option) => {
+  licenseOptionRenderer = (option: LicenseOption) => {
+    if (option.presentation && option.presentation.shortText) {
+      return <span>{option.label} {option.presentation.shortText.join(' ')}</span>;
+    }
     return <span>{option.label}</span>;
   }
 
@@ -248,7 +257,9 @@ class PackageFields extends React.Component<Props, State> {
     const { pkg } = this.state;
     const needsFullLicense = this.needsFullLicense();
     const largeCopyrightStatement = this.largeCopyrightStatement();
-    const licenseValue = this.licenseMap[pkg.license] || {label: pkg.license, value: pkg.license};
+    const license: Partial<LicenseOption> = this.licenseMap[pkg.license] ||
+                                            {label: pkg.license, value: pkg.license};
+    const longText = license.presentation && license.presentation.longText;
 
     return <div className="row">
 
@@ -265,17 +276,13 @@ class PackageFields extends React.Component<Props, State> {
           <label htmlFor="packageLicense">License</label>
           <FreeformSelect
             name="license"
-            value={licenseValue}
+            value={license}
             options={this.licenseOptions}
             optionRenderer={this.licenseOptionRenderer}
             placeholder="Select a license or paste the full text below."
             onChange={this.handleLicenseChange}
           />
-          {needsFullLicense || <span className="form-text text-muted">
-            We already have the full text for this license.
-            If your license is different from the standard {pkg.license} text,
-            clear the box above and then you can paste the license text here.
-          </span>}
+          {longText && <span className="form-text text-muted">{longText.join('\n')}</span>}
         </div>
         {needsFullLicense ? (
           <div className="form-group">

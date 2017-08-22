@@ -38,6 +38,25 @@ A tag module has the following exports:
 
   A tag may implement this to change how a license itself is rendered in the output document. It receives the original license text and a list of packages. For example, the `notice` tag uses this to re-locate copyright statements to a "NOTICE" section following the license. The `spdx` tag uses this to word-wrap SPDX-provided licenses to 80 characters.
 
+* `presentation = {}` _(optional)_
+
+  For website/UI purposes, a tag may suggest presentation options. These options are keys of an object named `presentation` (not a function). All are optional.
+
+  Available options:
+
+  * `sortFirst` (boolean, default false) - specifies whether this license should appear above others in a listing.
+  * `shortText` (string) - can add text to license listings, for example on the license dropdown. keep it short; picking an emoji might be a good idea!
+  * `longText` (string) - displayed below a license when selected.
+  * `fixedText` (boolean, default false) - if set, removes the textarea for pasting a custom license when a license with this tag is selected. primarily used by the `fixed-text` tag.
+
+  Example:
+
+  ```
+  export const presentation = { showFirst: true; }
+  ```
+
+  For more usage examples, see tags `fixed-text` and `popular`.
+
 ## Meta tags
 
 The following tags are more deeply integrated into the generator and should not be deleted:

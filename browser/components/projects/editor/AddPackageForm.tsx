@@ -126,7 +126,7 @@ class AddPackageForm extends Component<Props, Partial<State>> {
                 </p>
                 <p>
                   If the package you're using has a NOTICE file, it often includes a copyright statement.
-                 Yo u can include the NOTICE file in same box below.
+                 You can include the NOTICE file in same box below.
                 </p>
 
                 <h5>Identifying a License</h5>

@@ -14,6 +14,9 @@ require manual edits to pluggable interfaces.
   provide an `initialize` method that is called during app start-up. This can be used to register
   Passport strategies, login URLs, or any other session activities.
 - SPDX license texts are now shipped with the attribution builder.
+- License tags can now specify presentation options to influence how they appear in the package
+  editor. They can be sorted first, annotated with text (both in menu and below), and control
+  whether users are asked for the full license text.
 
 ### Removed
 - JWT sessions are no longer in use. See the above addition about auth backends for an alternative.

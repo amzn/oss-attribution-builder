@@ -17,6 +17,7 @@ import * as path from 'path';
 
 import * as Immutable from 'immutable';
 import * as winston from 'winston';
+import { TagPresentation } from '../api/licenses/interfaces';
 
 interface ValidationResult {
   level: 0 | 1 | 2;
@@ -28,10 +29,7 @@ interface TagModule {
   validateUsage: (pkg: any, usage: any) => ValidationResult[];
   transformCopyright?: (original: string) => string;
   transformLicense?: (original: string, packages) => string;
-  presentation?: {
-    sortFirst?: boolean;
-    showText?: string;
-  };
+  presentation?: TagPresentation;
 }
 
 type LicenseMap = Immutable.Map<string, Immutable.Map<string, any>>;

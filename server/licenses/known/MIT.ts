@@ -1,4 +1,4 @@
-export const tags = [];
+export const tags = ['popular'];
 
 // text could also be assigned to true to use the SPDX text, but in this example
 // we're just supplying it ourselves

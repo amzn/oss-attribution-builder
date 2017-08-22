@@ -12,17 +12,23 @@
  * permissions and limitations under the License.
  */
 
+import { WebLicense } from '../../server/api/licenses/interfaces';
 import { fetchAuth } from '../util';
 
 export const RECEIVE_LICENSES = 'app/licenses/receive-licenses';
 export const RECEIVE_CLAS = 'app/licenses/receive-clas';
 
-const initial = {
+interface State {
+  list: WebLicense[];
+  map: Map<string, WebLicense>;
+}
+
+const initial: State = {
   list: [],
   map: new Map(),
 };
 
-export default function reducer(state = initial, action: any = {}) {
+export default function reducer(state = initial, action: any = {}): State {
   switch (action.type) {
     case RECEIVE_LICENSES:
       return {

@@ -12,26 +12,19 @@
  * permissions and limitations under the License.
  */
 
-// NOTE: this tag is referenced from the UI
-
 // tslint:disable:no-empty
 
+// A demonstration of annotating licenses as "popular" so that they show
+// up more prominently in the license list. Can be used to mark licenses
+// that your company prefers, for example.
+
+export const presentation = {
+  sortFirst: true,
+  shortText: '⭐️',
+};
+
 export function validateSelf(name, text, tags) {
-  if (tags.includes('user-supplied')) {
-    return [
-      {
-        level: 0,
-        message: `The ${name} license's text is standardized -- ` +
-        'if the text is actually different, you may have a different license.',
-      },
-    ];
-  }
 }
 
 export function validateUsage(pkg, usage) {
 }
-
-export const presentation = {
-  fixedText: true,
-  longText: 'This license text is standardized; you don\'t need to paste it in.',
-};
