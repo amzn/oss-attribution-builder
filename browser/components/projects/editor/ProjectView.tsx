@@ -17,7 +17,9 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+import { WebLicense } from '../../../../server/api/licenses/interfaces';
 import { WebProject } from '../../../../server/api/projects/interfaces';
+import * as LicenseActions from '../../../modules/licenses';
 import * as ProjectActions from '../../../modules/projects';
 import EditableText from '../../util/EditableText';
 import AddPackageForm from './AddPackageForm';
@@ -27,6 +29,7 @@ interface Props {
   dispatch: (action: any) => any;
   match: any;
   project: WebProject;
+  licenses: WebLicense[];
 }
 
 interface State {
@@ -40,8 +43,13 @@ class ProjectView extends Component<Props, State> {
   };
 
   componentWillMount() {
-    const { dispatch, match: { params } } = this.props;
+    const { dispatch, match: { params }, licenses } = this.props;
     dispatch(ProjectActions.fetchProjectDetail(params.projectId));
+
+    // these are used in many sub-components. pre-load them now.
+    if (licenses.length === 0) {
+      dispatch(LicenseActions.fetchLicenses());
+    }
   }
 
   componentWillUpdate(nextProps) {
@@ -216,4 +224,5 @@ class ProjectView extends Component<Props, State> {
 
 export default connect((state) => ({
   project: state.projects.active,
+  licenses: state.licenses.list,
 }))(ProjectView);

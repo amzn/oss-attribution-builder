@@ -38,7 +38,7 @@ const initial = {
    *    description: "",
    *    createdOn: Date,
    *    packagesUsed: [
-   *      {packageId: 1, modified: false, notes: "", ...},
+   *      {packageId: 1, notes: "", ...},
    *      ...
    *    ],
    *    ...

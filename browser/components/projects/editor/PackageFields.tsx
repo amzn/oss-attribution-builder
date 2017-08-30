@@ -16,7 +16,7 @@ import React = require('react');
 import { connect } from 'react-redux';
 import Select = require('react-select');
 
-import { WebLicense, LicensePresentation } from '../../../../server/api/licenses/interfaces';
+import { WebLicense, WebTag } from '../../../../server/api/licenses/interfaces';
 import { WebPackage } from '../../../../server/api/packages/interfaces';
 import * as LicenseActions from '../../../modules/licenses';
 import * as PackageActions from '../../../modules/packages';
@@ -33,6 +33,7 @@ interface Props {
   completions: WebPackage[];
   packages: PackageActions.PackageSet;
   licenses: WebLicense[];
+  tags: {[key: string]: WebTag};
 }
 
 interface State {
@@ -42,7 +43,9 @@ interface State {
 
 interface LicenseOption extends Select.Option {
   tags: string[];
-  presentation: LicensePresentation;
+  shortText?: string[];
+  longText?: string[];
+  fixedText: boolean;
 }
 
 class PackageFields extends React.Component<Props, State> {
@@ -87,11 +90,21 @@ class PackageFields extends React.Component<Props, State> {
   }
 
   initLicenses() {
-    const { licenses } = this.props;
+    const { licenses, tags } = this.props;
 
     for (const license of licenses) {
+      // gather tag presentation data
+      const {shortText, longText, fixedText} = license.tags
+        .map((name) => tags[name].presentation || {})
+        .reduce((acc, curr) => ({
+          shortText: acc.shortText.concat(curr.shortText && [curr.shortText] || []),
+          longText: acc.longText.concat(curr.longText && [curr.longText] || []),
+          fixedText: acc.fixedText || curr.fixedText,
+        }), {shortText: [], longText: []} as any);
+
+      // create a dropdown option
       const entry = {label: license.name, value: license.name,
-        tags: license.tags, presentation: license.presentation};
+        tags: license.tags, shortText, longText, fixedText};
       this.licenseOptions.push(entry);
       this.licenseMap[license.name] = entry;
     }
@@ -213,7 +226,7 @@ class PackageFields extends React.Component<Props, State> {
     }
 
     // dont require text if the license is fixed
-    if (sel.presentation && sel.presentation.fixedText) {
+    if (sel.fixedText) {
       return false;
     }
 
@@ -221,8 +234,8 @@ class PackageFields extends React.Component<Props, State> {
   }
 
   licenseOptionRenderer = (option: LicenseOption) => {
-    if (option.presentation && option.presentation.shortText) {
-      return <span>{option.label} {option.presentation.shortText.join(' ')}</span>;
+    if (option.shortText) {
+      return <span>{option.label} {option.shortText.join(' ')}</span>;
     }
     return <span>{option.label}</span>;
   }
@@ -259,7 +272,6 @@ class PackageFields extends React.Component<Props, State> {
     const largeCopyrightStatement = this.largeCopyrightStatement();
     const license: Partial<LicenseOption> = this.licenseMap[pkg.license] ||
                                             {label: pkg.license, value: pkg.license};
-    const longText = license.presentation && license.presentation.longText;
 
     return <div className="row">
 
@@ -282,7 +294,7 @@ class PackageFields extends React.Component<Props, State> {
             placeholder="Select a license or paste the full text below."
             onChange={this.handleLicenseChange}
           />
-          {longText && <span className="form-text text-muted">{longText.join('\n')}</span>}
+          {license.longText && <span className="form-text text-muted">{license.longText.join('\n')}</span>}
         </div>
         {needsFullLicense ? (
           <div className="form-group">
@@ -325,4 +337,5 @@ export default connect((state) => ({
   completions: state.packages.completions,
   packages: state.packages.set,
   licenses: state.licenses.list,
+  tags: state.licenses.tags,
 }))(PackageFields as any) as React.ComponentClass<Partial<Props>>;

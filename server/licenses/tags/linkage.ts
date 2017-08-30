@@ -12,11 +12,25 @@
  * permissions and limitations under the License.
  */
 
-import { TagModule } from '../../licenses/interfaces';
+// NOTE: this tag is referenced from the UI
 
-export interface WebLicense {
-  name: string;
-  tags: string[];
+// tslint:disable:no-empty
+
+export function validateSelf(name, text, tags) {
 }
 
-export type WebTag = Pick<TagModule, 'presentation' | 'questions'>;
+export function validateUsage(pkg, usage) {
+}
+
+export const questions = {
+  link: {
+    label: 'Linkage',
+    options: [
+      ['dynamic', 'Dynamically linked'],
+      ['static', 'Statically linked'],
+    ],
+    type: 'string',
+    widget: 'radio',
+    required: true,
+  },
+};

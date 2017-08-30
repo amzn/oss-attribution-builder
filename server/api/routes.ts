@@ -149,6 +149,10 @@ router.post('/packages/:packageId/verify', (req, res, next) => {
 });
 
 /*** Licenses ***/
+
+/**
+ * Retrieve all license and tag data.
+ */
 router.get('/licenses/', (req, res, next) => {
   pack(licenseAPI.listLicenses(), res, next);
 });

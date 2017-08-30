@@ -17,6 +17,9 @@ require manual edits to pluggable interfaces.
 - License tags can now specify presentation options to influence how they appear in the package
   editor. They can be sorted first, annotated with text (both in menu and below), and control
   whether users are asked for the full license text.
+- License tags can also specify "questions" to ask a user when adding a package. This is useful
+  to gather context-sensitive info. For example, you could only ask for "dynamic/static linking"
+  if relevant for a given license.
 
 ### Removed
 - JWT sessions are no longer in use. See the above addition about auth backends for an alternative.
@@ -26,6 +29,8 @@ require manual edits to pluggable interfaces.
   can only view a project. An editor can change project details, except for the ACL. An owner can
   change everything about a project.
 - Users on a project contact list implicitly have "viewer" permissions unless otherwire specified.
+- The format of `/api/licenses` changed. Instead of a list, it returns a {licenses, tags}
+  structure. The license list is included in the `license` key.
 
 ### Fixed
 - Some lingering Bootstrap CSS issues were cleaned up.

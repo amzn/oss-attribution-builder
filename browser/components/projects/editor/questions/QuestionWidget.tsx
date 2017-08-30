@@ -13,29 +13,20 @@
  */
 
 import * as React from 'react';
-import { Component } from 'react';
+import { BaseProps, BaseWidget } from './index';
+import RadioWidget from './RadioWidget';
 
-export interface Props {
-  notes?: string;
-  [key: string]: string | boolean | number;
-}
-
-export default class PackageCardUsage extends Component<Props, {}> {
+export default class QuestionWidget extends BaseWidget<BaseProps> {
 
   render() {
-    const { notes } = this.props;
+    const { question } = this.props;
 
-    const usage = Object.keys(this.props)
-      .filter((prop) => prop !== 'notes')
-      .map((prop) => `${prop}: ${this.props[prop]}`)
-      .join('; ');
+    let Widget;
+    if (question.widget === 'radio') {
+      Widget = RadioWidget;
+    }
 
-    return (
-      <div>
-        <em>In this project: {usage}</em>
-        <p style={{whiteSpace: 'pre-wrap'}} className="text-muted mb-0">{notes}</p>
-      </div>
-    );
+    return <Widget {...this.props} />;
   }
 
 }

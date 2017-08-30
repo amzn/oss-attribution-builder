@@ -274,52 +274,84 @@ describe('projects', function () {
       done();
     });
 
-    it('should prevent bad data from being submitted', async function (done) {
-      mock.db.getProject = jasmine.createSpy('getProject')
-        .and.callFake((x) => x === 'abcd' && Promise.resolve(makeFakeDBProject()));
-      mock.packagedb.getPackage = jasmine.createSpy('getPackage')
-        .and.callFake((x) => x === 90 && Promise.resolve(makeFakeDBPackage()));
+    describe('input validation', function () {
+      let req;
+      let res;
+      let next;
 
-      const req = makeDummyRequest();
-      const res = jasmine.createSpy('res');
-      const next = jasmine.createSpy('next');
+      beforeEach(function () {
+        mock.db.getProject = jasmine.createSpy('getProject')
+          .and.callFake((x) => x === 'abcd' && Promise.resolve(makeFakeDBProject()));
+        mock.packagedb.getPackage = jasmine.createSpy('getPackage')
+          .and.callFake((x) => x === 90 && Promise.resolve(makeFakeDBPackage()));
 
-      // test null fields
-      req.body.version = null;
-      await validators.attachPackage(req, res, next);
-      expect(next.calls.first().args[0].message).toMatch(/Missing.*version/);
-      next.calls.reset();
-      req.body.version = '1';
+        req = makeDummyRequest();
+        res = jasmine.createSpy('res');
+        next = jasmine.createSpy('next');
+      });
 
-      // empty is null for licenses
-      req.body.licenseText = '       ';
-      await validators.attachPackage(req, res, next);
-      expect(req.body.licenseText).toBeNull();
-      next.calls.reset();
-      req.body.licenseText = null;
+      it('checks for null fields', async function (done) {
+        req.body.version = null;
+        await validators.attachPackage(req, res, next);
+        expect(next.calls.first().args[0].message).toMatch(/Missing.*version/);
+        done();
+      });
 
-      // bad url format
-      req.body.website = 'not-a-url';
-      await validators.attachPackage(req, res, next);
-      expect(next.calls.first().args[0].message).toContain('URL');
-      next.calls.reset();
-      req.body.website = 'http://example.com';
+      it('checks for empty-like licenses', async function (done) {
+        req.body.licenseText = '       ';
+        await validators.attachPackage(req, res, next);
+        expect(req.body.licenseText).toBeNull();
+        done();
+      });
 
-      // require license text if license name not specified
-      req.body.license = null;
-      req.body.licenseText = null;
-      await validators.attachPackage(req, res, next);
-      expect(next.calls.first().args[0].message).toContain('license name or full text');
-      req.body.license = 'MIT';
+      it('checks URL format', async function (done) {
+        req.body.website = 'not-a-url';
+        await validators.attachPackage(req, res, next);
+        expect(next.calls.first().args[0].message).toContain('URL');
+        done();
+      });
 
-      // packageId must be coerced to number
-      req.body.packageId = '90';
-      await validators.attachPackage(req, res, next);
-      expect(mock.packagedb.getPackage).toHaveBeenCalled();
-      const [packageId] = mock.packagedb.getPackage.calls.first().args;
-      expect(packageId).toBe(90);
+      it('looks for license text or name', async function (done) {
+        req.body.license = null;
+        req.body.licenseText = null;
+        await validators.attachPackage(req, res, next);
+        expect(next.calls.first().args[0].message).toContain('license name or full text');
+        done();
+      });
 
-      done();
+      it('requires usage info', async function (done) {
+        req = makeDummyRequest();
+        req.body.usage = null;
+        await validators.attachPackage(req, res, next);
+        expect(next.calls.first().args[0].message).toContain('usage information');
+        done();
+      });
+
+      it('checks for required questions', async function (done) {
+        req.body.license = 'MyCustomLicense';
+        req.body.usage.link = null; // "linkage" tag is on MyCustomLicense
+        await validators.attachPackage(req, res, next);
+        expect(next.calls.first().args[0].message).toContain('question "Linkage"');
+        done();
+      });
+
+      it('validates question answers', async function (done) {
+        req.body.license = 'MyCustomLicense';
+        req.body.usage.link = 'wat'; // "linkage" tag is on MyCustomLicense
+        await validators.attachPackage(req, res, next);
+        expect(next.calls.first().args[0].message).toContain('question "Linkage" is not valid');
+        done();
+      });
+
+      it('packageId must be coerced', async function (done) {
+        req.body.packageId = '90';
+        await validators.attachPackage(req, res, next);
+        expect(mock.packagedb.getPackage).toHaveBeenCalled();
+        const [packageId] = mock.packagedb.getPackage.calls.first().args;
+        expect(packageId).toBe(90);
+        done();
+      });
+
     });
 
     it('should ensure the project itself exists', async function (done) {
@@ -371,9 +403,11 @@ describe('projects', function () {
           copyright: '(c) 20xx some person',
           license: 'MIT',
           licenseText: null,
-          modified: false,
-          link: 'dynamic',
-          notes: 'blah blah',
+          usage: {
+            notes: 'blah blah',
+            link: 'dynamic',
+            modified: false,
+          },
         },
       } as any;
     }

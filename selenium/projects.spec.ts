@@ -109,8 +109,8 @@ describe('project management', function () {
     driver.findElement(By.id('packageWebsite')).sendKeys('example.com');
     driver.findElement(By.id('packageLicenseText')).sendKeys('Sample full text\nof\na\nlicense');
     driver.findElement(By.id('packageCopyright')).sendKeys('Copyright (c) 20XX Fox McCloud');
-    driver.findElement(By.id('packageModifiedYes')).click();
-    driver.findElement(By.id('packageDynamicLink')).click();
+    driver.findElement(By.css('[name="q_link"][value="dynamic"]')).click();
+    driver.findElement(By.css('[name="q_modified"][value="false"]')).click();
     driver.findElement(By.id('packageComments')).sendKeys('dota is a video game');
 
     // let everything in the above chain resolve since we're not expecting anything here
@@ -173,8 +173,8 @@ describe('project management', function () {
     expect(versionField.length).toEqual(0);
 
     // fill out the rest of the form again
-    driver.findElement(By.id('packageModifiedYes')).click();
-    driver.findElement(By.id('packageDynamicLink')).click();
+    driver.findElement(By.css('[name="q_link"][value="dynamic"]')).click();
+    driver.findElement(By.css('[name="q_modified"][value="false"]')).click();
     driver.findElement(By.id('packageComments')).sendKeys('dota is a game that will make you frustrated');
 
     // submit and check for card

@@ -12,38 +12,18 @@
  * permissions and limitations under the License.
  */
 
-import * as fs from 'mz/fs';
+import * as fs from 'fs';
 import * as path from 'path';
 
 import * as Immutable from 'immutable';
 import * as winston from 'winston';
-import { TagPresentation } from '../api/licenses/interfaces';
-
-interface ValidationResult {
-  level: 0 | 1 | 2;
-  message: string;
-}
-
-interface TagModule {
-  validateSelf: (name: string, text: string, tags: string[]) => ValidationResult[];
-  validateUsage: (pkg: any, usage: any) => ValidationResult[];
-  transformCopyright?: (original: string) => string;
-  transformLicense?: (original: string, packages) => string;
-  presentation?: TagPresentation;
-}
+import { TagModule } from './interfaces';
 
 type LicenseMap = Immutable.Map<string, Immutable.Map<string, any>>;
 
 const tagCache = new Map<string, any>();
 
-export let licenses: LicenseMap;
-loadLicenses()
-  .then((l) => {
-    licenses = l;
-  })
-  .catch((e) => {
-    throw e;
-  });
+export const licenses: LicenseMap = loadLicenses();
 
 export function mapTag(name): TagModule {
   let mod = tagCache.get(name);
@@ -55,14 +35,14 @@ export function mapTag(name): TagModule {
   return mod;
 }
 
-async function loadLicenses(): Promise<LicenseMap> {
+function loadLicenses(): LicenseMap {
   const licenseMap = new Map<string, Immutable.Map<string, any>>();
 
   // start with SPDX licenses
   const spdxData = require('../../data/spdx-license-data.json');
   for (const id of Object.keys(spdxData)) {
     licenseMap.set(id, Immutable.fromJS({
-      tags: ['spdx'],
+      tags: ['all', 'spdx', 'unknown'],
       text: spdxData[id].text,
     }));
   }
@@ -70,7 +50,8 @@ async function loadLicenses(): Promise<LicenseMap> {
 
   // then load known/custom license data
   // overwriting SPDX is OK
-  const files = await fs.readdir(path.join(__dirname, 'known'));
+  // Sync function used here; this is only called during app startup
+  const files = fs.readdirSync(path.join(__dirname, 'known'));
   for (const f of files) {
     if (f.endsWith('.js')) {
       const id = path.basename(f, '.js');
@@ -85,7 +66,7 @@ async function loadLicenses(): Promise<LicenseMap> {
 function processKnownLicense(id: string, spdxData: any) {
   const info = require(`./known/${id}`);
   let text = info.text;
-  const tags = info.tags;
+  const tags = info.tags.concat(['all']);
 
   // overwriting an SPDX license?
   if (spdxData.hasOwnProperty(id)) {

@@ -16,6 +16,8 @@ import auth from '../../auth';
 import * as packagedb from '../../db/packages';
 import * as db from '../../db/projects';
 import { RequestError } from '../../errors';
+import { licenses, mapTag } from '../../licenses/index';
+import { TagQuestions } from '../../licenses/interfaces';
 import { effectivePermission, ProjectAccess } from './auth';
 
 export async function createProject(req, res, next) {
@@ -90,8 +92,6 @@ export async function attachPackage(req, res, next) {
       version: 'package version',
       website: 'package website',
       copyright: 'package copyright',
-      modified: 'modified option',
-      link: 'linkage option',
     };
     ensureFieldsExist(fields, req.body);
 
@@ -111,6 +111,38 @@ export async function attachPackage(req, res, next) {
     // either the license name or the full license text must be specified
     if (!isValid(req.body, 'license') && !isValid(req.body, 'licenseText')) {
       throw new RequestError('Either the license name or full text must be provided.');
+    }
+
+    // check for a usage block
+    if (!isValid(req.body, 'usage')) {
+      throw new RequestError('Missing usage information.');
+    }
+
+    // ensure that all required questions (via tags) were answered
+    const license = licenses[req.body.license];
+    const tags = license ? license.tags : ['unknown'];
+    const questions: TagQuestions = tags.map((name) => mapTag(name).questions || {})
+      .reduce((acc, curr) => ({
+        ...acc,
+        ...curr,
+      }), {} as TagQuestions);
+    for (const key of Object.keys(questions)) {
+      const q = questions[key];
+      // validate it is present if required
+      if (q.required) {
+        if (!isValid(req.body.usage, key)) {
+          throw new RequestError(`Usage question "${q.label}" is required.`);
+        }
+
+      }
+      // validate it's a valid option if supplied
+      const answer = req.body.usage[key];
+      if (answer && q.options) {
+        const accepted = q.options.map((o) => o[0]);
+        if (!accepted.includes(answer)) {
+          throw new RequestError(`Answer to question "${q.label}" is not valid`);
+        }
+      }
     }
 
     // ensure the project exists

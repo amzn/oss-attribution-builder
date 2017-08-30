@@ -57,14 +57,24 @@ A tag module has the following exports:
 
   For more usage examples, see tags `fixed-text` and `popular`.
 
+* `questions = {}` _(optional)_
+
+  Tags attached to a license may ask for more information from users. For example, a tag could ask a question asking if a package is modified. Tags may export any number of questions in this object.
+
+  Questions are specified by adding a new key to the object with a unique name. If this name is shared by another tag, it will be overwritten. This name is also used as a key in usage metadata; e.g. if your question key is `foo` then you'll start seeing `{"foo": "bar"}` entries in your database.
+
+  The schema is detailed in the [TagQuestion interface](../interfaces.ts). Have a look at that for valid options.
+
+  For examples, see the `linkage` and `modified` tags. `unknown` also imports these questions into its own set.
+
 ## Meta tags
 
 The following tags are more deeply integrated into the generator and should not be deleted:
 
 * `all` - applied to all packages in a document
-* `unknown` - applied to packages which use a license not known by the generator -- matched by license name
+* `unknown` - applied to packages which use a license not "known" by the generator; meaning it wasn't present in the 'known' directory. will apply to SPDX licenses unless configured otherwise.
 * `fixed-text` - used by the UI to hide the license text box; useful for license texts that should never be changed
 * `spdx` - applied to SPDX-supplied licenses (so, most that ship with the attribution builder)
 * `user-supplied` - applied to any licenses where the user supplied the text, unknown license or not
 
-Note the key differences in `user-supplied` and `unknown`; `unknown` refers to the license by name being unknown, where user-supplied is applied if any license is pasted in. So, both `unknown` and `user-supplied` will apply to a license where only the text was pasted in, but only `user-supplied` would apply if they selected BSD-3-Clause *and* pasted in a license.
+Note the key differences in `user-supplied` and `unknown`; `unknown` refers to the license by name being unknown, where user-supplied is applied if any license is pasted in. So, both `unknown` and `user-supplied` will apply to a license where only the text was pasted in, but only `user-supplied` would apply if they selected MIT *and* pasted in a license.

@@ -15,6 +15,7 @@
 import React = require('react');
 import { connect } from 'react-redux';
 
+import { WebTag } from '../../../../server/api/licenses/interfaces';
 import { WebPackage } from '../../../../server/api/packages/interfaces';
 import { PackageUsage } from '../../../../server/api/projects/interfaces';
 import * as PackageActions from '../../../modules/packages';
@@ -35,6 +36,7 @@ interface Props {
   dispatch: (action: any) => any;
   project: any;
   packages: PackageActions.PackageSet;
+  tags: {[key: string]: WebTag};
 }
 
 interface State {
@@ -149,4 +151,5 @@ class ProjectPackage extends React.Component<Props, State> {
 export default connect((state) => ({
   project: state.projects.active,
   packages: state.packages.set,
+  tags: state.licenses.tags,
 }))(ProjectPackage as any) as React.ComponentClass<Partial<Props>>;

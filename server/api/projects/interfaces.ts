@@ -31,9 +31,9 @@ export interface WebProject {
 
 export interface PackageUsage {
   packageId: number;
-  modified: boolean;
-  link: 'dynamic' | 'static';
   notes?: string;
+  // tag-added properties
+  [key: string]: string | boolean | number;
 }
 
 export const AccessLevelStrength: {[key: string]: number} = {

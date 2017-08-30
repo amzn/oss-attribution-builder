@@ -15,10 +15,13 @@
 import React = require('react');
 
 import { PackageUsage } from '../../../../server/api/projects/interfaces';
+import { TagQuestions } from '../../../../server/licenses/interfaces';
+import QuestionWidget from './questions/QuestionWidget';
 
 interface Props {
   initial?: Partial<PackageUsage>;
   onChange: (usage: Partial<PackageUsage>) => void;
+  questions: TagQuestions;
 }
 
 interface State {
@@ -38,80 +41,39 @@ export default class UsageFields extends React.Component<Props, State> {
     };
   }
 
-  handleChange = (e) => {
-    let val = e.target.value;
-    if (e.target.type === 'radio' && (val === 'yes' || val === 'no')) {
-      val = val === 'yes';
-    }
-
+  handleChange = (name, val) => {
     this.setState({usage: {
       ...this.state.usage,
-      [e.target.name]: val,
+      [name]: val,
     }}, () => {
       this.props.onChange(this.state.usage);
     });
   }
 
+  renderQuestion = (name: string, i: number) => {
+    const { questions } = this.props;
+    return <QuestionWidget key={i}
+      name={name}
+      question={questions[name]}
+      value={this.state.usage[name]}
+      onChange={(val) => this.handleChange(name, val)}
+    />;
+  }
+
   render() {
+    const { questions } = this.props;
     const { usage } = this.state;
 
     return <div>
-      <div className="form-group row">
-        <label className="col-md-3">Modification</label>
-        <div className="col-md-9">
-          <div className="form-check form-check-inline">
-            <label className="form-check-label">
-              <input type="radio" name="modified" id="packageModifiedNo" value="no"
-                checked={usage.modified === false} onChange={this.handleChange}
-                className="form-check-input"
-              /> Unmodified
-            </label>
-          </div>
-          <div className="form-check form-check-inline">
-            <label className="form-check-label">
-              <input type="radio" name="modified" id="packageModifiedYes" value="yes"
-                checked={usage.modified === true} onChange={this.handleChange}
-                className="form-check-input"
-              /> Modified from original
-            </label>
-          </div>
-        </div>
+      <div>
+        {Object.keys(questions).map(this.renderQuestion)}
       </div>
 
       <div className="form-group row">
-        <label className="col-md-3">
-          Linkage{' '}
-          <i className="fa fa-question-circle" data-toggle="tooltip"
-            title={'If this doesn\'t apply to your product, pick the closest option. ' +
-                   'Generally, static linking is when your code is bundled together by a ' +
-                   'compiler/minifier into a single file, and dynamic linking keeps the ' +
-                   'library in a separate file.'} />
-        </label>
-        <div className="col-md-9">
-          <div className="form-check form-check-inline">
-            <label className="form-check-label">
-              <input type="radio" name="link" id="packageDynamicLink" value="dynamic"
-                checked={usage.link === 'dynamic'} onChange={this.handleChange}
-                className="form-check-input"
-              /> Dynamically linked
-            </label>
-          </div>
-          <div className="form-check form-check-inline">
-            <label className="form-check-label">
-              <input type="radio" name="link" id="packageStaticLink" value="static"
-                checked={usage.link === 'static'} onChange={this.handleChange}
-                className="form-check-input"
-              /> Statically linked
-            </label>
-          </div>
-        </div>
-      </div>
-
-      <div className="form-group row">
-        <label htmlFor="packageComments" className="col-md-3">Additional comments?</label>
+        <label htmlFor="packageComments" className="col-md-3">Additional comments</label>
         <div className="col-md-9">
           <textarea name="notes" id="packageComments" className="form-control"
-            value={usage.notes} onChange={this.handleChange} />
+            value={usage.notes} onChange={(e) => this.handleChange('notes', e.target.value)} />
         </div>
       </div>
     </div>;

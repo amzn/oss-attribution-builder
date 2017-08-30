@@ -66,7 +66,6 @@ export default class DocBuilder {
 
     // determine tags
     const tags: string[] = license != null ? license.tags : ['unknown'];
-    tags.push('all');
 
     // create or add to a bucket
     const bucket = this.buckets.get(key) || {name, text, tags, packages: []};

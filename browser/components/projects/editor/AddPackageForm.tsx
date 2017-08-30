@@ -16,6 +16,7 @@ import * as React from 'react';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 
+import { WebTag } from '../../../../server/api/licenses/interfaces';
 import { PackageUsage, WebProject } from '../../../../server/api/projects/interfaces';
 import * as ProjectActions from '../../../modules/projects';
 import PackageFields, { PkgOutput } from './PackageFields';
@@ -26,6 +27,8 @@ interface Props {
 
   dispatch: (action: any) => any;
   project: WebProject;
+  licenses: Map<string, any>;
+  tags: {[key: string]: WebTag};
 }
 
 interface State {
@@ -58,14 +61,14 @@ class AddPackageForm extends Component<Props, Partial<State>> {
     const { dispatch, onCompleted, project: { projectId } } = this.props;
     const {
       pkg: { packageId, name, version, website, copyright, license, licenseText },
-      usage: { modified, link, notes },
+      usage,
     } = this.state;
 
     await dispatch(ProjectActions.attachPackageToProject(projectId, {
       packageId,
       name, version, website,
       copyright, license, licenseText,
-      modified, link, notes,
+      usage,
     }));
 
     window.sessionStorage.setItem('package_help_shown', '1');
@@ -81,6 +84,25 @@ class AddPackageForm extends Component<Props, Partial<State>> {
   }
 
   render() {
+    const { licenses, tags } = this.props;
+    const { pkg } = this.state;
+
+    // XXX: move this out of the render path?
+    // collect questions from tags
+    let questions = {};
+    if (pkg && pkg.license) {
+      const license = licenses.get(pkg.license);
+      questions = license.tags
+        .map((name) => tags[name].questions || {})
+        .reduce((acc, curr) => ({
+          ...acc,
+          ...curr,
+        }), {});
+    } else {
+      // default questions via the "unknown" tag
+      questions = tags.unknown && tags.unknown.questions || {};
+    }
+
     return (
       <form id="add-package-form" className="form mt-4" onSubmit={this.handleSubmit}>
 
@@ -88,8 +110,14 @@ class AddPackageForm extends Component<Props, Partial<State>> {
         {this.renderPackageHelp()}
         <PackageFields onChange={this.handlePkgChanged} />
 
-        <h4>Usage details</h4>
-        <UsageFields onChange={this.handleUsageChanged} />
+        {pkg &&
+          <div>
+            <h4>Usage details <small className="text-muted">In your project</small></h4>
+            <UsageFields
+              onChange={this.handleUsageChanged}
+              questions={questions} />
+          </div>
+        }
 
         <button type="submit" className="btn btn-primary">
           <i className="fa fa-plus" /> Add
@@ -126,7 +154,7 @@ class AddPackageForm extends Component<Props, Partial<State>> {
                 </p>
                 <p>
                   If the package you're using has a NOTICE file, it often includes a copyright statement.
-                 You can include the NOTICE file in same box below.
+                  You can include the NOTICE file in same box below.
                 </p>
 
                 <h5>Identifying a License</h5>
@@ -147,5 +175,7 @@ class AddPackageForm extends Component<Props, Partial<State>> {
 
 export default connect((state) => ({
   project: state.projects.active,
+  licenses: state.licenses.map,
+  tags: state.licenses.tags,
 }))(AddPackageForm) as React.ComponentClass<Partial<Props>>;
 // type re-casted with prop information since not all props are redux-supplied

@@ -45,10 +45,9 @@ export async function getProject(req: Request, projectId: string): Promise<WebPr
     acl: project.acl,
     packagesUsed: project.packages_used.map((usage) => {
       return {
+        ...usage,
+        package_id: undefined,
         packageId: usage.package_id,
-        modified: usage.modified,
-        link: usage.link,
-        notes: usage.notes,
       };
     }),
     metadata: project.metadata,
@@ -130,7 +129,7 @@ export async function patchProject(req: Request, projectId, changes): ProjectIdP
 }
 
 export async function attachPackage(req: Request, projectId, info) {
-  const { packageId, name, version, website, copyright, modified, link, notes } = info;
+  const { packageId, name, version, website, copyright, usage } = info;
   const { license, licenseText } = info;
 
   // access check
@@ -144,10 +143,8 @@ export async function attachPackage(req: Request, projectId, info) {
 
   // update usage info to store on project
   const usageInfo = {
+    ...usage,
     package_id: newId,
-    modified,
-    link,
-    notes,
   };
 
   // when both are ready, update the project
