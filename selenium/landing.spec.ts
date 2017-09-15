@@ -17,30 +17,24 @@ import build, { CustomDriver } from './driver';
 
 describe('landing page', function () {
   let driver: CustomDriver;
-  beforeAll(async function (done) {
+  beforeAll(async function () {
     driver = await build();
-    done();
   });
-  afterAll(async function (done) {
+  afterAll(async function () {
     await driver.quit();
-    done();
   });
 
-  it('loads correctly', async function (done) {
+  it('loads correctly', async function () {
     driver.getRelative('/');
     const title = await driver.getTitle();
     expect(title).toContain('Attribution Builder');
     await driver.wait(until.elementLocated(By.className('jumbotron')));
-
-    done();
   });
 
-  it('can navigate and render the new project form', async function (done) {
+  it('can navigate and render the new project form', async function () {
     driver.getRelative('/');
     driver.findElement(By.css('a[href="/projects/new"]')).click();
     await driver.wait(until.elementLocated(By.id('description')), 1000);
-
-    done();
   });
 
 });

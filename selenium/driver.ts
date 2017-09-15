@@ -15,6 +15,7 @@
 // tslint:disable:no-console
 
 import webdriver = require('selenium-webdriver');
+jasmine.DEFAULT_TIMEOUT_INTERVAL = 30 * 1000;
 
 export type CustomDriver = webdriver.WebDriver & {
                              getRelative: (path: string) => webdriver.promise.Promise<void>,

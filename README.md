@@ -92,3 +92,10 @@ Handy environment variables:
 `npm test` will run unit tests. These are primarily server focused.
 
 `npm run test-ui` will run Selenium tests. You can set the environment variable `SELENIUM_DRIVER` if you want a custom driver -- by default, it'll try to use Chrome, and if that's not available it'll fall back to PhantomJS.
+
+When debugging UI tests, it may be easier to change `standalone-chrome` to `standalone-chrome-debug` in `docker-compose.selenium.yml`, and then connect to the container via VNC (port 5900, password "secret"). Run the container and your tests separately:
+
+* `docker-compose -f docker-compose.selenium.yml up --build`
+* `tsc && jasmine --stop-on-failure=true 'build/selenium/*.spec.js'`
+
+Tests failing for seemingly no reason? `driver.sleep` not working? Make sure your Jasmine timeout on your test is high enough.

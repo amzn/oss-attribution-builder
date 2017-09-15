@@ -20,23 +20,20 @@ const packageName = 'ZZZ Automated Test Package ' + new Date().getTime();
 
 describe('project management', function () {
   let driver: CustomDriver;
-  beforeAll(async function (done) {
+  beforeAll(async function () {
     driver = await build();
     await driver.manage().timeouts().implicitlyWait(1000);
-    done();
   });
-  afterAll(async function (done) {
+  afterAll(async function () {
     await driver.quit();
-    done();
   });
 
-  it('loads the form', async function (done) {
+  it('loads the form', async function () {
     driver.getRelative('/projects/new');
     await driver.wait(until.elementLocated(By.id('onboarding-form')));
-    done();
   });
 
-  it('shows an error with invalid values', async function (done) {
+  it('shows an error with invalid values', async function () {
     // fill out the form
     driver.findElement(By.id('title')).sendKeys(projectName);
     driver.findElement(By.id('version')).sendKeys('0.0.0-integration-test');
@@ -56,12 +53,11 @@ describe('project management', function () {
     const errorText = await driver.findElement(By.css('#error-modal .modal-body')).getText();
     expect(errorText).toContain('Contact nobody could not be found');
     driver.findElement(By.css('#error-modal button.btn-primary')).click(); // close button
-    await driver.wait(until.elementIsNotVisible(driver.findElement(By.css('#error-modal'))));
-
-    done();
+    driver.wait(until.elementIsNotVisible(driver.findElement(By.css('#error-modal'))));
+    await driver.sleep(1000); // modal animation
   });
 
-  it('accepts a corrected form and loads the project', async function (done) {
+  it('accepts a corrected form and loads the project', async function () {
     // correct the BLL field & submit
     const bllField = driver.findElement(By.id('legalContact'));
     bllField.clear();
@@ -71,29 +67,23 @@ describe('project management', function () {
     // see that the project page loaded
     const headerText = await driver.findElement(By.id('project-heading')).getText();
     expect(headerText).toContain(projectName);
-
-    done();
   });
 
-  it('has editable fields', async function (done) {
+  it('has editable fields', async function () {
     driver.findElement(By.css('#project-open-sourcing .EditableText')).click();
     driver.findElement(By.css('#project-open-sourcing select > option[value="true"]')).click();
     const ele = driver.findElement(By.css('#project-open-sourcing select'));
     ele.sendKeys(Key.ENTER);
     await driver.findElement(By.xpath('//*[@id="project-open-sourcing"]/span[text()="Yes"]'));
-
-    done();
   });
 
-  it('does not yet have a build button', async function (done) {
+  it('does not yet have a build button', async function () {
     // implicit wait WILL get triggered here, even though we don't really want it
     const present = await driver.findElements(By.id('build-buttons'));
     expect(present.length).toEqual(0);
-
-    done();
   });
 
-  it('can fill out the add package form', async function (done) {
+  it('can fill out the add package form', async function () {
     driver.findElement(By.id('add-package')).click();
 
     // fancy dropdown
@@ -115,22 +105,19 @@ describe('project management', function () {
 
     // let everything in the above chain resolve since we're not expecting anything here
     await driver.sleep(0);
-
-    done();
   });
 
-  it('gets an error about the url', async function (done) {
+  it('gets an error about the url', async function () {
     driver.findElement(By.css('#add-package-form button[type="submit"]')).click();
     driver.sleep(1000); // modal animation
     const text = await driver.findElement(By.css('#error-modal .modal-body')).getText();
     expect(text).toContain('not a real URL');
     driver.findElement(By.css('#error-modal button.btn-primary')).click(); // close button
-    await driver.wait(until.elementIsNotVisible(driver.findElement(By.css('#error-modal'))));
-
-    done();
+    driver.wait(until.elementIsNotVisible(driver.findElement(By.css('#error-modal'))));
+    await driver.sleep(1000); // modal animation
   });
 
-  it('can successfully add a package', async function (done) {
+  it('can successfully add a package', async function () {
     const field = await driver.findElement(By.id('packageWebsite'));
     field.clear();
     field.sendKeys('http://example.com');
@@ -139,21 +126,17 @@ describe('project management', function () {
     // package should have been added
     const ele = await driver.findElement(By.css('.package-card h4'));
     await driver.wait(until.elementTextContains(ele, packageName), 1000);
-
-    done();
   });
 
-  it('can delete that package', async function (done) {
+  it('can delete that package', async function () {
     driver.findElement(By.className('package-remove-button')).click();
     driver.findElement(By.css('.package-remove-button.btn-danger')).click();
     await driver.wait(async () => {
       return (await driver.findElements(By.className('package-card'))).length === 0;
     });
-
-    done();
   });
 
-  it('can re-add the package', async function (done) {
+  it('can re-add the package', async function () {
     driver.findElement(By.id('add-package')).click();
 
     // fancy dropdown again
@@ -181,16 +164,12 @@ describe('project management', function () {
     driver.findElement(By.css('#add-package-form button[type="submit"]')).click();
     const ele = await driver.findElement(By.css('.package-card h4'));
     await driver.wait(until.elementTextContains(ele, packageName), 1000);
-
-    done();
   });
 
-  it('can preview the document', async function (done) {
+  it('can preview the document', async function () {
     driver.findElement(By.css('#build-buttons a')).click();
     const ele = await driver.findElement(By.css('#attribution-document-text pre'));
     await driver.wait(until.elementTextContains(ele, 'Sample full text'));
-
-    done();
   });
 
 });

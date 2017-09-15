@@ -47,7 +47,7 @@ export default class NullAuth implements AuthBase {
     });
     // selenium needs a page with no authentication to set a cookie on
     app.get('/dummy-no-auth', (req, res) => {
-      res.sendStatus(200);
+      res.send('OK');
     });
     // and cookie auth for the rest
     app.use(cookieParser());
