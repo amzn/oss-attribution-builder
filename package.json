@@ -12,7 +12,7 @@
     "start": "export NODE_ENV=production; gulp; node ./build/server/localserver.js",
     "test": "gulp test",
     "test-ui": "trap 'docker-compose -f docker-compose.selenium.yml stop' INT HUP EXIT; docker-compose -f docker-compose.selenium.yml up -d --build && gulp build-selenium && jasmine 'build/selenium/*.spec.js'",
-    "lint": "tslint -c tslint.json 'browser/**/*.ts?(x)' 'server/**/*.ts' 'selenium/**/*.ts' --fix"
+    "lint": "tslint -c tslint.json -p tsconfig.json --type-check --fix"
   },
   "author": "Jacob Peddicord <peddicor@amazon.com>",
   "license": "Apache-2.0",
