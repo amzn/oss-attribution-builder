@@ -9,12 +9,9 @@
     "sourceMap": true,
     "rootDir": "./",
     "outDir": "./build/",
-    "jsx": "react",
     "noImplicitAny": false
   },
   "include": [
-    "browser/**/*.ts",
-    "browser/**/*.tsx",
     "server/**/*.ts",
     "selenium/**/*.ts"
   ],

@@ -53,6 +53,9 @@ module.exports = {
       {
         test: /\.tsx?$/,
         loader: 'ts-loader',
+        options: {
+          configFileName: 'browser/tsconfig.json',
+        },
       },
       {
         test: /\.scss$/,
@@ -86,4 +89,14 @@ module.exports = {
   devtool: prod ? 'source-map' : 'cheap-module-eval-source-map',
 
   plugins: plugins,
+
+  devServer: {
+    port: 8010,
+    publicPath: '/res/',
+    proxy: {
+      '*': 'http://localhost:8000',
+    },
+    stats: 'minimal',
+  },
+
 };

@@ -5,7 +5,7 @@ COPY ./package.json ./package-lock.json ./
 RUN NPM_CONFIG_LOGLEVEL=warn npm install
 
 COPY ./ ./
-RUN NODE_ENV=production ./node_modules/.bin/gulp
+RUN NODE_ENV=production npm run build
 
 
 FROM node:6

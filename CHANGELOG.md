@@ -23,6 +23,7 @@ require manual edits to pluggable interfaces.
 
 ### Removed
 - JWT sessions are no longer in use. See the above addition about auth backends for an alternative.
+- The build process no longer requires Gulp.
 
 ### Changed
 - Project ACLs are now sanely validated, with levels of "owner", "editor", and "viewer". A viewer

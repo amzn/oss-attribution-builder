@@ -24,7 +24,6 @@ See documentation:
 The attribution builder was originally an Amazon-internal tool. Some portions had to be removed to make this a sensible open source project. As such, there are some warts:
 
 * Projects have contact lists, but at the moment the UI only supports one contact (the legal contact).
-* The website needs Node 6.x to build, due to usage of Gulp 3. It should still _run_ on 8, however.
 
 These will all be fixed in time, but be aware that some things might be weird for a while.
 
@@ -66,7 +65,7 @@ See [the base auth interface](server/auth/base.ts) for implementation details.
 
 ### Running
 
-To start up the server, you should run `build/server/localserver.js` after building with `gulp`. There are some environment variables you'll probably want to set when running:
+To start up the server, you should run `build/server/localserver.js` after building with `npm run build`. There are some environment variables you'll probably want to set when running:
 
 * `NODE_ENV` should most likely be set to `production`
 * `CONFIG_NAME` should be set to the basename (no extension) of your configuration file you created above. The default is "default".
@@ -79,7 +78,7 @@ See [CONTRIBUTING](CONTRIBUTING.md) for information.
 
 ### Development
 
-`npm install` and then `npm run dev` will get you off the ground for local development. This will start a Docker container for PostgreSQL, but will use a local copy of gulp, node, etc so you can iterate quickly.
+`npm install` and then `npm run dev` will get you off the ground for local development. This will start a Docker container for PostgreSQL, but will use a local copy of tsc, webpack, node, etc so you can iterate quickly.
 
 Once things have started up, you can open http://0.0.0.0:8010/webpack-dev-server/. This will automatically reload on browser changes, and the backend will also automatically restart on server-side changes.
 
@@ -90,6 +89,6 @@ Handy environment variables:
 
 #### Testing
 
-`npm test` or `gulp test` will run unit tests. These are primarily server focused.
+`npm test` will run unit tests. These are primarily server focused.
 
-`gulp test-ui` will run Selenium tests. You can set the environment variable `SELENIUM_DRIVER` if you want a custom driver -- by default, it'll try to use Chrome, and if that's not available it'll fall back to PhantomJS.
+`npm run test-ui` will run Selenium tests. You can set the environment variable `SELENIUM_DRIVER` if you want a custom driver -- by default, it'll try to use Chrome, and if that's not available it'll fall back to PhantomJS.
