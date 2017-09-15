@@ -53,9 +53,6 @@ module.exports = {
       {
         test: /\.tsx?$/,
         loader: 'ts-loader',
-        options: {
-          configFileName: 'browser/tsconfig.json',
-        },
       },
       {
         test: /\.scss$/,

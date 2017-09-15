@@ -25,7 +25,7 @@ const webpack = require('webpack');
 const webpackStream = require('webpack-stream');
 const WebpackDevServer = require('webpack-dev-server');
 
-const tsProject = ts.createProject('server/tsconfig.json');
+const tsProject = ts.createProject('tsconfig.json');
 gulp.task('build-server', ['copy-config', 'copy-data'], () => {
   return gulp.src(['server/**/*.ts'])
     .pipe(plumber())
@@ -35,12 +35,11 @@ gulp.task('build-server', ['copy-config', 'copy-data'], () => {
     .pipe(gulp.dest('build/server'));
 });
 
-const seleniumTsProject = ts.createProject('selenium/tsconfig.json');
 gulp.task('build-selenium', () => {
   return gulp.src(['selenium/**/*.ts'])
     .pipe(plumber())
     .pipe(sourcemaps.init())
-    .pipe(seleniumTsProject())
+    .pipe(tsProject())
     .pipe(sourcemaps.write('.'))
     .pipe(gulp.dest('build/selenium'));
 });

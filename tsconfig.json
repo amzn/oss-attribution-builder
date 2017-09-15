@@ -4,18 +4,19 @@
     "target": "es2015",
     "lib": [
       "dom",
-      "es2017"
+      "es2016"
     ],
     "sourceMap": true,
-    "rootDir": "../",
-    "outDir": "../build/",
+    "rootDir": "./",
+    "outDir": "./build/",
     "jsx": "react",
-    "noImplicitAny": false,
-    "noUnusedLocals": true
+    "noImplicitAny": false
   },
   "include": [
-    "**/*.ts",
-    "**/*.tsx"
+    "browser/**/*.ts",
+    "browser/**/*.tsx",
+    "server/**/*.ts",
+    "selenium/**/*.ts"
   ],
   "exclude": [
     "node_modules"

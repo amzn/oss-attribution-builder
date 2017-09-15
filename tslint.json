@@ -8,6 +8,7 @@
     "max-classes-per-file": [false],
     "member-access": [false],
     "member-ordering": [false],
+    "no-unused-variable": [true],
     "object-literal-sort-keys": [false],
     "only-arrow-functions": [false],
     "quotemark": [
