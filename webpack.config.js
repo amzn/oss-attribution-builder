@@ -86,7 +86,7 @@ module.exports = {
     publicPath: '/res/',
   },
 
-  devtool: prod ? 'source-map' : 'cheap-module-eval-source-map',
+  devtool: prod ? 'source-map' : 'cheap-module-source-map',
 
   plugins: plugins,
 

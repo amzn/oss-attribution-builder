@@ -23,7 +23,6 @@ import TextAnnotator from './TextAnnotator';
 
 interface Props {
   dispatch: (action: any) => any;
-  match: any;
   attributionDoc: any;
   project: any;
 }
@@ -37,17 +36,10 @@ class AttributionDocBuilder extends Component<Props, State> {
   state = {
     highlights: [],
   };
-
   componentWillMount() {
-    const { dispatch, match: { params } } = this.props;
+    const { dispatch, project: { projectId } } = this.props;
     const activeProjectId = this.props.project.projectId;
-    dispatch(ProjectActions.buildAttributionDoc(params.projectId));
-
-    // reload the active project if it's not the one in the URL
-    // (can happen via direct links to this)
-    if (params.projectId !== activeProjectId) {
-      dispatch(ProjectActions.fetchProjectDetail(params.projectId));
-    }
+    dispatch(ProjectActions.buildAttributionDoc(projectId));
   }
 
   saveAndDownload = async () => {
@@ -96,11 +88,6 @@ class AttributionDocBuilder extends Component<Props, State> {
 
     return (
       <div>
-        <nav className="breadcrumb">
-          <Link to={`/projects/${projectId}`} className="breadcrumb-item">Project Editor</Link>
-          <span className="breadcrumb-item active">Attribution Document</span>
-        </nav>
-
         <h2>{title} <small>version {version}</small></h2>
 
         <p>

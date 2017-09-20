@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc && webpack && npm run copy-static",
     "copy-static": "mkdir -p build/server && cp -r config data build && cp -r assets build/server",
-    "dev": "export NODE_ENV=development CONFIG_NAME=dev && npm run copy-static && concurrently -k \"docker-compose -f docker-compose.dev.yml up\" \"nodemon -d 1 -w build build/server/localserver.js\" \"webpack-dev-server\"",
+    "dev": "export NODE_ENV=development CONFIG_NAME=dev && npm run copy-static && concurrently -k \"docker-compose -f docker-compose.dev.yml up\" \"tsc -w\" \"nodemon -d 1 -w build build/server/localserver.js\" \"webpack-dev-server\"",
     "start": "export NODE_ENV=production && npm run build && node ./build/server/localserver.js",
     "test": "npm run build && jasmine 'build/server/**/*.spec.js'",
     "test-ui": "trap 'docker-compose -f docker-compose.selenium.yml stop' INT HUP EXIT; docker-compose -f docker-compose.selenium.yml up -d --build && tsc && jasmine 'build/selenium/*.spec.js'",
@@ -37,7 +37,7 @@
     "@types/react-dom": "^15.5.1",
     "@types/react-redux": "^4.4.35",
     "@types/react-router-dom": "^4.0.7",
-    "@types/react-select": "^1.0.39",
+    "@types/react-select": "1.0.39",
     "@types/selenium-webdriver": "^3.0.3",
     "@types/webpack": "^3.0.10",
     "@types/winston": "2.3.4",

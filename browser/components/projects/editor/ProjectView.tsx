@@ -19,7 +19,6 @@ import { Link } from 'react-router-dom';
 
 import { WebLicense } from '../../../../server/api/licenses/interfaces';
 import { WebProject } from '../../../../server/api/projects/interfaces';
-import * as LicenseActions from '../../../modules/licenses';
 import * as ProjectActions from '../../../modules/projects';
 import EditableText from '../../util/EditableText';
 import AddPackageForm from './AddPackageForm';
@@ -27,7 +26,6 @@ import ProjectPackage from './ProjectPackage';
 
 interface Props {
   dispatch: (action: any) => any;
-  match: any;
   project: WebProject;
   licenses: WebLicense[];
 }
@@ -42,27 +40,20 @@ class ProjectView extends Component<Props, State> {
     showAddPackageForm: false,
   };
 
-  componentWillMount() {
-    const { dispatch, match: { params }, licenses } = this.props;
-    dispatch(ProjectActions.fetchProjectDetail(params.projectId));
-
-    // these are used in many sub-components. pre-load them now.
-    if (licenses.length === 0) {
-      dispatch(LicenseActions.fetchLicenses());
-    }
-  }
-
-  componentWillUpdate(nextProps) {
-    const { dispatch, match: { params } } = this.props;
-    if (params.projectId === nextProps.match.params.projectId) {
-      return;
-    }
-
-    dispatch(ProjectActions.fetchProjectDetail(nextProps.match.params.projectId));
-  }
-
   showAddPackageForm = (show = true) => {
     this.setState({showAddPackageForm: show});
+  }
+
+  getOwners() {
+    const { project: { acl } } = this.props;
+    const owners = [];
+    for (const user of Object.keys(acl)) {
+      const access = acl[user];
+      if (access === 'owner') {
+        owners.push(user);
+      }
+    }
+    return owners.join(', ');
   }
 
   makeChangeEvent = (fieldName: string, bool?: boolean, extended?: string) => {
@@ -100,13 +91,8 @@ class ProjectView extends Component<Props, State> {
   }
 
   render() {
-    const { project, match: { params } } = this.props;
+    const { project } = this.props;
     const { showAddPackageForm } = this.state;
-
-    // don't show the UI if the project data is stale and hasn't loaded
-    if (project.projectId !== params.projectId) {
-      return (<div>Loading project information...</div>);
-    }
 
     const noPackagesBanner = (
       <div className="alert alert-info mt-3">
@@ -125,9 +111,15 @@ class ProjectView extends Component<Props, State> {
 
     return (
       <div className="pb-5">
-        <nav className="breadcrumb">
-          <span className="breadcrumb-item active">Project Editor</span>
-        </nav>
+        {project.access.level === 'owner' ?
+          <div className="float-right text-muted small EditableText">
+            <Link to={`/projects/${project.projectId}/acl`}>owned by {this.getOwners()}</Link>
+          </div>
+        :
+          <div className="float-right text-muted small">
+            owned by {this.getOwners()}
+          </div>
+        }
 
         <h2 id="project-heading">
           <EditableText

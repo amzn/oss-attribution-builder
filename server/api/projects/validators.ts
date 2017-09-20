@@ -81,7 +81,7 @@ async function validateContacts(contacts) {
 async function validateAcl(req: any, project: ProjectAccess) {
   const effective = await effectivePermission(req, project);
   if (effective !== 'owner') {
-    throw new RequestError('You cannot remove yourself from project permissions.');
+    throw new RequestError('You cannot remove yourself as an owner.');
   }
 }
 

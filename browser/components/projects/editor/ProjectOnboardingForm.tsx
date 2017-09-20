@@ -14,19 +14,22 @@
 
 import * as React from 'react';
 import { Component } from 'react';
-import * as Select from 'react-select';
+
+import { connect } from 'react-redux';
 import { WebProject } from '../../../../server/api/projects/interfaces';
+import * as ProjectActions from '../../../modules/projects';
+import GroupSelect from '../acl/GroupSelect';
 
 interface Props {
-  createProject?: (data: Partial<WebProject>) => null;
+  dispatch: (action: any) => any;
   groups: any[];
 }
 
 interface State {
-  ownerGroup: Select.Option;
+  ownerGroup: string;
 }
 
-export default class ProjectOnboardingForm extends Component<Props, State> {
+class ProjectOnboardingForm extends Component<Props, State> {
 
   state = {
     ownerGroup: null,
@@ -36,12 +39,12 @@ export default class ProjectOnboardingForm extends Component<Props, State> {
     $('[data-toggle="tooltip"]').tooltip({placement: 'bottom', container: 'body'});
   }
 
-  handleSubmit(e) {
+  handleSubmit = (e) => {
+    const { dispatch } = this.props;
     e.preventDefault();
-    const { createProject } = this.props;
 
     const fields = e.target.elements;
-    createProject({
+    dispatch(ProjectActions.createProject({
       title: fields.title.value,
       version: fields.version.value,
       description: fields.description.value,
@@ -52,42 +55,21 @@ export default class ProjectOnboardingForm extends Component<Props, State> {
         ],
       },
       acl: {
-        [fields.ownerGroup.value]: 'owner',
+        [this.state.ownerGroup]: 'owner',
       },
       metadata: {
         open_sourcing: fields.openSourcing.value === 'true',
       },
-    });
-  }
-
-  mapGroups = () => {
-    const { groups } = this.props;
-
-    return groups.map((group) => {
-      const firstColon = group.indexOf(':');
-      if (firstColon === -1) {
-        return {
-          value: group,
-          label: group,
-        };
-      }
-
-      // if colon-prefixed, assume it's a type of group (e.g., ldap, posix)
-      const type = group.substring(0, firstColon);
-      const name = group.substring(firstColon + 1);
-      return {
-        value: group,
-        label: `${name} (${type})`,
-      };
-    });
+    }));
   }
 
   render() {
-    const sub = this.handleSubmit.bind(this);
-
     return (
       <div className="container">
-        <form id="onboarding-form" onSubmit={sub}>
+        <form id="onboarding-form" onSubmit={this.handleSubmit}>
+          <div className="row">
+            <h2>Tell us about your project</h2>
+          </div>
 
           <div className="form-group row">
             <label htmlFor="title" className="col-md-3 col-form-label">Title</label>
@@ -149,11 +131,11 @@ export default class ProjectOnboardingForm extends Component<Props, State> {
               Project owner (group)
             </label>
             <div className="col-md-7" id="ownerGroup-container">
-              <Select
+              <GroupSelect
                 name="ownerGroup"
-                options={this.mapGroups()}
+                groups={this.props.groups}
                 value={this.state.ownerGroup}
-                onChange={(ownerGroup) => this.setState({ownerGroup: ownerGroup as Select.Option})}
+                onChange={(val) => this.setState({ownerGroup: val})}
               />
             </div>
           </div>
@@ -169,3 +151,7 @@ export default class ProjectOnboardingForm extends Component<Props, State> {
     );
   }
 }
+
+export default connect((state) => ({
+  groups: state.common.info.groups ? state.common.info.groups : [],
+}))(ProjectOnboardingForm);

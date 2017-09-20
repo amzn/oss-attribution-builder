@@ -21,9 +21,8 @@ import Landing from './Landing';
 import PackageVerification from './projects/admin/PackageVerification';
 import PackageVerificationQueue from './projects/admin/PackageVerificationQueue';
 import Projects from './projects/browse/Projects';
-import Onboarding from './projects/editor/Onboarding';
-import ProjectView from './projects/editor/ProjectView';
-import AttributionDocBuilder from './projects/render/AttributionDocBuilder';
+import ProjectOnboardingForm from './projects/editor/ProjectOnboardingForm';
+import ProjectRouter from './projects/ProjectRouter';
 import ErrorModal from './util/ErrorModal';
 import ToggleLink from './util/ToggleLink';
 
@@ -47,7 +46,6 @@ class App extends React.Component<Props, {}> {
   }
 
   mapError(err) {
-
     if (err.code === 403) {
       return (<ErrorModal
         message={err.message}
@@ -98,11 +96,10 @@ class App extends React.Component<Props, {}> {
               <Switch>
                 <Route exact path="/" component={Landing} />
                 <Route exact path="/projects" component={Projects} />
-                <Route exact path="/projects/new" component={Onboarding} />
-                <Route exact path="/projects/:projectId" component={ProjectView} />
-                <Route exact path="/projects/:projectId/build" component={AttributionDocBuilder} />
+                <Route exact path="/projects/new" component={ProjectOnboardingForm} />
+                <Route path="/projects/:projectId" component={ProjectRouter} />
                 <Route exact path="/packages/verify" component={PackageVerificationQueue} />
-                <Route exact path="/packages/verify/:packageId" component={PackageVerification} />
+                <Route path="/packages/verify/:packageId" component={PackageVerification} />
               </Switch>
             </div>
           </div>
