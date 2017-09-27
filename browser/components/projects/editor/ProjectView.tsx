@@ -112,11 +112,11 @@ class ProjectView extends Component<Props, State> {
     return (
       <div className="pb-5">
         {project.access.level === 'owner' ?
-          <div className="float-right text-muted small EditableText">
+          <div id="acl-owner-info" className="float-right text-muted small EditableText">
             <Link to={`/projects/${project.projectId}/acl`}>owned by {this.getOwners()}</Link>
           </div>
         :
-          <div className="float-right text-muted small">
+          <div id="acl-owner-info" className="float-right text-muted small">
             owned by {this.getOwners()}
           </div>
         }

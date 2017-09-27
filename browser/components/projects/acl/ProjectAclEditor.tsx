@@ -17,6 +17,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { AccessLevel, AccessLevelStrength, WebProject } from '../../../../server/api/projects/interfaces';
+import history from '../../../history';
 import * as ProjectActions from '../../../modules/projects';
 import GroupSelect from './GroupSelect';
 
@@ -72,7 +73,7 @@ class ProjectAclEditor extends React.Component<Props, State> {
     });
   }
 
-  save = (e) => {
+  save = async (e) => {
     e.preventDefault();
     const { dispatch, project: { projectId } } = this.props;
     const { sortedAcl } = this.state;
@@ -82,18 +83,19 @@ class ProjectAclEditor extends React.Component<Props, State> {
       return acc;
     }, {});
 
-    dispatch(ProjectActions.patchProject(projectId, {
+    await dispatch(ProjectActions.patchProject(projectId, {
       acl: newAcl,
     }));
+    history.push(`/projects/${projectId}`);
   }
 
   render() {
     const { groups } = this.props;
     const { sortedAcl } = this.state;
 
-    return <div>
+    return <form onSubmit={this.save}>
       <h2>Manage project access</h2>
-      <table className="table table-bordered">
+      <table className="table table-bordered" id="project-acl-editor">
         <thead>
           <tr>
             <th style={{ width: '20%' }}>Permissions</th>
@@ -114,17 +116,17 @@ class ProjectAclEditor extends React.Component<Props, State> {
         </tbody>
         <tr>
           <td colSpan={3}>
-            <button className="btn btn-secondary" onClick={this.addEntry}>
+            <button type="button" id="acl-add" className="btn btn-secondary" onClick={this.addEntry}>
               <i className="fa fa-plus" /> Add
             </button>
           </td>
         </tr>
       </table>
 
-      <button className="btn btn-primary" onClick={this.save}>
+      <button type="submit" className="btn btn-primary">
         Save
       </button>
-    </div>;
+    </form>;
   }
 
 }
@@ -152,7 +154,7 @@ function AclRow(props: AclRowProps) {
       />
     </td>
     <td>
-      <button className="btn btn-secondary" onClick={props.onDelete}>
+      <button type="button" className="btn btn-secondary" onClick={props.onDelete}>
         <i className="fa fa-times" />
       </button>
     </td>
