@@ -14,7 +14,7 @@
 
 import * as React from 'react';
 import { Component } from 'react';
-import * as Select from 'react-select';
+import Select from 'react-select';
 
 interface Props {
   name: string;

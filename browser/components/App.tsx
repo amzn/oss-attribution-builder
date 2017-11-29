@@ -122,7 +122,7 @@ class App extends React.Component<Props, {}> {
 
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   generalError: state.common.generalError,
   canAdmin: state.common.info.permissions && state.common.info.permissions.admin,
   admin: state.common.admin,

@@ -50,7 +50,7 @@ class Projects extends Component<Props, {}> {
 
 }
 
-export default connect((state) => {
+export default connect((state: any) => {
   return {
     projects: state.projects.list,
   };

@@ -161,6 +161,6 @@ function AclRow(props: AclRowProps) {
   </tr>;
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   project: state.projects.active,
 }))(ProjectAclEditor);

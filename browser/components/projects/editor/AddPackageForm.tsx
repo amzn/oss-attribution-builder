@@ -41,8 +41,8 @@ interface State {
  */
 class AddPackageForm extends Component<Props, Partial<State>> {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       pkg: null,
@@ -173,7 +173,7 @@ class AddPackageForm extends Component<Props, Partial<State>> {
 
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   project: state.projects.active,
   licenses: state.licenses.map,
   tags: state.licenses.tags,

@@ -27,7 +27,7 @@ interface Props {
   packageId: number;
   packages: PackageSet;
   usage?: UsageProps;
-  buttons: any[];
+  buttons?: any[];
   preStyle?: React.CSSProperties;
 }
 
@@ -37,7 +37,10 @@ class PackageCard extends Component<Props, {}> {
 
   static defaultProps = {
     packages: {},
-    preStyle: {overflow: 'auto', maxHeight: '150px'},
+    // wat?
+    // https://github.com/Microsoft/TypeScript/pull/19966
+    // https://github.com/Microsoft/TypeScript/issues/11465
+    preStyle: {overflow: 'auto' as 'auto', maxHeight: '150px'},
   };
 
   componentWillMount() {
@@ -122,6 +125,6 @@ class PackageCard extends Component<Props, {}> {
 
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   packages: state.packages.set,
-}))(PackageCard) as React.ComponentClass<Partial<Props>>;
+}))(PackageCard);

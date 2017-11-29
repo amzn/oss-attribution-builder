@@ -13,7 +13,7 @@
  */
 
 import * as React from 'react';
-import * as Select from 'react-select';
+import Select, { Option } from 'react-select';
 
 interface Props {
   name: string;
@@ -27,7 +27,7 @@ export default function GroupSelect(props: Props) {
     name={props.name}
     options={mapGroups(props.groups)}
     value={props.value}
-    onChange={(sel: Select.Option) => props.onChange(sel ? sel.value as string : null)}
+    onChange={(sel: Option) => props.onChange(sel ? sel.value as string : null)}
   />;
 }
 

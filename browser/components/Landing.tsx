@@ -61,7 +61,7 @@ class Landing extends React.Component<Props, {}> {
   }
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   displayName: state.common.info.displayName,
   admin: state.common.admin,
 }))(Landing as any);

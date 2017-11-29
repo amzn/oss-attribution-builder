@@ -123,6 +123,6 @@ class PackageVerification extends Component<Props, State> {
 
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   packages: state.packages.set,
 }))(PackageVerification);

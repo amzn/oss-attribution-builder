@@ -52,6 +52,6 @@ class PackageVerificationQueue extends Component<Props, {}> {
 
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   queue: state.packages.verificationQueue,
 }))(PackageVerificationQueue);

@@ -214,7 +214,7 @@ class ProjectView extends Component<Props, State> {
 
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   project: state.projects.active,
   licenses: state.licenses.list,
 }))(ProjectView);

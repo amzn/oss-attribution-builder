@@ -14,7 +14,7 @@
 
 import React = require('react');
 import { connect } from 'react-redux';
-import Select = require('react-select');
+import Select, { Option } from 'react-select';
 
 import { WebLicense, WebTag } from '../../../../server/api/licenses/interfaces';
 import { WebPackage } from '../../../../server/api/packages/interfaces';
@@ -41,7 +41,7 @@ interface State {
   selectedPackage: any;
 }
 
-interface LicenseOption extends Select.Option {
+interface LicenseOption extends Option {
   tags: string[];
   shortText?: string[];
   longText?: string[];
@@ -333,7 +333,7 @@ class PackageFields extends React.Component<Props, State> {
 
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   completions: state.packages.completions,
   packages: state.packages.set,
   licenses: state.licenses.list,

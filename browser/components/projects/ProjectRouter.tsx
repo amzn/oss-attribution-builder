@@ -72,6 +72,6 @@ class ProjectRouter extends React.Component<Props, {}> {
 
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   project: state.projects.active,
 }))(ProjectRouter);

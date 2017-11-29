@@ -152,6 +152,6 @@ class ProjectOnboardingForm extends Component<Props, State> {
   }
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   groups: state.common.info.groups ? state.common.info.groups : [],
 }))(ProjectOnboardingForm);

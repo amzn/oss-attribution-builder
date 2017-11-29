@@ -45,8 +45,8 @@ interface State {
 
 class ProjectPackage extends React.Component<Props, State> {
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.state = {
       showDelta: false,
@@ -148,7 +148,7 @@ class ProjectPackage extends React.Component<Props, State> {
 
 }
 
-export default connect((state) => ({
+export default connect((state: any) => ({
   project: state.projects.active,
   packages: state.packages.set,
   tags: state.licenses.tags,

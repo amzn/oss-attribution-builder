@@ -131,7 +131,7 @@ class AttributionDocBuilder extends Component<Props, State> {
 
 }
 
-export default connect((state) => {
+export default connect((state: any) => {
   return {
     attributionDoc: state.projects.attributionDoc,
     project: state.projects.active,
