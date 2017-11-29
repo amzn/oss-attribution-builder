@@ -24,21 +24,21 @@ import { AccessError } from '../../errors/index';
 import DocBuilder from '../../licenses/docbuilder';
 import { storePackage } from '../packages';
 import { assertProjectAccess, effectivePermission } from './auth';
-import { AccessLevelStrength, WebProject } from './interfaces';
+import { AccessLevelStrength, WebProject, AccessLevel } from './interfaces';
 
 type ProjectIdPromise = Promise<Pick<WebProject, 'projectId'>>;
 
 export async function getProject(req: Request, projectId: string): Promise<WebProject> {
   const project = await db.getProject(projectId);
   await assertProjectAccess(req, project, 'viewer');
-  const accessLevel = await effectivePermission(req, project);
+  const accessLevel = await effectivePermission(req, project) as AccessLevel;
 
   // map DB types to a public API
   return {
     projectId,
     title: project.title,
     version: project.version,
-    description: project.description,
+    description: project.description || '',
     createdOn: project.created_on,
     plannedRelease: project.planned_release,
     contacts: project.contacts,
@@ -50,7 +50,7 @@ export async function getProject(req: Request, projectId: string): Promise<WebPr
         packageId: usage.package_id,
       };
     }),
-    metadata: project.metadata,
+    metadata: project.metadata || {},
     access: {
       level: accessLevel,
       canEdit: AccessLevelStrength[accessLevel] >= AccessLevelStrength.editor,
@@ -212,6 +212,9 @@ export async function generateAttributionDocument(req: Request, projectId: strin
   const builder = new DocBuilder();
   for (const usage of project.packages_used) {
     const pkg = packages.get(usage.package_id);
+    if (pkg == null) {
+      throw new Error(`Reference to package ${usage.package_id} was not found`);
+    }
     builder.addPackage(pkg, usage);
   }
 

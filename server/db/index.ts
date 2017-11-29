@@ -24,7 +24,7 @@ if (process.env.DEBUG_SQL) {
 }
 
 const pgp = pgPromise(options);
-let pg: pgPromise.IDatabase<any> = null;
+let pg: pgPromise.IDatabase<any>;
 
 export function connect(cn: any) {
   pg = pgp(cn);

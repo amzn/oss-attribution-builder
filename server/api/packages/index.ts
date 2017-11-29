@@ -20,7 +20,7 @@ import * as db from '../../db/packages';
 import { assertCanValidate } from './auth';
 import { WebPackage } from './interfaces';
 
-export async function searchPackages(req: any, query: string): Promise<{results: WebPackage[]}> {
+export async function searchPackages(req: any, query: string): Promise<{results: Array<Partial<WebPackage>>}> {
   const packages = await db.searchPackages(query, 25);
   return {results: packages.map((pkg) => ({
     packageId: pkg.package_id,
@@ -34,7 +34,7 @@ export async function searchPackages(req: any, query: string): Promise<{results:
   }))};
 }
 
-export async function getPackage(req: any, packageId: number, extended = false): Promise<WebPackage> {
+export async function getPackage(req: any, packageId: number, extended = false): Promise<WebPackage | null> {
   const pkg = await db.getPackage(packageId);
   if (pkg == null) {
     return null;
@@ -68,6 +68,7 @@ export async function getPackage(req: any, packageId: number, extended = false):
     license: pkg.license,
     copyright: pkg.copyright,
     licenseText: pkg.license_text,
+    createdBy: pkg.created_by,
     verified: pkg.verified,
     extra,
   };
@@ -113,8 +114,15 @@ export async function storePackage(req: any, packageId: number, info: Pick<WebPa
   let newId: number;
   if (shouldInsert) {
     const createdBy = auth.extractRequestUser(req);
-    newId = await db.createPackageRevision(info.name, info.version, info.website,
-      info.license, info.copyright, info.licenseText, createdBy);
+    newId = await db.createPackageRevision(
+      info.name,
+      info.version,
+      info.website as string,
+      info.license as string,
+      info.copyright as string,
+      info.licenseText as string,
+      createdBy,
+    );
     winston.info('Created a new package revision with ID %s (previous revision at %s) by %s',
       newId, packageId ? packageId : '[none]', createdBy);
   } else {

@@ -21,7 +21,7 @@ export interface WebPackage {
   licenseText?: string;
   copyright?: string;
   createdBy?: string;
-  verified?: boolean | null;
+  verified: boolean | null;
   extra?: {verification?: PackageVerification, stats?: PackageStats, latest?: number};
 }
 

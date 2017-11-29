@@ -1,3 +1,5 @@
+import { ValidationResult } from '../interfaces';
+
 /* Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
  *
  * Licensed under the Apache License, Version 2.0 (the "License").
@@ -21,7 +23,7 @@
 // tslint:disable:no-empty
 
 export function validateSelf(name, text, tags) {
-  const warnings = [];
+  const warnings: ValidationResult[] = [];
   const nicename = name ? name : 'The provided license';
 
   // look for excessively long lines, but ignore SPDX-tagged licenses.

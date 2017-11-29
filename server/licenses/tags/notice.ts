@@ -31,7 +31,7 @@ export function transformCopyright(original) {
 
 // ...and place it at the bottom
 export function transformLicense(original, packages) {
-  const notices = [];
+  const notices: string[] = [];
   for (const pkgBundle of packages) {
     const { pkg } = pkgBundle;
 

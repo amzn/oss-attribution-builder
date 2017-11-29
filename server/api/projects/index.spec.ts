@@ -132,7 +132,7 @@ describe('projects', function () {
           acl: {abc: 'owner'},
           metadata: {open_sourcing: true},
         },
-      };
+      } as any;
     }
 
   });

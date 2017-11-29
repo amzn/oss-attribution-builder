@@ -59,7 +59,7 @@ export default class NullAuth implements AuthBase {
       || request.user.user || process.env.USER || 'unknown';
   }
 
-  async getDisplayName(user: string): Promise<string> {
+  async getDisplayName(user: string): Promise<string | null> {
     // special test case; this user will never "exist"
     if (user === 'nobody') {
       return null;

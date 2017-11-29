@@ -29,7 +29,7 @@ export interface DbProject {
   // resource (user/group) name: access level
   acl: {[key: string]: AccessLevel};
   packages_used: any[];
-  metadata?: object;
+  metadata?: {[key: string]: any};
 }
 
 export function getProject(projectId: string): Promise<DbProject> {
@@ -75,7 +75,7 @@ export async function createProject(project: ProjectInput, who: string): Promise
 export async function patchProject(projectId: string, changes: Partial<DbProject>,
                                    who: string): Promise<void> {
   // build a set up update statements
-  const patches = [];
+  const patches: string[] = [];
   for (const change of Object.keys(changes)) {
     // make a named parameter with the same name as the field
     patches.push(`${change} = $(${change})`);

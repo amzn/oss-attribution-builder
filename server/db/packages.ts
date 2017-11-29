@@ -23,7 +23,7 @@ export interface Package {
   copyright?: string;
   license_text?: string;
   created_by?: string;
-  verified?: boolean;
+  verified: boolean | null;
 }
 
 export interface PackageVerify {

@@ -33,7 +33,7 @@ export interface PackageUsage {
   packageId: number;
   notes?: string;
   // tag-added properties
-  [key: string]: string | boolean | number;
+  [key: string]: string | boolean | number | undefined;
 }
 
 export const AccessLevelStrength: {[key: string]: number} = {
@@ -41,4 +41,4 @@ export const AccessLevelStrength: {[key: string]: number} = {
   editor: 2,
   owner: 3,
 };
-export type AccessLevel = 'owner' | 'editor' | 'viewer' | null;
+export type AccessLevel = 'owner' | 'editor' | 'viewer';

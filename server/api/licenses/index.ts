@@ -38,8 +38,8 @@ export async function listLicenses(): Promise<LicenseResponse> {
 function cacheLicenseData() {
     // a little silly, but keep two license lists; one for those that ask to be
     // displayed first and the other for those that don't care
-    const first = [];
-    const rest = [];
+    const first: any[] = [];
+    const rest: any[] = [];
 
     // load each license...
     for (const [id, data] of (licenses as any).entries()) {

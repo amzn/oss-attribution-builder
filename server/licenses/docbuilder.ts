@@ -15,6 +15,7 @@
 import { createHash } from 'crypto';
 import { Package } from '../db/packages';
 import { licenses, mapTag } from './index';
+import { ValidationResult } from './interfaces';
 
 interface BarePackageUsage {
   package_id: number;
@@ -27,25 +28,30 @@ interface PackagePair {
 }
 
 interface LicenseBucket {
-  name: string;
+  name?: string;
   text: string;
   tags: string[];
   packages: PackagePair[];
 }
 
+interface Annotation {
+  lines: [number, number | null];
+  [key: string]: any;
+}
+
 export default class DocBuilder {
 
   private buckets = new Map<string, LicenseBucket>();
-  private openAnnotations = {};
-  private finalAnnotations = [];
+  private openAnnotations: {[key: string]: Annotation} = {};
+  private finalAnnotations: Annotation[] = [];
   private lineNum = 0;
   private chunks: string[] = [];
-  private finalWarnings = [];
+  private finalWarnings: ValidationResult[] = [];
 
   addPackage(pkg: Package, usage: BarePackageUsage) {
     // see if it's a known license
     const name = pkg.license;
-    const licenseImmutable = licenses.get(name);
+    const licenseImmutable = name ? licenses.get(name) : null;
     const license = licenseImmutable ? licenseImmutable.toJS() : null;
 
     // prefer package's license text
@@ -68,7 +74,7 @@ export default class DocBuilder {
     const tags: string[] = license != null ? license.tags : ['unknown'];
 
     // create or add to a bucket
-    const bucket = this.buckets.get(key) || {name, text, tags, packages: []};
+    const bucket = this.buckets.get(key) || {name, text, tags, packages: [] as PackagePair[]};
 
     bucket.packages.push({pkg, usage});
     this.buckets.set(key, bucket);
@@ -81,7 +87,7 @@ export default class DocBuilder {
     // go through each bucket (packages with same license)
     const sortedBuckets = Array.from(this.buckets.keys()).sort();
     for (const key of sortedBuckets) {
-      const { name, text, tags, packages } = this.buckets.get(key);
+      const { name, text, tags, packages } = this.buckets.get(key) as LicenseBucket;
 
       const mappedTags = tags.map((tagName) => {
         const mod = mapTag(tagName);
@@ -102,13 +108,13 @@ export default class DocBuilder {
           this.addWarnings(mod.validateUsage(pkg, usage), {packageId: pkg.package_id});
 
           // mangle the notice statement
-          if (mod.transformCopyright != null) {
+          if (mod.transformCopyright != null && notice != null) {
             notice = mod.transformCopyright(notice);
           }
         }
 
         let statement = `** ${pkg.name}; version ${pkg.version} -- ${pkg.website}`;
-        if (notice.length > 0) {
+        if (notice != null && notice.length > 0) {
           statement += `\n${notice}`;
         }
 
@@ -143,7 +149,7 @@ export default class DocBuilder {
     this.chunks.push(str);
   }
 
-  private addWarnings(warnings, extra) {
+  private addWarnings(warnings: ValidationResult[], extra: {[key: string]: any}) {
     if (warnings != null) {
       if (!Array.isArray(warnings)) {
         throw new Error('Bug: Validator output should return an array of messages');
