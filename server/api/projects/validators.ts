@@ -119,8 +119,8 @@ export async function attachPackage(req, res, next) {
     }
 
     // ensure that all required questions (via tags) were answered
-    const license = licenses[req.body.license];
-    const tags = license ? license.tags : ['unknown'];
+    const license = licenses.get(req.body.license);
+    const tags = license ? license.get('tags').toArray() : ['unknown'];
     const questions: TagQuestions = tags.map((name) => mapTag(name).questions || {})
       .reduce((acc, curr) => ({
         ...acc,
