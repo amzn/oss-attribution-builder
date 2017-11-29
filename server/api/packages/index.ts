@@ -15,6 +15,7 @@
 import * as Immutable from 'immutable';
 import * as winston from 'winston';
 
+import auth from '../../auth';
 import * as db from '../../db/packages';
 import { assertCanValidate } from './auth';
 import { WebPackage } from './interfaces';
@@ -111,7 +112,7 @@ export async function storePackage(req: any, packageId: number, info: Pick<WebPa
   // create a new revision if anything changed (or it didn't exist)
   let newId: number;
   if (shouldInsert) {
-    const createdBy = req.user.user;
+    const createdBy = auth.extractRequestUser(req);
     newId = await db.createPackageRevision(info.name, info.version, info.website,
       info.license, info.copyright, info.licenseText, createdBy);
     winston.info('Created a new package revision with ID %s (previous revision at %s) by %s',
@@ -126,12 +127,13 @@ export async function storePackage(req: any, packageId: number, info: Pick<WebPa
 
 export async function verifyPackage(req: any, packageId: number, verified: boolean,
                                     comments: string): Promise<Partial<WebPackage>> {
+  const user = auth.extractRequestUser(req);
   assertCanValidate(req);
   await Promise.all([
-    db.addVerification(packageId, req.user.user, comments),
+    db.addVerification(packageId, user, comments),
     db.verifyPackage(packageId, verified),
   ]);
-  winston.info('Package %s verified (%s) by %s', packageId, verified, req.user.user);
+  winston.info('Package %s verified (%s) by %s', packageId, verified, user);
   return {packageId};
 }
 

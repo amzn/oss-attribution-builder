@@ -50,6 +50,7 @@ describe('projects auth', function () {
     mock = {
       auth: {
         getGroups: jasmine.createSpy('getGroups').and.returnValue(Promise.resolve(['a-nobody'])),
+        extractRequestUser: (req) => req.user.user,
       },
       config: {
         admin: {

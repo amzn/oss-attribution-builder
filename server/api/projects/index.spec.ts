@@ -23,7 +23,9 @@ describe('projects', function () {
     mockery.enable({useCleanCache: true, warnOnUnregistered: false});
     mock = {
       db: {},
-      auth: {},
+      auth: {
+        extractRequestUser: (req) => req.user.user,
+      },
       packagedb: {},
       assertProjectAccess: jasmine.createSpy('assertProjectAccess'),
       effectivePermission: jasmine.createSpy('effectivePermission'),

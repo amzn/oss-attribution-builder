@@ -20,7 +20,8 @@ import { config } from '../../config';
 import { AccessError } from '../../errors';
 
 export async function canValidate(req) {
-  const groups = await auth.getGroups(req.user.user);
+  const user = auth.extractRequestUser(req);
+  const groups = await auth.getGroups(user);
 
   if (isUserInAnyGroup(groups, config.admin.verifiers)) {
     return true;
@@ -30,7 +31,7 @@ export async function canValidate(req) {
     return true;
   }
 
-  winston.warn('User %s cannot validate package metadata', req.user.user);
+  winston.warn('User %s cannot validate package metadata', user);
   return false;
 }
 

@@ -22,9 +22,10 @@ import { AccessLevel, AccessLevelStrength } from './interfaces';
  * Check if the request's user is the project's contact list.
  */
 export function isInContacts(req: any, project: Pick<DbProject, 'contacts'>) {
+  const user = auth.extractRequestUser(req);
   for (const type of Object.keys(project.contacts)) {
     const contactList = project.contacts[type];
-    if (contactList.includes(req.user.user)) {
+    if (contactList.includes(user)) {
       return true;
     }
   }
@@ -50,7 +51,8 @@ export async function assertProjectAccess(req: any, project: ProjectAccess, leve
 }
 
 export async function effectivePermission(req: any, project: ProjectAccess): Promise<AccessLevel> {
-  const reqGroups = await auth.getGroups(req.user.user);
+  const user = auth.extractRequestUser(req);
+  const reqGroups = await auth.getGroups(user);
 
   // start by checking the global list
   // TODO: make global list ACL-like too

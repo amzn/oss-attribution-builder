@@ -59,7 +59,8 @@ export async function getProject(req: Request, projectId: string): Promise<WebPr
 }
 
 export async function searchProjects(req: Request): Promise<Array<Partial<WebProject>>> {
-  const groups = await auth.getGroups(req.user.user);
+  const user = auth.extractRequestUser(req);
+  const groups = await auth.getGroups(user);
 
   // all projects
   if (req.query.all) {
@@ -85,6 +86,7 @@ function mapProjectShortInfo(dbData): Partial<WebProject> {
 }
 
 export async function createProject(req: Request, body: WebProject): ProjectIdPromise {
+  const user = auth.extractRequestUser(req);
   const projectId = await db.createProject({
     title: body.title,
     version: body.version,
@@ -93,13 +95,14 @@ export async function createProject(req: Request, body: WebProject): ProjectIdPr
     contacts: body.contacts,
     acl: body.acl,
     metadata: body.metadata,
-  }, req.user.user);
+  }, user);
 
-  winston.info('Project %s created by %s', projectId, req.user.user);
+  winston.info('Project %s created by %s', projectId, user);
   return {projectId};
 }
 
 export async function patchProject(req: Request, projectId, changes): ProjectIdPromise {
+  const user = auth.extractRequestUser(req);
   const project = await db.getProject(projectId);
   await assertProjectAccess(req, project, 'editor');
 
@@ -122,15 +125,16 @@ export async function patchProject(req: Request, projectId, changes): ProjectIdP
     mappedChanges[internalMap[k]] = changes[k];
   }
 
-  await db.patchProject(projectId, mappedChanges, req.user.user);
+  await db.patchProject(projectId, mappedChanges, user);
 
-  winston.info('Project %s modified by %s', projectId, req.user.user);
+  winston.info('Project %s modified by %s', projectId, user);
   return {projectId};
 }
 
 export async function attachPackage(req: Request, projectId, info) {
   const { packageId, name, version, website, copyright, usage } = info;
   const { license, licenseText } = info;
+  const user = auth.extractRequestUser(req);
 
   // access check
   const project = await db.getProject(projectId);
@@ -151,7 +155,7 @@ export async function attachPackage(req: Request, projectId, info) {
   await db.updatePackagesUsed(projectId, [
     ...project.packages_used,
     usageInfo,
-  ], req.user.user);
+  ], user);
 
   // finally, return the updated/inserted package ID
   const addedPackageId = usageInfo.package_id;
@@ -160,6 +164,7 @@ export async function attachPackage(req: Request, projectId, info) {
 }
 
 export async function detachPackage(req: Request, projectId, packageId): ProjectIdPromise {
+  const user = auth.extractRequestUser(req);
   const project = await db.getProject(projectId);
   await assertProjectAccess(req, project, 'editor');
 
@@ -167,12 +172,13 @@ export async function detachPackage(req: Request, projectId, packageId): Project
     return item.package_id !== packageId;
   });
 
-  await db.updatePackagesUsed(projectId, newUsage, req.user.user);
+  await db.updatePackagesUsed(projectId, newUsage, user);
   winston.info('Detached package %s from project %s', packageId, projectId);
   return {projectId};
 }
 
 export async function replacePackage(req: Request, projectId: string, oldId: number, newId: number): ProjectIdPromise {
+  const user = auth.extractRequestUser(req);
   const project = await db.getProject(projectId);
   await assertProjectAccess(req, project, 'editor');
 
@@ -183,12 +189,13 @@ export async function replacePackage(req: Request, projectId: string, oldId: num
     }
   }
 
-  await db.updatePackagesUsed(projectId, usage, req.user.user);
+  await db.updatePackagesUsed(projectId, usage, user);
   winston.info('Replaced package %s -> %s on project %s', oldId, newId, projectId);
   return {projectId};
 }
 
 export async function generateAttributionDocument(req: Request, projectId: string, store: boolean = false) {
+  const user = auth.extractRequestUser(req);
   const project = await db.getProject(projectId);
   await assertProjectAccess(req, project, 'viewer');
 
@@ -216,9 +223,8 @@ export async function generateAttributionDocument(req: Request, projectId: strin
 
   // save a copy if requested
   if (store) {
-    const createdBy = req.user.user;
-    documentdb.storeAttributionDocument(projectId, project.version, text, createdBy);
-    winston.info(`Document for project ${projectId} was stored by ${createdBy}`);
+    documentdb.storeAttributionDocument(projectId, project.version, text, user);
+    winston.info(`Document for project ${projectId} was stored by ${user}`);
     return {text};
   }
 
