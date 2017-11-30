@@ -19,16 +19,17 @@ import { ADMIN_SESSION_KEY } from '../modules/common';
 /**
  * Convenience function for sending/receiving JSON for API calls.
  */
-export function reqJSON(url: string, obj?: any, method: string = 'POST') {
+export async function reqJSON(url: string, obj?: any, method: string = 'POST') {
   const body = obj != null ? JSON.stringify(obj) : undefined;
-  return fetchAuth(url, {
+  const response = await fetchAuth(url, {
     method,
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json',
     },
     body,
-  }).then((response) => response.json());
+  });
+  return await response.json();
 }
 
 /**
@@ -36,7 +37,7 @@ export function reqJSON(url: string, obj?: any, method: string = 'POST') {
  *
  * Will throw on non 2xx responses.
  */
-export function fetchAuth(url: string, options?: any) {
+export async function fetchAuth(url: string, options?: any) {
   options = options || {};
   const headers = options.headers || {};
 
@@ -45,28 +46,28 @@ export function fetchAuth(url: string, options?: any) {
     headers['X-Admin'] = '1';
   }
 
-  return fetch(url, {
+  const response = await fetch(url, {
     ...options,
     headers,
     credentials: 'same-origin',
-  }).then(async (response) => {
-    if (response.ok) {
-      return response;
-    } else {
-      let error;
-
-      // try to parse as json
-      try {
-        const json = await response.json();
-        error = new Error(json.error);
-      } catch (ex) {
-        // otherwise just use the HTTP status code
-        error = new Error(response.statusText);
-      }
-
-      error.code = response.status;
-      error.response = response;
-      throw error;
-    }
   });
+
+  if (response.ok) {
+    return response;
+  } else {
+    let error;
+
+    // try to parse as json
+    try {
+      const json = await response.json();
+      error = new Error(json.error);
+    } catch (ex) {
+      // otherwise just use the HTTP status code
+      error = new Error(response.statusText);
+    }
+
+    error.code = response.status;
+    error.response = response;
+    throw error;
+  }
 }

@@ -26,7 +26,10 @@ export default class ErrorModal extends Component<Props, {}> {
   self = null;
 
   componentDidMount() {
-    $(this.self).modal();
+    // for some reason (bug in BS4.b2?) clicking the backdrop instead of close
+    // causes the modal to hang and not re-open. test this before removing
+    // 'static' below.
+    $(this.self).modal({backdrop: 'static'});
   }
 
   hideModal = () => {
