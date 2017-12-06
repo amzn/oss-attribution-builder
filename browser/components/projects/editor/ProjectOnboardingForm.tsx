@@ -16,7 +16,6 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import { connect } from 'react-redux';
-import { WebProject } from '../../../../server/api/projects/interfaces';
 import * as ProjectActions from '../../../modules/projects';
 import GroupSelect from '../acl/GroupSelect';
 

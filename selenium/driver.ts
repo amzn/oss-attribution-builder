@@ -22,7 +22,7 @@ export type CustomDriver = webdriver.WebDriver & {
                              setUser: (user: string) => webdriver.promise.Promise<void>,
                            };
 
-export default async function(): Promise<CustomDriver> {
+export default async function (): Promise<CustomDriver> {
   const driver: any = await new webdriver.Builder()
     .usingServer('http://localhost:4444/wd/hub')
     .forBrowser('chrome')

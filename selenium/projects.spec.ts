@@ -145,15 +145,13 @@ describe('project management', function () {
     // wait for results to load (should be one that isn't the create option)
     await driver.wait(until.elementLocated(By.xpath(
       '//*[@id="package-container"]//*[contains(@class, "Select-option")][not(contains(text(), "Create"))]')));
-    const existingOption = await driver.findElement(By.css('#package-container .Select-option:first-child'));
+    const existingOption = await driver.findElement(
+      By.css('#package-container .Select-option:first-child .package-option'));
 
     const existingText = await existingOption.getText();
-    expect(existingText).toContain(`${packageName} (0.0.0)`);
+    expect(existingText).toContain(`${packageName}`);
+    expect(existingText).toContain('0.0.0');
     existingOption.click();
-
-    // shouldn't be a version field here now
-    const versionField = await driver.findElements(By.id('packageVersion'));
-    expect(versionField.length).toEqual(0);
 
     // fill out the rest of the form again
     driver.findElement(By.css('[name="q_link"][value="dynamic"]')).click();
@@ -164,6 +162,21 @@ describe('project management', function () {
     driver.findElement(By.css('#add-package-form button[type="submit"]')).click();
     const ele = await driver.findElement(By.css('.package-card h4'));
     await driver.wait(until.elementTextContains(ele, packageName), 1000);
+  });
+
+  it('can edit a package', async function () {
+    driver.findElement(By.className('package-edit-button')).click();
+
+    // add in more to the comment
+    const comments = await driver.findElement(By.id('packageComments'));
+    const commentText = await comments.getText();
+    expect(commentText).toContain('frustrated');
+    comments.sendKeys(', really');
+
+    // save it
+    driver.findElement(By.css('#add-package-form button[type="submit"]')).click();
+    const ele = await driver.findElement(By.css('.package-card p'));
+    await driver.wait(until.elementTextContains(ele, 'really'), 1000);
   });
 
   it('can preview the document', async function () {

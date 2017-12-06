@@ -20,11 +20,12 @@ import { isAdmin } from '../../auth/util';
 import * as documentdb from '../../db/attribution_documents';
 import * as packagedb from '../../db/packages';
 import * as db from '../../db/projects';
+import { DbPackageUsage } from '../../db/projects';
 import { AccessError } from '../../errors/index';
 import DocBuilder from '../../licenses/docbuilder';
 import { storePackage } from '../packages';
 import { assertProjectAccess, effectivePermission } from './auth';
-import { AccessLevelStrength, WebProject, AccessLevel } from './interfaces';
+import { AccessLevel, AccessLevelStrength, WebProject } from './interfaces';
 
 type ProjectIdPromise = Promise<Pick<WebProject, 'projectId'>>;
 
@@ -131,7 +132,7 @@ export async function patchProject(req: Request, projectId, changes): ProjectIdP
   return {projectId};
 }
 
-export async function attachPackage(req: Request, projectId, info) {
+export async function attachPackage(req: Request, projectId: string, info) {
   const { packageId, name, version, website, copyright, usage } = info;
   const { license, licenseText } = info;
   const user = auth.extractRequestUser(req);
@@ -146,16 +147,22 @@ export async function attachPackage(req: Request, projectId, info) {
   });
 
   // update usage info to store on project
-  const usageInfo = {
+  const usageInfo: DbPackageUsage = {
     ...usage,
     package_id: newId,
   };
 
-  // when both are ready, update the project
-  await db.updatePackagesUsed(projectId, [
-    ...project.packages_used,
-    usageInfo,
-  ], user);
+  // filter out any existing packages with the current/previous ID.
+  // no sense in having more than one instance, so assume that
+  // re-submitting means "edit". note that if the package details
+  // were changed (instead of just usage info) then a new package
+  // ID will have been created, and the old one won't get removed.
+  const used = project.packages_used
+    .filter((u) => u.package_id !== packageId); // *not* newId
+  used.push(usageInfo);
+
+  // submit the update
+  await db.updatePackagesUsed(projectId, used, user);
 
   // finally, return the updated/inserted package ID
   const addedPackageId = usageInfo.package_id;

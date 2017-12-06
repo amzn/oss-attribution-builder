@@ -26,13 +26,13 @@ export default class PackageCardUsage extends Component<Props, {}> {
     const { notes } = this.props;
 
     const usage = Object.keys(this.props)
-      .filter((prop) => prop !== 'notes')
+      .filter((prop) => !['packageId', 'notes'].includes(prop))
       .map((prop) => `${prop}: ${this.props[prop]}`)
       .join('; ');
 
     return (
       <div>
-        <em>In this project: {usage}</em>
+        {usage && <em>In this project: {usage}</em>}
         <p style={{whiteSpace: 'pre-wrap'}} className="text-muted mb-0">{notes}</p>
       </div>
     );

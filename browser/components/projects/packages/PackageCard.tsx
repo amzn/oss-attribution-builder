@@ -97,7 +97,7 @@ class PackageCard extends Component<Props, {}> {
             <PackageVerificationMark pkg={pkg} />{' '}
             {pkg.name}{' '}
             <small>
-              {pkg.version}{' '}
+              <span title={`id ${pkg.packageId}`}>{pkg.version}{' '}</span>
               <span className="badge badge-info">{pkg.license}</span>
             </small>
           </h4>

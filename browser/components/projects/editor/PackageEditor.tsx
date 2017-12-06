@@ -22,9 +22,13 @@ import * as ProjectActions from '../../../modules/projects';
 import PackageFields, { PkgOutput } from './PackageFields';
 import UsageFields from './UsageFields';
 
-interface Props {
+interface OwnProps {
+  initialPackage?: PkgOutput;
+  initialUsage?: Partial<PackageUsage>;
   onCompleted: () => any;
+}
 
+interface Props extends OwnProps {
   dispatch: (action: any) => any;
   project: WebProject;
   licenses: Map<string, any>;
@@ -39,14 +43,19 @@ interface State {
 /**
  * A form used to attach (optionally create) a package to a project.
  */
-class AddPackageForm extends Component<Props, Partial<State>> {
+class PackageEditor extends Component<Props, Partial<State>> {
+
+  static defaultProps = {
+    initialPackage: null,
+    initialUsage: {},
+  };
 
   constructor(props) {
     super(props);
 
     this.state = {
-      pkg: null,
-      usage: {},
+      pkg: props.initialPackage,
+      usage: props.initialUsage,
     };
   }
 
@@ -84,14 +93,14 @@ class AddPackageForm extends Component<Props, Partial<State>> {
   }
 
   render() {
-    const { licenses, tags } = this.props;
+    const { initialPackage, initialUsage, licenses, tags } = this.props;
     const { pkg } = this.state;
 
     // XXX: move this out of the render path?
     // collect questions from tags
     let questions = {};
-    if (pkg && pkg.license) {
-      const license = licenses.get(pkg.license);
+    const license = pkg && pkg.license && licenses.get(pkg.license);
+    if (license) {
       questions = license.tags
         .map((name) => tags[name].questions || {})
         .reduce((acc, curr) => ({
@@ -105,22 +114,35 @@ class AddPackageForm extends Component<Props, Partial<State>> {
 
     return (
       <form id="add-package-form" className="form mt-4" onSubmit={this.handleSubmit}>
-
-        <h4>Package Details</h4>
         {this.renderPackageHelp()}
-        <PackageFields onChange={this.handlePkgChanged} />
+
+        <h4>
+          Package Details{' '}
+          {initialPackage &&
+            <span className="badge badge-warning">Editing <strong>{initialPackage.name}</strong></span>
+          }
+        </h4>
+        <PackageFields
+          initial={initialPackage}
+          onChange={this.handlePkgChanged}
+        />
 
         {pkg &&
           <div>
             <h4>Usage details <small className="text-muted">In your project</small></h4>
             <UsageFields
+              initial={initialUsage}
+              questions={questions}
               onChange={this.handleUsageChanged}
-              questions={questions} />
+            />
           </div>
         }
 
         <button type="submit" className="btn btn-primary">
-          <i className="fa fa-plus" /> Add
+          {initialPackage ?
+            <span><i className="fa fa-floppy-o" /> Save Changes</span> :
+            <span><i className="fa fa-plus" /> Add</span>
+          }
         </button>
 
       </form>
@@ -136,7 +158,7 @@ class AddPackageForm extends Component<Props, Partial<State>> {
     return (
       <div className="row">
         <div className="col-md-12">
-          <div className="card">
+          <div className="card mb-3">
             <div className="card-body">
               <h5 className="card-heading">How to identify licenses and copyrights</h5>
               <div className="card-text">
@@ -173,9 +195,8 @@ class AddPackageForm extends Component<Props, Partial<State>> {
 
 }
 
-export default connect((state: any) => ({
+export default connect((state: any, props: OwnProps) => ({
   project: state.projects.active,
   licenses: state.licenses.map,
   tags: state.licenses.tags,
-}))(AddPackageForm) as React.ComponentClass<Partial<Props>>;
-// type re-casted with prop information since not all props are redux-supplied
+}))(PackageEditor);

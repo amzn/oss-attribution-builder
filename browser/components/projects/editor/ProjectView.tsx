@@ -19,30 +19,30 @@ import { Link } from 'react-router-dom';
 
 import { WebLicense } from '../../../../server/api/licenses/interfaces';
 import { WebProject } from '../../../../server/api/projects/interfaces';
+import * as PackageActions from '../../../modules/packages';
 import * as ProjectActions from '../../../modules/projects';
 import EditableText from '../../util/EditableText';
-import AddPackageForm from './AddPackageForm';
+import PackageEditor from './PackageEditor';
 import ProjectPackage from './ProjectPackage';
 
 interface Props {
   dispatch: (action: any) => any;
   project: WebProject;
+  packages: PackageActions.PackageSet;
   licenses: WebLicense[];
 }
 
 interface State {
-  showAddPackageForm: boolean;
+  editPackageId: number | null;
+  showPackageEditor: boolean;
 }
 
 class ProjectView extends Component<Props, State> {
 
   state = {
-    showAddPackageForm: false,
+    editPackageId: null,
+    showPackageEditor: false,
   };
-
-  showAddPackageForm = (show = true) => {
-    this.setState({showAddPackageForm: show});
-  }
 
   getOwners() {
     const { project: { acl } } = this.props;
@@ -92,13 +92,7 @@ class ProjectView extends Component<Props, State> {
 
   render() {
     const { project } = this.props;
-    const { showAddPackageForm } = this.state;
-
-    const noPackagesBanner = (
-      <div className="alert alert-info mt-3">
-        <strong>Your project is empty!</strong> Add the open source packages you use here.
-      </div>
-    );
+    const { showPackageEditor } = this.state;
 
     const selectYesNo = (
       <select>
@@ -186,35 +180,86 @@ class ProjectView extends Component<Props, State> {
         </dl>
 
         <h3>Open Source Packages Used</h3>
-        {project.packagesUsed.length > 0 && project.packagesUsed.map((usage, index) =>
-          <ProjectPackage key={index} usage={usage} />,
-        ) || noPackagesBanner }
+        {this.renderUsedPackages()}
+        {this.renderPackageEditor()}
 
-        <div>
-          {project.access.canEdit &&
-            (showAddPackageForm
-              ? <AddPackageForm onCompleted={() => this.showAddPackageForm(false)} />
-              : <button id="add-package" className="btn btn-primary" onClick={() => this.showAddPackageForm(true)}>
-                  <i className="fa fa-plus"/> Add Package
-                </button>
-            )
-          }
-
-          {showAddPackageForm || project.packagesUsed.length === 0 ? '' :
-            <div className="pull-right" id="build-buttons">
-              <Link to={`/projects/${project.projectId}/build`} className="btn btn-success btn-lg">
-                Build Attribution Document
-              </Link>
-            </div>
-          }
-        </div>
+        {showPackageEditor || project.packagesUsed.length === 0 ? '' :
+          <div className="pull-right" id="build-buttons">
+            <Link to={`/projects/${project.projectId}/build`} className="btn btn-success btn-lg">
+              Build Attribution Document
+            </Link>
+          </div>
+        }
       </div>
     );
+  }
+
+  renderUsedPackages() {
+    const { project: { packagesUsed } } = this.props;
+    const { showPackageEditor, editPackageId } = this.state;
+    if (packagesUsed.length === 0) {
+      return <div className="alert alert-info mt-3">
+        <strong>Your project is empty!</strong> Add the open source packages you use here.
+      </div>;
+    }
+
+    // don't show the package list if we're editing a specific package
+    if (showPackageEditor && editPackageId != null) {
+      return;
+    }
+
+    return packagesUsed.map((usage, index) =>
+      <ProjectPackage
+        key={usage.packageId}
+        usage={usage}
+        onEditPackage={() => this.setState({
+          showPackageEditor: true,
+          editPackageId: usage.packageId,
+        })}
+      />,
+    );
+  }
+
+  renderPackageEditor() {
+    const { showPackageEditor, editPackageId } = this.state;
+    const { packages, project: { packagesUsed, access } } = this.props;
+
+    if (!access.canEdit) {
+      return;
+    }
+
+    if (!showPackageEditor) {
+      return <button id="add-package" className="btn btn-primary"
+        onClick={() => this.setState({showPackageEditor: true})}>
+        <i className="fa fa-plus" /> Add Package
+      </button>;
+    }
+
+    if (editPackageId != null) {
+      const usage = packagesUsed.find((x) => x.packageId === editPackageId);
+      const pkg = packages[editPackageId];
+      return <PackageEditor
+        initialPackage={pkg}
+        initialUsage={usage}
+        onCompleted={() => this.setState({
+          showPackageEditor: false,
+          editPackageId: null,
+        })}
+      />;
+    }
+
+    return <PackageEditor
+      onCompleted={() => this.setState({
+        showPackageEditor: false,
+        editPackageId: null,
+      })}
+    />;
   }
 
 }
 
 export default connect((state: any) => ({
   project: state.projects.active,
+  packages: state.packages.set,
   licenses: state.licenses.list,
 }))(ProjectView);

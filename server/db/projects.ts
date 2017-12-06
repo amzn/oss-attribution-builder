@@ -28,8 +28,13 @@ export interface DbProject {
   contacts: {[key: string]: string[]};
   // resource (user/group) name: access level
   acl: {[key: string]: AccessLevel};
-  packages_used: any[];
+  packages_used: DbPackageUsage[];
   metadata?: {[key: string]: any};
+}
+
+export interface DbPackageUsage {
+  package_id: number;
+  [key: string]: any;
 }
 
 export function getProject(projectId: string): Promise<DbProject> {

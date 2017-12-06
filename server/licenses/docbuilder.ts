@@ -14,17 +14,13 @@
 
 import { createHash } from 'crypto';
 import { Package } from '../db/packages';
+import { DbPackageUsage } from '../db/projects';
 import { licenses, mapTag } from './index';
 import { ValidationResult } from './interfaces';
 
-interface BarePackageUsage {
-  package_id: number;
-  notes: string | null;
-}
-
 interface PackagePair {
   pkg: Package;
-  usage: BarePackageUsage;
+  usage: DbPackageUsage;
 }
 
 interface LicenseBucket {
@@ -48,7 +44,7 @@ export default class DocBuilder {
   private chunks: string[] = [];
   private finalWarnings: ValidationResult[] = [];
 
-  addPackage(pkg: Package, usage: BarePackageUsage) {
+  addPackage(pkg: Package, usage: DbPackageUsage) {
     // see if it's a known license
     const name = pkg.license;
     const licenseImmutable = name ? licenses.get(name) : null;

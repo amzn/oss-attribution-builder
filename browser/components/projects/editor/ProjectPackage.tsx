@@ -30,9 +30,12 @@ const DeltaFields: Array<[keyof WebPackage, string]> = [
   ['copyright', 'Copyright/NOTICE'],
 ];
 
-interface Props {
+interface OwnProps {
   usage: PackageUsage;
+  onEditPackage: () => void;
+}
 
+interface Props extends OwnProps {
   dispatch: (action: any) => any;
   project: any;
   packages: PackageActions.PackageSet;
@@ -53,9 +56,9 @@ class ProjectPackage extends React.Component<Props, State> {
     };
   }
 
-  detachPackage = (packageId) => {
-    const { dispatch, project } = this.props;
-    dispatch(ProjectActions.detachPackageFromProject(project.projectId, packageId));
+  detachPackage = () => {
+    const { dispatch, project, usage } = this.props;
+    dispatch(ProjectActions.detachPackageFromProject(project.projectId, usage.packageId));
   }
 
   showDelta = (e) => {
@@ -75,12 +78,15 @@ class ProjectPackage extends React.Component<Props, State> {
   }
 
   render() {
-    const { usage, packages } = this.props;
+    const { usage, packages, onEditPackage } = this.props;
     const { showDelta } = this.state;
+
     const buttons = [
-      <DetatchButton key={1} onClick={() => this.detachPackage(usage.packageId)} />,
+      <button key={'edit'} className="btn btn-secondary package-edit-button" onClick={onEditPackage}>
+        <i className="fa fa-pencil" />
+      </button>,
+      <DetatchButton key={'detach'} onClick={this.detachPackage} />,
     ];
-    let child;
 
     // this "update" functionality isn't in PackageCard because it relates to usage
     // in this project, and isn't applicable to other package views
@@ -88,16 +94,17 @@ class ProjectPackage extends React.Component<Props, State> {
     // see if the we have newer metadata available
     const pkg = packages[usage.packageId];
     if (pkg != null && pkg.extra != null &&
-        pkg.extra.latest != null && pkg.extra.latest !== usage.packageId) {
-      // add an update button
+      pkg.extra.latest != null && pkg.extra.latest !== usage.packageId) {
+        // add an update button
       buttons.unshift(
-        <button key={2} className="btn btn-sm btn-info" onClick={this.showDelta}>
+        <button key={'update'} className="btn btn-sm btn-info" onClick={this.showDelta}>
           <i className="fa fa-bolt" /> Update
         </button>,
       );
     }
 
     // show a delta of the changes
+    let child;
     if (showDelta) {
       child = <div className="alert alert-info">{this.renderDelta()}</div>;
     }
@@ -148,8 +155,8 @@ class ProjectPackage extends React.Component<Props, State> {
 
 }
 
-export default connect((state: any) => ({
+export default connect((state: any, props: OwnProps) => ({
   project: state.projects.active,
   packages: state.packages.set,
   tags: state.licenses.tags,
-}))(ProjectPackage as any) as React.ComponentClass<Partial<Props>>;
+}))(ProjectPackage);

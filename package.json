@@ -14,7 +14,7 @@
     "start": "export NODE_ENV=production && npm run build && node ./build/server/localserver.js",
     "test": "npm run build && jasmine 'build/server/**/*.spec.js'",
     "test-ui": "trap 'docker-compose -f docker-compose.selenium.yml stop' INT HUP EXIT; docker-compose -f docker-compose.selenium.yml up -d --build && tsc && jasmine 'build/selenium/*.spec.js'",
-    "lint": "tslint -c tslint.json -p . --type-check --fix && tslint -c tslint.json -p browser --type-check --fix"
+    "lint": "tslint -c tslint.json -p . --fix && tslint -c tslint.json -p browser --fix"
   },
   "author": "Jacob Peddicord <peddicor@amazon.com>",
   "license": "Apache-2.0",

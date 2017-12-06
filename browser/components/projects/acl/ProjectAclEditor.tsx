@@ -14,12 +14,10 @@
 
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 
 import { AccessLevel, AccessLevelStrength, WebProject } from '../../../../server/api/projects/interfaces';
 import history from '../../../history';
 import * as ProjectActions from '../../../modules/projects';
-import GroupSelect from './GroupSelect';
 
 interface Props {
   dispatch: (action: any) => any;

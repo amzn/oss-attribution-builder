@@ -25,10 +25,12 @@ import FreeformSelect from '../../util/FreeformSelect';
 
 export type PkgOutput = Partial<WebPackage>;
 
-interface Props {
+interface OwnProps {
   initial?: Partial<WebPackage>;
   onChange?: (usage: PkgOutput) => void;
+}
 
+interface Props extends OwnProps {
   dispatch: (action: any) => any;
   completions: WebPackage[];
   packages: PackageActions.PackageSet;
@@ -38,7 +40,12 @@ interface Props {
 
 interface State {
   pkg: Partial<WebPackage>;
-  selectedPackage: any;
+  selectedPackage: PackageOption;
+}
+
+interface PackageOption extends Option {
+  name: string;
+  version: string;
 }
 
 interface LicenseOption extends Option {
@@ -49,7 +56,6 @@ interface LicenseOption extends Option {
 }
 
 class PackageFields extends React.Component<Props, State> {
-
   licenseOptions: LicenseOption[] = [];
   licenseMap: {[name: string]: LicenseOption} = {};
 
@@ -69,20 +75,12 @@ class PackageFields extends React.Component<Props, State> {
     const { dispatch, licenses } = this.props;
     if (licenses.length === 0) {
       dispatch(LicenseActions.fetchLicenses());
-    } else {
-      this.initLicenses();
-    }
-  }
-
-  componentWillReceiveProps() {
-    // no need to re-compute if the list was already built
-    if (this.licenseOptions.length === 0) {
-      this.initLicenses();
     }
   }
 
   componentDidMount() {
     this.attachBootstrap();
+    this.setInitialPackage();
   }
 
   componentDidUpdate() {
@@ -91,6 +89,10 @@ class PackageFields extends React.Component<Props, State> {
 
   initLicenses() {
     const { licenses, tags } = this.props;
+
+    if (licenses.length === 0 || this.licenseOptions.length > 0) {
+      return;
+    }
 
     for (const license of licenses) {
       // gather tag presentation data
@@ -145,8 +147,16 @@ class PackageFields extends React.Component<Props, State> {
 
     return [
       ...options,
-      {value: filter, label: `Create package ${filter}`, create: true},
+      {value: filter, label: filter, create: true},
     ];
+  }
+
+  packageOptionRenderer = (option: PackageOption) => {
+    if (option.create) {
+      return <span className="create-package-option">Create package <strong>{option.value}</strong></span>;
+    }
+
+    return <span className="package-option">{option.name} <small>{option.version}</small></span>;
   }
 
   mapPackageCompletions = () => {
@@ -154,28 +164,50 @@ class PackageFields extends React.Component<Props, State> {
       return {
         value: item.packageId,
         label: `${item.name} (${item.version})`,
+        name: item.name,
+        version: item.version,
       };
     });
   }
 
-  isCreating = () => {
-    return this.state.pkg.packageId == null;
+  setInitialPackage = () => {
+    const { initial, packages } = this.props;
+    if (initial == null || initial.packageId == null) {
+      return;
+    }
+
+    if (this.state.selectedPackage != null) {
+      return;
+    }
+
+    const pkg = packages[initial.packageId];
+    if (pkg == null) {
+      return;
+    }
+
+    this.handlePackageChange({
+      label: `Editing ${pkg.name}`,
+      value: initial.packageId,
+      name: pkg.name,
+      version: pkg.version,
+    });
   }
 
-  handlePackageChange = (selected) => {
+  handlePackageChange = (selected: PackageOption) => {
     // empty input? clear it all
     if (selected == null || selected.value === '') {
       this.propagateState({pkg: {}, selectedPackage: null});
       return;
     }
 
-    const isCreating = selected.create === true;
+    const value = selected.value as number;
 
+    const isCreating = selected.create === true;
     if (isCreating) {
       this.propagateState({
         selectedPackage: selected,
         pkg: {
-          name: selected.value,
+          name: selected.value as string, // value is a string when accepting custom input
           version: '',
           website: '',
           license: '',
@@ -184,7 +216,7 @@ class PackageFields extends React.Component<Props, State> {
         },
       });
     } else {
-      const pkg = this.props.packages[selected.value];
+      const pkg = this.props.packages[value];
       this.propagateState({
         selectedPackage: selected,
         pkg: {
@@ -202,7 +234,6 @@ class PackageFields extends React.Component<Props, State> {
 
   handleChange = (e) => {
     const val = e.target.value;
-
     this.propagateState({pkg: {
       ...this.state.pkg,
       [e.target.name]: val,
@@ -245,6 +276,7 @@ class PackageFields extends React.Component<Props, State> {
   }
 
   render() {
+
     return <div>
       <div className="form-group" id="package-container">
         <label htmlFor="package">Package</label>
@@ -252,6 +284,8 @@ class PackageFields extends React.Component<Props, State> {
           name="package"
           value={this.state.selectedPackage}
           options={this.mapPackageCompletions()}
+          optionRenderer={this.packageOptionRenderer}
+          valueRenderer={this.packageOptionRenderer}
           onInputChange={this.searchPackages}
           filterOptions={this.filterPackageList}
           onChange={this.handlePackageChange}
@@ -268,6 +302,8 @@ class PackageFields extends React.Component<Props, State> {
 
   renderDetails() {
     const { pkg } = this.state;
+    this.initLicenses();
+
     const needsFullLicense = this.needsFullLicense();
     const largeCopyrightStatement = this.largeCopyrightStatement();
     const license: Partial<LicenseOption> = this.licenseMap[pkg.license] ||
@@ -276,13 +312,11 @@ class PackageFields extends React.Component<Props, State> {
     return <div className="row">
 
       <div className="col-md-6">
-        {this.isCreating() &&
-          <div className="form-group">
-            <label htmlFor="packageVersion">Version</label>
-            <input type="text" name="version" id="packageVersion" className="form-control"
-              value={pkg.version} onChange={this.handleChange} />
-          </div>
-        }
+        <div className="form-group">
+          <label htmlFor="packageVersion">Version</label>
+          <input type="text" name="version" id="packageVersion" className="form-control"
+            value={pkg.version} onChange={this.handleChange} />
+        </div>
 
         <div className="form-group">
           <label htmlFor="packageLicense">License</label>
@@ -333,9 +367,9 @@ class PackageFields extends React.Component<Props, State> {
 
 }
 
-export default connect((state: any) => ({
+export default connect((state: any, props: OwnProps) => ({
   completions: state.packages.completions,
   packages: state.packages.set,
   licenses: state.licenses.list,
   tags: state.licenses.tags,
-}))(PackageFields as any) as React.ComponentClass<Partial<Props>>;
+}))(PackageFields);

@@ -9,7 +9,8 @@
     "sourceMap": true,
     "rootDir": "./",
     "outDir": "./build/",
-    "noImplicitAny": false
+    "noImplicitAny": false,
+    "pretty": true
   },
   "include": [
     "server/**/*.ts",

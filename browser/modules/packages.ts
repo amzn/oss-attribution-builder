@@ -21,7 +21,9 @@ export const RECEIVE_PACKAGE = 'app/packages/receive-package';
 export const RECEIVE_PACKAGE_SEARCH_RESULTS = 'app/packages/reveive-package-search-results';
 export const RECEIVE_PACKAGE_VERIFICATION_QUEUE = 'app/packages/receive-package-verification-queue';
 
-export interface PackageSet {[key: number]: WebPackage; }
+export interface PackageSet {
+  [key: number]: WebPackage;
+}
 
 interface State {
   set: PackageSet;

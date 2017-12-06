@@ -12,7 +12,7 @@
  * permissions and limitations under the License.
  */
 
-import {By, Key, until} from 'selenium-webdriver';
+import {By, until} from 'selenium-webdriver';
 import build, { CustomDriver } from './driver';
 
 const projectName = 'ACL Test ' + new Date().getTime();
