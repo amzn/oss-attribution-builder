@@ -22,7 +22,6 @@ import * as ProjectActions from '../../../modules/projects';
 interface Props {
   dispatch: (action: any) => any;
   project: WebProject;
-  groups: string[];
 }
 
 interface State {
@@ -88,7 +87,6 @@ class ProjectAclEditor extends React.Component<Props, State> {
   }
 
   render() {
-    const { groups } = this.props;
     const { sortedAcl } = this.state;
 
     return <form onSubmit={this.save}>

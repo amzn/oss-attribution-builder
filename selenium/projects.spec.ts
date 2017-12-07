@@ -12,6 +12,8 @@
  * permissions and limitations under the License.
  */
 
+/* tslint:disable:no-floating-promises */
+
 import {By, Key, until} from 'selenium-webdriver';
 import build, { CustomDriver } from './driver';
 

@@ -48,8 +48,8 @@ function pack(promise: Promise<any>, res: any | undefined, next: any | undefined
 }
 
 /*** User/session/general info ***/
-router.get('/info', (req, res, next) => {
-  pack(userInfo(req), res, next);
+router.get('/info', async (req, res, next) => {
+  await pack(userInfo(req), res, next);
 });
 
 /*** Projects ***/
@@ -57,65 +57,65 @@ router.get('/info', (req, res, next) => {
 /**
  * List all projects filtered by access.
  */
-router.get('/projects', (req, res, next) => {
-  pack(projectAPI.searchProjects(req), res, next);
+router.get('/projects', async (req, res, next) => {
+  await pack(projectAPI.searchProjects(req), res, next);
 });
 
 /**
  * Create a new project.
  */
-router.post('/projects/new', projectValidators.createProject, (req, res, next) => {
-  pack(projectAPI.createProject(req, req.body), res, next);
+router.post('/projects/new', projectValidators.createProject, async (req, res, next) => {
+  await pack(projectAPI.createProject(req, req.body), res, next);
 });
 
 /**
  * Get a particular project.
  */
-router.get('/projects/:projectId', (req, res, next) => {
-  pack(projectAPI.getProject(req, req.params.projectId), res, next);
+router.get('/projects/:projectId', async (req, res, next) => {
+  await pack(projectAPI.getProject(req, req.params.projectId), res, next);
 });
 
 /**
  * Edit a project's basic details.
  */
-router.patch('/projects/:projectId', projectValidators.patchProject, (req, res, next) => {
-  pack(projectAPI.patchProject(req, req.params.projectId, req.body), res, next);
+router.patch('/projects/:projectId', projectValidators.patchProject, async (req, res, next) => {
+  await pack(projectAPI.patchProject(req, req.params.projectId, req.body), res, next);
 });
 
 /**
  * Attach a package to a project, optionally creating or updating the package.
  */
-router.post('/projects/:projectId/attach', projectValidators.attachPackage, (req, res, next) => {
-  pack(projectAPI.attachPackage(req, req.params.projectId, req.body), res, next);
+router.post('/projects/:projectId/attach', projectValidators.attachPackage, async (req, res, next) => {
+  await pack(projectAPI.attachPackage(req, req.params.projectId, req.body), res, next);
 });
 
 /**
  * Detach a package from a project.
  */
-router.post('/projects/:projectId/detach', (req, res, next) => {
-  pack(projectAPI.detachPackage(req, req.params.projectId, req.body.packageId), res, next);
+router.post('/projects/:projectId/detach', async (req, res, next) => {
+  await pack(projectAPI.detachPackage(req, req.params.projectId, req.body.packageId), res, next);
 });
 
 /**
  * Replace a package instance with another, without changing the usage.
  */
-router.post('/projects/:projectId/replace', projectValidators.replacePackage, (req, res, next) => {
-  pack(projectAPI.replacePackage(req, req.params.projectId, req.body.oldId, req.body.newId), res, next);
+router.post('/projects/:projectId/replace', projectValidators.replacePackage, async (req, res, next) => {
+  await pack(projectAPI.replacePackage(req, req.params.projectId, req.body.oldId, req.body.newId), res, next);
 });
 
 /**
  * Build an attribution document. Return the document along
  * with any warnings.
  */
-router.get('/projects/:projectId/build', (req, res, next) => {
-  pack(projectAPI.generateAttributionDocument(req, req.params.projectId), res, next);
+router.get('/projects/:projectId/build', async (req, res, next) => {
+  await pack(projectAPI.generateAttributionDocument(req, req.params.projectId), res, next);
 });
 
 /**
  * Building a document using POST will trigger a store & download.
  */
-router.post('/projects/:projectId/build', (req, res, next) => {
-  pack(projectAPI.generateAttributionDocument(req, req.params.projectId, true), res, next);
+router.post('/projects/:projectId/build', async (req, res, next) => {
+  await pack(projectAPI.generateAttributionDocument(req, req.params.projectId, true), res, next);
 });
 
 /*** Packages ***/
@@ -123,29 +123,29 @@ router.post('/projects/:projectId/build', (req, res, next) => {
 /**
  * Search all packages by name/version.
  */
-router.post('/packages/', (req, res, next) => {
-  pack(packageAPI.searchPackages(req, req.body.query), res, next);
+router.post('/packages/', async (req, res, next) => {
+  await pack(packageAPI.searchPackages(req, req.body.query), res, next);
 });
 
 /**
  * Admin action: fetch the package verification queue.
  */
-router.get('/packages/verification', (req, res, next) => {
-  pack(packageAPI.getVerificationQueue(req), res, next);
+router.get('/packages/verification', async (req, res, next) => {
+  await pack(packageAPI.getVerificationQueue(req), res, next);
 });
 
 /**
  * Get a single package.
  */
-router.get('/packages/:packageId', (req, res, next) => {
-  pack(packageAPI.getPackage(req, req.params.packageId, req.query.extended != null), res, next);
+router.get('/packages/:packageId', async (req, res, next) => {
+  await pack(packageAPI.getPackage(req, req.params.packageId, req.query.extended != null), res, next);
 });
 
 /**
  * Verify (accept/reject with comments) a single package.
  */
-router.post('/packages/:packageId/verify', (req, res, next) => {
-  pack(packageAPI.verifyPackage(req, req.params.packageId, req.body.verified, req.body.comments), res, next);
+router.post('/packages/:packageId/verify', async (req, res, next) => {
+  await pack(packageAPI.verifyPackage(req, req.params.packageId, req.body.verified, req.body.comments), res, next);
 });
 
 /*** Licenses ***/
@@ -153,8 +153,8 @@ router.post('/packages/:packageId/verify', (req, res, next) => {
 /**
  * Retrieve all license and tag data.
  */
-router.get('/licenses/', (req, res, next) => {
-  pack(licenseAPI.listLicenses(), res, next);
+router.get('/licenses/', async (req, res, next) => {
+  await pack(licenseAPI.listLicenses(), res, next);
 });
 
 // error handling for all of the above

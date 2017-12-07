@@ -136,7 +136,7 @@ export async function storePackage(req: any, packageId: number, info: Pick<WebPa
 export async function verifyPackage(req: any, packageId: number, verified: boolean,
                                     comments: string): Promise<Partial<WebPackage>> {
   const user = auth.extractRequestUser(req);
-  assertCanValidate(req);
+  await assertCanValidate(req);
   await Promise.all([
     db.addVerification(packageId, user, comments),
     db.verifyPackage(packageId, verified),
@@ -146,7 +146,7 @@ export async function verifyPackage(req: any, packageId: number, verified: boole
 }
 
 export async function getVerificationQueue(req: any): Promise<{queue: Array<Partial<WebPackage>>}> {
-  assertCanValidate(req);
+  await assertCanValidate(req);
   const results = await db.getUnverifiedPackages(25);
   const queue = results.map((item) => ({
     packageId: item.package_id,

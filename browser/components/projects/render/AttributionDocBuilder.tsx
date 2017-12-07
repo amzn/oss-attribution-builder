@@ -37,7 +37,6 @@ class AttributionDocBuilder extends Component<Props, State> {
   };
   componentWillMount() {
     const { dispatch, project: { projectId } } = this.props;
-    const activeProjectId = this.props.project.projectId;
     dispatch(ProjectActions.buildAttributionDoc(projectId));
   }
 
@@ -82,7 +81,7 @@ class AttributionDocBuilder extends Component<Props, State> {
   }
 
   render() {
-    const { attributionDoc: { lines, warnings }, project: { title, version, projectId } } = this.props;
+    const { attributionDoc: { lines, warnings }, project: { title, version } } = this.props;
     const { highlights } = this.state;
 
     return (

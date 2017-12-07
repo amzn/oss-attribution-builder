@@ -233,7 +233,7 @@ export async function generateAttributionDocument(req: Request, projectId: strin
 
   // save a copy if requested
   if (store) {
-    documentdb.storeAttributionDocument(projectId, project.version, text, user);
+    await documentdb.storeAttributionDocument(projectId, project.version, text, user);
     winston.info(`Document for project ${projectId} was stored by ${user}`);
     return {text};
   }
