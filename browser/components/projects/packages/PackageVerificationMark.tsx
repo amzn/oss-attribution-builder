@@ -29,7 +29,7 @@ interface Props {
 // with things that need to dynamically update.
 
 export default class PackageVerificationMark extends Component<Props, {}> {
-  self = null;
+  private self: HTMLElement;
 
   componentDidMount() {
     $(this.self).tooltip();
@@ -44,7 +44,7 @@ export default class PackageVerificationMark extends Component<Props, {}> {
 
     // don't render if we don't have everything loaded
     if (pkg == null || pkg.verified == null || pkg.extra == null) {
-      return <span ref={(r) => this.self = r} />;
+      return <span ref={(r) => { if (r) { this.self = r; } } } />;
     }
 
     let content = 'Loading details...';
@@ -81,7 +81,7 @@ export default class PackageVerificationMark extends Component<Props, {}> {
 
   render() {
     return (
-      <span ref={(r) => this.self = r} style={{cursor: 'pointer'}}
+      <span ref={(r) => { if (r) { this.self = r; } } } style={{cursor: 'pointer'}}
         data-toggle="tooltip"
         data-placement="right"
         title="Click for details"

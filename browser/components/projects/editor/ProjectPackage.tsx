@@ -66,7 +66,7 @@ class ProjectPackage extends React.Component<Props, State> {
 
     // at this point, we have the extra section already, so fetch the lastest revision
     const pkg = packages[usage.packageId];
-    dispatch(PackageActions.fetchPackage(pkg.extra.latest));
+    dispatch(PackageActions.fetchPackage(pkg.extra!.latest!));
 
     this.setState({showDelta: true});
   }
@@ -121,13 +121,13 @@ class ProjectPackage extends React.Component<Props, State> {
   renderDelta() {
     const { usage, packages } = this.props;
     const oldPkg = packages[usage.packageId];
-    const newPkg = packages[oldPkg.extra.latest];
+    const newPkg = packages[oldPkg.extra!.latest!];
 
     if (newPkg == null) {
       return 'Loading updated metadata...';
     }
 
-    const listElements = [];
+    const listElements: JSX.Element[] = [];
     for (const [field, label] of DeltaFields) {
       if (oldPkg[field] !== newPkg[field]) {
         listElements.push(

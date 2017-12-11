@@ -17,7 +17,7 @@ import { Component } from 'react';
 
 export interface Props {
   notes?: string;
-  [key: string]: string | boolean | number;
+  [key: string]: string | boolean | number | undefined;
 }
 
 export default class PackageCardUsage extends Component<Props, {}> {

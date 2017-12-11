@@ -14,15 +14,15 @@
 
 import pg from './index';
 
-export function getProjectAuditLog(projectId: string) {
+export async function getProjectAuditLog(projectId: string) {
   return pg().query(
     'select * from projects_audit where project_id = $1 order by changed_on desc',
     [projectId],
   );
 }
 
-export function addAuditItem(projectId: string, who: string, changes: any): Promise<void> {
-  return pg().none(
+export async function addAuditItem(projectId: string, who: string, changes: any): Promise<void> {
+  await pg().none(
     'insert into projects_audit(project_id, who, changed_to) values($1, $2, $3)',
     [projectId, who, changes],
   );

@@ -27,7 +27,7 @@ export type PkgOutput = Partial<WebPackage>;
 
 interface OwnProps {
   initial?: Partial<WebPackage>;
-  onChange?: (usage: PkgOutput) => void;
+  onChange?: (usage: PkgOutput | null) => void;
 }
 
 interface Props extends OwnProps {
@@ -40,7 +40,7 @@ interface Props extends OwnProps {
 
 interface State {
   pkg: Partial<WebPackage>;
-  selectedPackage: PackageOption;
+  selectedPackage: PackageOption | null;
 }
 
 interface PackageOption extends Option {
@@ -117,7 +117,10 @@ class PackageFields extends React.Component<Props, State> {
   }
 
   propagateState(state: Partial<State>) {
-    this.setState(state as any, () => {
+    this.setState(state as State, () => {
+      if (this.props.onChange == null) {
+        return;
+      }
       if (this.state.selectedPackage == null) {
         this.props.onChange(null);
       } else {
@@ -193,7 +196,7 @@ class PackageFields extends React.Component<Props, State> {
     });
   }
 
-  handlePackageChange = (selected: PackageOption) => {
+  handlePackageChange = (selected: PackageOption | null) => {
     // empty input? clear it all
     if (selected == null || selected.value === '') {
       this.propagateState({pkg: {}, selectedPackage: null});
@@ -248,6 +251,10 @@ class PackageFields extends React.Component<Props, State> {
   }
 
   needsFullLicense = () => {
+    if (this.state.pkg.license == null) {
+      return true;
+    }
+
     const sel = this.licenseMap[this.state.pkg.license];
 
     // we want to show the full license box if a license wasn't entered,
@@ -272,23 +279,22 @@ class PackageFields extends React.Component<Props, State> {
   }
 
   largeCopyrightStatement = () => {
-    return this.state.pkg.copyright.split(/\n/).length > 5;
+    return this.state.pkg.copyright != null && this.state.pkg.copyright.split(/\n/).length > 5;
   }
 
   render() {
-
     return <div>
       <div className="form-group" id="package-container">
         <label htmlFor="package">Package</label>
         <Select
           name="package"
-          value={this.state.selectedPackage}
+          value={this.state.selectedPackage || undefined}
           options={this.mapPackageCompletions()}
-          optionRenderer={this.packageOptionRenderer}
-          valueRenderer={this.packageOptionRenderer}
+          optionRenderer={this.packageOptionRenderer as any}
+          valueRenderer={this.packageOptionRenderer as any}
           onInputChange={this.searchPackages}
           filterOptions={this.filterPackageList}
-          onChange={this.handlePackageChange}
+          onChange={this.handlePackageChange as any}
         />
       </div>
 

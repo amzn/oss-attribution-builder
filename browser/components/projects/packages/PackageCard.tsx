@@ -32,7 +32,7 @@ interface Props {
 }
 
 class PackageCard extends Component<Props, {}> {
-  ref: HTMLElement;
+  private ref: HTMLElement;
   extendedFetched: boolean = false;
 
   static defaultProps = {
@@ -77,7 +77,7 @@ class PackageCard extends Component<Props, {}> {
     const pkg = packages[packageId] || {} as WebPackage;
 
     return (
-      <div className="card package-card mb-2" ref={(r) => this.ref = r}>
+      <div className="card package-card mb-2" ref={(r) => { if (r) { this.ref = r; } } }>
         <div className="card-body">
 
           <div className="float-right">

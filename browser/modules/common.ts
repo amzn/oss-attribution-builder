@@ -21,7 +21,7 @@ export const SET_ADMIN_MODE = 'app/common/set-admin-mode';
 export const ADMIN_SESSION_KEY = 'admin-enabled';
 
 const initial = {
-  generalError: null as string,
+  generalError: null as {message: string} | null,
   info: {} as any,
   admin: sessionStorage.getItem(ADMIN_SESSION_KEY) === '1',
 };
@@ -52,7 +52,7 @@ export default function reducer(state = initial, action: any = {}) {
   }
 }
 
-export function setGeneralError(error: {message: string} | string) {
+export function setGeneralError(error: {message: string} | string | null) {
   if (typeof error === 'string') {
     error = {message: error};
   }

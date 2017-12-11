@@ -16,7 +16,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 interface Props {
-  highlight?: string;
+  highlight?: string | null;
   scrollTo?: boolean;
   children?: any;
 }

@@ -46,7 +46,7 @@ class ProjectView extends Component<Props, State> {
 
   getOwners() {
     const { project: { acl } } = this.props;
-    const owners = [];
+    const owners: string[] = [];
     for (const user of Object.keys(acl)) {
       const access = acl[user];
       if (access === 'owner') {
@@ -64,6 +64,10 @@ class ProjectView extends Component<Props, State> {
       }
 
       if (fieldName === 'contacts') {
+        if (extended == null) {
+          throw new Error('contacts extended data must not be null');
+        }
+
         // transform a single contact field into a change of the contacts map
         // note that this is only capable of supporting a single contact of
         // each type, but this could easily be changed
@@ -74,6 +78,10 @@ class ProjectView extends Component<Props, State> {
           },
         }));
       } else if (fieldName === 'meta') {
+        if (extended == null) {
+          throw new Error('meta extended data must not be null');
+        }
+
         // transform a single meta edit into an updated meta map
         dispatch(ProjectActions.patchProject(project.projectId, {
           metadata: {

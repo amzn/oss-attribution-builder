@@ -65,7 +65,7 @@ class ProjectAclEditor extends React.Component<Props, State> {
     this.setState({
       sortedAcl: [
         ...this.state.sortedAcl,
-        {level: 'viewer', resource: null},
+        {level: 'viewer', resource: ''},
       ],
     });
   }

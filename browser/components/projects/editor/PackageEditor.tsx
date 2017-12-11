@@ -46,7 +46,7 @@ interface State {
 class PackageEditor extends Component<Props, Partial<State>> {
 
   static defaultProps = {
-    initialPackage: null,
+    initialPackage: undefined,
     initialUsage: {},
   };
 

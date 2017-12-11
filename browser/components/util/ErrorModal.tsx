@@ -23,7 +23,7 @@ interface Props {
 }
 
 export default class ErrorModal extends Component<Props, {}> {
-  self = null;
+  private self: HTMLElement;
 
   componentDidMount() {
     // for some reason (bug in BS4.b2?) clicking the backdrop instead of close
@@ -33,14 +33,14 @@ export default class ErrorModal extends Component<Props, {}> {
   }
 
   hideModal = () => {
-    $(this.self).modal('hide').on('hidden.bs.modal', this.props.onDismiss);
+    $(this.self).modal('hide').on('hidden.bs.modal' as any, this.props.onDismiss);
   }
 
   render() {
     const { title, message, explain } = this.props;
 
     return (
-      <div className="modal fade show" role="dialog" id="error-modal" ref={(r) => this.self = r}>
+      <div className="modal fade show" role="dialog" id="error-modal" ref={(r) => { if (r) { this.self = r; } } }>
         <div className="modal-dialog">
           <div className="modal-content">
             <div className="modal-header">

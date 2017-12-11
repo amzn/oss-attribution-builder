@@ -42,7 +42,7 @@ class PackageVerificationQueue extends Component<Props, {}> {
           {queue.map((pkg) => (
             <tr key={pkg.packageId}>
               <td><Link to={`/packages/verify/${pkg.packageId}`}>{pkg.name} {pkg.version}</Link></td>
-              <td>{pkg.extra.stats.numProjects} project{pkg.extra.stats.numProjects !== 1 && 's'}</td>
+              <td>{pkg.extra!.stats!.numProjects} project{pkg.extra!.stats!.numProjects !== 1 && 's'}</td>
             </tr>
           ))}
         </tbody>

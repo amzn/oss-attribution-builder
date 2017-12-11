@@ -74,7 +74,7 @@ export async function createPackageRevision(name: string, version: string, websi
   return result.package_id;
 }
 
-export function getUnverifiedPackages(limit: number = 25) {
+export async function getUnverifiedPackages(limit: number = 25) {
   // take a deep breath
   return pg().any(
     // select all packages,
@@ -92,14 +92,14 @@ export function getUnverifiedPackages(limit: number = 25) {
   // and yes there is an index for the above query (see sql/projects.sql)
 }
 
-export function verifyPackage(packageId: number, verified: boolean | null): Promise<void> {
-  return pg().none(
+export async function verifyPackage(packageId: number, verified: boolean | null): Promise<void> {
+  await pg().none(
     'update packages set verified = $2 where package_id = $1',
     [packageId, verified],
   );
 }
 
-export function getPackageVerifications(packageId: number): Promise<PackageVerify[]> {
+export async function getPackageVerifications(packageId: number): Promise<PackageVerify[]> {
   return pg().any(
     'select * from packages_verify where package_id = $1 order by verified_on desc',
     [packageId],

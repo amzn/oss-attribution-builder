@@ -19,7 +19,7 @@ interface Props {
   name: string;
   value: string;
   groups: string[];
-  onChange: (value: string) => void;
+  onChange: (value: string | null) => void;
 }
 
 export default function GroupSelect(props: Props) {
@@ -27,7 +27,7 @@ export default function GroupSelect(props: Props) {
     name={props.name}
     options={mapGroups(props.groups)}
     value={props.value}
-    onChange={(sel: Option) => props.onChange(sel ? sel.value as string : null)}
+    onChange={(sel: Option | null) => props.onChange(sel ? sel.value as string : null)}
   />;
 }
 
