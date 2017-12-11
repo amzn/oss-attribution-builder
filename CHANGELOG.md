@@ -9,6 +9,10 @@ require manual edits to pluggable interfaces.
 
 ## Unreleased
 
+(No current changes)
+
+## 0.9.0 - 2017-12-11
+
 ### Added
 - Auth backends can now specify how a user should be authenticated, via Passport. They should
   provide an `initialize` method that is called during app start-up. This can be used to register
@@ -20,6 +24,10 @@ require manual edits to pluggable interfaces.
 - License tags can also specify "questions" to ask a user when adding a package. This is useful
   to gather context-sensitive info. For example, you could only ask for "dynamic/static linking"
   if relevant for a given license.
+- Added a user interface for editing project access lists. This can be accessed by clicking on
+  the owner on the top right side of the projcet editor.
+- It is now possible to edit a package and usage information in a project. New package revisions
+  will be created as necessary, and previous entries will be correctly cleaned up.
 
 ### Removed
 - JWT sessions are no longer in use. See the above addition about auth backends for an alternative.
@@ -36,6 +44,12 @@ require manual edits to pluggable interfaces.
 ### Fixed
 - Some lingering Bootstrap CSS issues were cleaned up.
 - The `validateUsage` function (used in tags) was incorrectly documented.
+- `extractRequestUser` is now consistently used, making custom auth backends more reliable.
+
+### Security
+- Users who weren't configured to access package validation systems could still do so, due to
+  a dangling `Promise`. Additional type checks and lints have been enabled to prevent this in the
+  future.
 
 ## 0.8.0 - 2017-08-04
 

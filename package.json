@@ -1,6 +1,6 @@
 {
   "name": "amazon-oss-attribution-builder",
-  "version": "0.8.0",
+  "version": "0.9.0",
   "description": "A website to help you create attribution documents for product releases",
   "repository": {
     "type": "git",
