@@ -219,7 +219,7 @@ export async function generateAttributionDocument(req: Request, projectId: strin
   const builder = new DocBuilder();
   for (const usage of project.packages_used) {
     const pkg = packages.get(usage.package_id);
-    if (pkg == null) {
+    if (pkg == undefined) {
       throw new Error(`Reference to package ${usage.package_id} was not found`);
     }
     builder.addPackage(pkg, usage);

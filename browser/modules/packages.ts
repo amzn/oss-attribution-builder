@@ -136,7 +136,7 @@ export function verifyPackage(packageId: number, verified: boolean, comments: st
  */
 export function fetchVerificationQueue() {
   return (dispatch) => {
-    return reqJSON('/api/packages/verification', null, 'GET')
+    return reqJSON('/api/packages/verification', undefined, 'GET')
       .then((json) => dispatch(receiveVerificationQueue(json)));
   };
 }

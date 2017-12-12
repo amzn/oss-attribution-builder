@@ -17,7 +17,7 @@ export default function debounce(fn: (...args: any[]) => void, time: number) {
   return (...args) => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
-      timeout = null;
+      timeout = undefined;
       fn(...args);
     }, time);
   };

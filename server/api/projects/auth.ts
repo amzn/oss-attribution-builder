@@ -38,9 +38,9 @@ export type ProjectAccess = Pick<DbProject, 'contacts' | 'acl'>;
  * Throw an error if the request's user has no access.
  */
 export async function assertProjectAccess(req: any, project: ProjectAccess, level: AccessLevel): Promise<void> {
-  if (project != null) {
+  if (project != undefined) {
     const effective = await effectivePermission(req, project);
-    if (effective != null) {
+    if (effective != undefined) {
       if (AccessLevelStrength[effective] >= AccessLevelStrength[level]) {
         return;
       }
@@ -50,7 +50,7 @@ export async function assertProjectAccess(req: any, project: ProjectAccess, leve
   throw new AccessError('This project does not exist or you do not have access to it.');
 }
 
-export async function effectivePermission(req: any, project: ProjectAccess): Promise<AccessLevel | null> {
+export async function effectivePermission(req: any, project: ProjectAccess): Promise<AccessLevel | undefined> {
   const user = auth.extractRequestUser(req);
   const reqGroups = await auth.getGroups(user);
 
@@ -61,7 +61,7 @@ export async function effectivePermission(req: any, project: ProjectAccess): Pro
   }
 
   // then check the project ACL
-  let effective: AccessLevel | null = null;
+  let effective: AccessLevel | undefined;
   let effectiveStrength = 0;
   for (const entity of Object.keys(project.acl)) {
     // skip groups that aren't relevant for the requester

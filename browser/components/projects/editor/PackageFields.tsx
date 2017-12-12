@@ -27,7 +27,7 @@ export type PkgOutput = Partial<WebPackage>;
 
 interface OwnProps {
   initial?: Partial<WebPackage>;
-  onChange?: (usage: PkgOutput | null) => void;
+  onChange?: (usage?: PkgOutput) => void;
 }
 
 interface Props extends OwnProps {
@@ -40,7 +40,7 @@ interface Props extends OwnProps {
 
 interface State {
   pkg: Partial<WebPackage>;
-  selectedPackage: PackageOption | null;
+  selectedPackage?: PackageOption;
 }
 
 interface PackageOption extends Option {
@@ -67,7 +67,7 @@ class PackageFields extends React.Component<Props, State> {
     super(props);
     this.state = {
       pkg: {...this.props.initial},
-      selectedPackage: null,
+      selectedPackage: undefined,
     };
   }
 
@@ -118,11 +118,11 @@ class PackageFields extends React.Component<Props, State> {
 
   propagateState(state: Partial<State>) {
     this.setState(state as State, () => {
-      if (this.props.onChange == null) {
+      if (this.props.onChange == undefined) {
         return;
       }
-      if (this.state.selectedPackage == null) {
-        this.props.onChange(null);
+      if (this.state.selectedPackage == undefined) {
+        this.props.onChange();
       } else {
         this.props.onChange({
           ...this.state.pkg,
@@ -136,7 +136,7 @@ class PackageFields extends React.Component<Props, State> {
   }, 200);
 
   searchPackages = (input: string) => {
-    if (input == null || input.length === 0) {
+    if (input == undefined || input.length === 0) {
       return;
     }
 
@@ -175,16 +175,16 @@ class PackageFields extends React.Component<Props, State> {
 
   setInitialPackage = () => {
     const { initial, packages } = this.props;
-    if (initial == null || initial.packageId == null) {
+    if (initial == undefined || initial.packageId == undefined) {
       return;
     }
 
-    if (this.state.selectedPackage != null) {
+    if (this.state.selectedPackage != undefined) {
       return;
     }
 
     const pkg = packages[initial.packageId];
-    if (pkg == null) {
+    if (pkg == undefined) {
       return;
     }
 
@@ -196,10 +196,10 @@ class PackageFields extends React.Component<Props, State> {
     });
   }
 
-  handlePackageChange = (selected: PackageOption | null) => {
+  handlePackageChange = (selected?: PackageOption) => {
     // empty input? clear it all
-    if (selected == null || selected.value === '') {
-      this.propagateState({pkg: {}, selectedPackage: null});
+    if (selected == undefined || selected.value === '') {
+      this.propagateState({pkg: {}, selectedPackage: undefined});
       return;
     }
 
@@ -246,12 +246,12 @@ class PackageFields extends React.Component<Props, State> {
   handleLicenseChange = (selected: LicenseOption) => {
     this.propagateState({pkg: {
       ...this.state.pkg,
-      license: selected ? selected.value as string : null,
+      license: selected ? selected.value as string : undefined,
     }});
   }
 
   needsFullLicense = () => {
-    if (this.state.pkg.license == null) {
+    if (this.state.pkg.license == undefined) {
       return true;
     }
 
@@ -259,7 +259,7 @@ class PackageFields extends React.Component<Props, State> {
 
     // we want to show the full license box if a license wasn't entered,
     // or if we don't know it
-    if (sel == null) {
+    if (sel == undefined) {
       return true;
     }
 
@@ -279,7 +279,7 @@ class PackageFields extends React.Component<Props, State> {
   }
 
   largeCopyrightStatement = () => {
-    return this.state.pkg.copyright != null && this.state.pkg.copyright.split(/\n/).length > 5;
+    return this.state.pkg.copyright != undefined && this.state.pkg.copyright.split(/\n/).length > 5;
   }
 
   render() {
@@ -298,7 +298,7 @@ class PackageFields extends React.Component<Props, State> {
         />
       </div>
 
-      {this.state.selectedPackage == null ?
+      {this.state.selectedPackage == undefined ?
         <p>
           Search for a package above or create it by typing in its name<br/><br/>
         </p>
@@ -312,8 +312,8 @@ class PackageFields extends React.Component<Props, State> {
 
     const needsFullLicense = this.needsFullLicense();
     const largeCopyrightStatement = this.largeCopyrightStatement();
-    const license: Partial<LicenseOption> = this.licenseMap[pkg.license] ||
-                                            {label: pkg.license, value: pkg.license};
+    const license: Partial<LicenseOption> = this.licenseMap[pkg.license!] ||
+                                            {label: pkg.license!, value: pkg.license!};
 
     return <div className="row">
 

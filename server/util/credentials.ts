@@ -20,12 +20,12 @@ export function selfDestruct(func) {
   let secret = func();
 
   return () => {
-    if (secret == null) {
+    if (secret == undefined) {
       throw new Error('Secret has been destroyed');
     }
 
     const copy = secret;
-    secret = null;
+    secret = undefined;
     return copy;
   };
 }

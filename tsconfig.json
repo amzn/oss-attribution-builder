@@ -13,6 +13,7 @@
     "rootDir": "./",
     "outDir": "./build/",
     "pretty": true,
+    "strict": true,
     "noImplicitAny": false,
     "noUnusedLocals": true
   },

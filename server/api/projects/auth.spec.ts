@@ -136,11 +136,11 @@ describe('projects auth', function () {
 
   describe('effectivePermission', function () {
 
-    it('should return null for a single-entry ACL that does not match', async function (done) {
+    it('should return undefined for a single-entry ACL that does not match', async function (done) {
       const req = makeReq();
       const proj = makeProj();
       const level = await effectivePermission(req, proj);
-      expect(level).toBeNull();
+      expect(level).toBeUndefined();
       done();
     });
 

@@ -27,7 +27,7 @@ export const licenses: LicenseMap = loadLicenses();
 
 export function mapTag(name): TagModule {
   let mod = tagCache.get(name);
-  if (mod == null) {
+  if (mod == undefined) {
     mod = require(`./tags/${name}`);
     tagCache.set(name, mod);
   }

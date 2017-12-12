@@ -28,9 +28,9 @@ export default class AttributionDocWarning extends Component<Props, {}> {
 
     // figure out what this is all about
     let thing;
-    if (warning.license != null) {
+    if (warning.license != undefined) {
       thing = 'used license';
-    } else if (warning.package != null) {
+    } else if (warning.package != undefined) {
       thing = `package ${warning.package}`;
     } else {
       thing = 'project';

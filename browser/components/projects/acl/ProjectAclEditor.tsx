@@ -109,14 +109,14 @@ class ProjectAclEditor extends React.Component<Props, State> {
               onResourceChange={(val) => this.changeResource(i, val)}
               onDelete={() => this.deleteEntry(i)}
             />)}
+          <tr>
+            <td colSpan={3}>
+              <button type="button" id="acl-add" className="btn btn-secondary" onClick={this.addEntry}>
+                <i className="fa fa-plus" /> Add
+              </button>
+            </td>
+          </tr>
         </tbody>
-        <tr>
-          <td colSpan={3}>
-            <button type="button" id="acl-add" className="btn btn-secondary" onClick={this.addEntry}>
-              <i className="fa fa-plus" /> Add
-            </button>
-          </td>
-        </tr>
       </table>
 
       <button type="submit" className="btn btn-primary">

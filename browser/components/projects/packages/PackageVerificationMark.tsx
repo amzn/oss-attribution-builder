@@ -43,7 +43,7 @@ export default class PackageVerificationMark extends Component<Props, {}> {
     const { pkg } = this.props;
 
     // don't render if we don't have everything loaded
-    if (pkg == null || pkg.verified == null || pkg.extra == null) {
+    if (pkg == undefined || pkg.verified == undefined || pkg.extra == undefined) {
       return <span ref={(r) => { if (r) { this.self = r; } } } />;
     }
 

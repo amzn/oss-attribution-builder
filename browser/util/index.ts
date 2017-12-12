@@ -20,7 +20,7 @@ import { ADMIN_SESSION_KEY } from '../modules/common';
  * Convenience function for sending/receiving JSON for API calls.
  */
 export async function reqJSON(url: string, obj?: any, method: string = 'POST') {
-  const body = obj != null ? JSON.stringify(obj) : undefined;
+  const body = obj != undefined ? JSON.stringify(obj) : undefined;
   const response = await fetchAuth(url, {
     method,
     headers: {

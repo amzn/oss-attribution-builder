@@ -24,11 +24,10 @@ export default class RadioWidget extends BaseWidget<BaseProps> {
 
   private renderOption = (opt: [string | number | boolean, string]) => {
     const { name, value } = this.props;
-    const optVal = opt[0].toString();
-    const optLabel = opt[1];
-    return <div key={optVal} className="form-check form-check-inline">
+    const [optVal, optLabel] = opt;
+    return <div key={optVal.toString()} className="form-check form-check-inline">
       <label className="form-check-label">
-        <input type="radio" name={`q_${name}`} value={optVal}
+        <input type="radio" name={`q_${name}`} value={optVal.toString()}
           checked={value === optVal} onChange={this.handleChange}
           className="form-check-input"
         /> {optLabel}

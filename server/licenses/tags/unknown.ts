@@ -30,7 +30,7 @@ export function validateSelf(name, text, tags) {
     ];
   }
 
-  const proper = name != null ? `${name}` : 'This license';
+  const proper = name ? `${name}` : 'This license';
   return [
     {
       level: 1,

@@ -16,12 +16,12 @@ export interface WebPackage {
   packageId: number;
   name: string;
   version: string;
-  website?: string | null;
-  license?: string | null;
-  licenseText?: string | null;
-  copyright?: string | null;
-  createdBy?: string | null;
-  verified?: boolean | null;
+  website?: string;
+  license?: string;
+  licenseText?: string;
+  copyright?: string;
+  createdBy?: string;
+  verified?: boolean;
   extra?: {verification?: PackageVerification, stats?: PackageStats, latest?: number};
 }
 

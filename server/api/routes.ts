@@ -38,7 +38,7 @@ function pack(promise: Promise<any>, res: any | undefined, next: any | undefined
   }
   return promise
     .then((x) => {
-      if (x === null) {
+      if (x == undefined) {
         res.status(404).send('Object not found');
       } else {
         res.send(x);
@@ -138,7 +138,7 @@ router.get('/packages/verification', async (req, res, next) => {
  * Get a single package.
  */
 router.get('/packages/:packageId', async (req, res, next) => {
-  await pack(packageAPI.getPackage(req, req.params.packageId, req.query.extended != null), res, next);
+  await pack(packageAPI.getPackage(req, req.params.packageId, req.query.extended != undefined), res, next);
 });
 
 /**

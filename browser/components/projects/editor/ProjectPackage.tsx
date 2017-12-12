@@ -93,8 +93,8 @@ class ProjectPackage extends React.Component<Props, State> {
 
     // see if the we have newer metadata available
     const pkg = packages[usage.packageId];
-    if (pkg != null && pkg.extra != null &&
-      pkg.extra.latest != null && pkg.extra.latest !== usage.packageId) {
+    if (pkg != undefined && pkg.extra != undefined &&
+      pkg.extra.latest != undefined && pkg.extra.latest !== usage.packageId) {
         // add an update button
       buttons.unshift(
         <button key={'update'} className="btn btn-sm btn-info" onClick={this.showDelta}>
@@ -123,7 +123,7 @@ class ProjectPackage extends React.Component<Props, State> {
     const oldPkg = packages[usage.packageId];
     const newPkg = packages[oldPkg.extra!.latest!];
 
-    if (newPkg == null) {
+    if (newPkg == undefined) {
       return 'Loading updated metadata...';
     }
 

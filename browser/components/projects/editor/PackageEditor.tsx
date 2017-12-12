@@ -63,7 +63,7 @@ class PackageEditor extends Component<Props, Partial<State>> {
     e.preventDefault();
 
     // do nothing if no package entered
-    if (this.state.pkg == null) {
+    if (this.state.pkg == undefined) {
       return;
     }
 
@@ -151,7 +151,7 @@ class PackageEditor extends Component<Props, Partial<State>> {
 
   renderPackageHelp() {
     // only show once per session
-    if (window.sessionStorage.getItem('package_help_shown') != null) {
+    if (window.sessionStorage.getItem('package_help_shown') != undefined) {
       return;
     }
 

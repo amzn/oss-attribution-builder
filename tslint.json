@@ -9,6 +9,7 @@
     "member-access": [false],
     "member-ordering": [false],
     "no-floating-promises": [true],
+    "no-null-keyword": [true],
     "no-unused-expression": [true],
     "no-unused-variable": [true],
     "object-literal-sort-keys": [false],
@@ -27,6 +28,7 @@
         "method": "never",
         "named": "never"
       }
-    ]
+    ],
+    "triple-equals": [true, "allow-undefined-check"]
   }
 }

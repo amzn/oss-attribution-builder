@@ -48,7 +48,7 @@ class ProjectRouter extends React.Component<Props, {}> {
   render() {
     const { project, match: { params: { projectId } } } = this.props;
 
-    if (project == null || projectId !== project.projectId) {
+    if (project == undefined || projectId !== project.projectId) {
       return <div className="text-muted">Loading project information...</div>;
     }
 

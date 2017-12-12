@@ -90,7 +90,7 @@ describe('projects', function () {
 
     it('should reject invalid form data', async function (done) {
       const req = makeDummyRequest();
-      req.body.description = null;
+      req.body.description = undefined;
       const res = jasmine.createSpy('res');
       const next = jasmine.createSpy('next');
 
@@ -102,7 +102,7 @@ describe('projects', function () {
 
     it('should validate user existence', async function (done) {
       mock.auth.getDisplayName = jasmine.createSpy('getDisplayName')
-        .and.returnValue(Promise.resolve(null));
+        .and.returnValue(Promise.resolve(undefined));
 
       const req = makeDummyRequest();
       const res = jasmine.createSpy('res');
@@ -228,7 +228,7 @@ describe('projects', function () {
       mock.db.updatePackagesUsed = jasmine.createSpy('updatePackagesUsed');
 
       const req = makeDummyRequest();
-      req.body.packageId = null;
+      req.body.packageId = undefined;
       const res = jasmine.createSpy('res');
       const next = jasmine.createSpy('next');
 
@@ -292,8 +292,8 @@ describe('projects', function () {
         next = jasmine.createSpy('next');
       });
 
-      it('checks for null fields', async function (done) {
-        req.body.version = null;
+      it('checks for undefined fields', async function (done) {
+        req.body.version = undefined;
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toMatch(/Missing.*version/);
         done();
@@ -302,7 +302,7 @@ describe('projects', function () {
       it('checks for empty-like licenses', async function (done) {
         req.body.licenseText = '       ';
         await validators.attachPackage(req, res, next);
-        expect(req.body.licenseText).toBeNull();
+        expect(req.body.licenseText).toBeUndefined();
         done();
       });
 
@@ -314,8 +314,8 @@ describe('projects', function () {
       });
 
       it('looks for license text or name', async function (done) {
-        req.body.license = null;
-        req.body.licenseText = null;
+        req.body.license = undefined;
+        req.body.licenseText = undefined;
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toContain('license name or full text');
         done();
@@ -323,7 +323,7 @@ describe('projects', function () {
 
       it('requires usage info', async function (done) {
         req = makeDummyRequest();
-        req.body.usage = null;
+        req.body.usage = undefined;
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toContain('usage information');
         done();
@@ -331,7 +331,7 @@ describe('projects', function () {
 
       it('checks for required questions', async function (done) {
         req.body.license = 'MyCustomLicense';
-        req.body.usage.link = null; // "linkage" tag is on MyCustomLicense
+        req.body.usage.link = undefined; // "linkage" tag is on MyCustomLicense
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toContain('question "Linkage"');
         done();
@@ -358,7 +358,7 @@ describe('projects', function () {
 
     it('should ensure the project itself exists', async function (done) {
       mock.db.getProject = jasmine.createSpy('getProject')
-        .and.callFake((x) => x === 'abcd' && Promise.resolve(null));
+        .and.callFake((x) => x === 'abcd' && Promise.resolve(undefined));
       mock.packagedb.getPackage = jasmine.createSpy('getPackage')
         .and.callFake((x) => x === 90 && Promise.resolve(makeFakeDBPackage()));
 
@@ -376,7 +376,7 @@ describe('projects', function () {
       mock.db.getProject = jasmine.createSpy('getProject')
         .and.callFake((x) => x === 'abcd' && Promise.resolve(makeFakeDBProject()));
       mock.packagedb.getPackage = jasmine.createSpy('getPackage')
-        .and.callFake((x) => x === 90 && Promise.resolve(null));
+        .and.callFake((x) => x === 90 && Promise.resolve(undefined));
 
       const req = makeDummyRequest();
       const res = jasmine.createSpy('res');
@@ -404,7 +404,7 @@ describe('projects', function () {
           website: 'http://example.com',
           copyright: '(c) 20xx some person',
           license: 'MIT',
-          licenseText: null,
+          licenseText: undefined,
           usage: {
             notes: 'blah blah',
             link: 'dynamic',
@@ -483,7 +483,7 @@ describe('projects', function () {
       website: 'http://example.com',
       copyright: '(c) 20xx some person',
       license: 'MIT',
-      license_text: null,
+      license_text: undefined,
     } as any;
   }
 

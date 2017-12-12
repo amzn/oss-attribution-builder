@@ -42,7 +42,7 @@ class App extends React.Component<Props, {}> {
 
   dismissError = () => {
     const { dispatch } = this.props;
-    dispatch(setGeneralError(null));
+    dispatch(setGeneralError(undefined));
   }
 
   mapError(err) {
@@ -88,7 +88,7 @@ class App extends React.Component<Props, {}> {
           </div>
         </nav>
 
-        { generalError != null && this.mapError(generalError) }
+        { generalError != undefined && this.mapError(generalError) }
 
         <div className="container mt-4">
           <div className="row">

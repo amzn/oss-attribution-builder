@@ -16,7 +16,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 interface Props {
-  highlight?: string | null;
+  highlight?: string;
   scrollTo?: boolean;
   children?: any;
 }
@@ -26,10 +26,10 @@ export default class TextLine extends Component<Props, {}> {
   render() {
     const { children, highlight, scrollTo } = this.props;
 
-    const classes = highlight != null ? highlight : '';
+    const classes = highlight != undefined ? highlight : '';
 
     function scrollRef(r) {
-      if (r == null) {
+      if (r == undefined) {
         return;
       }
       window.scrollTo(0, r.offsetTop);

@@ -31,7 +31,7 @@ interface LicenseBucket {
 }
 
 interface Annotation {
-  lines: [number, number | null];
+  lines: [number, number | undefined];
   [key: string]: any;
 }
 
@@ -47,16 +47,16 @@ export default class DocBuilder {
   addPackage(pkg: Package, usage: DbPackageUsage) {
     // see if it's a known license
     const name = pkg.license;
-    const licenseImmutable = name ? licenses.get(name) : null;
-    const license = licenseImmutable ? licenseImmutable.toJS() : null;
+    const licenseImmutable = name ? licenses.get(name) : undefined;
+    const license = licenseImmutable ? licenseImmutable.toJS() : undefined;
 
     // prefer package's license text
     let text = '';
-    if (pkg.license_text != null && pkg.license_text.length > 0) {
+    if (pkg.license_text != undefined && pkg.license_text.length > 0) {
       text = pkg.license_text;
     } else {
       // no provided license text => use our stored version if we have it
-      text = license != null ? license.text : name;
+      text = license != undefined ? license.text : name;
     }
 
     // create a key based on the text (or name, if text is empty)
@@ -64,10 +64,10 @@ export default class DocBuilder {
 
     // sort unknown licenses at the end (~)
     const prefix = name || '';
-    const key = license != null ? `${prefix}~${hash}` : `~${prefix}~${hash}`;
+    const key = license != undefined ? `${prefix}~${hash}` : `~${prefix}~${hash}`;
 
     // determine tags
-    const tags: string[] = license != null ? license.tags : ['unknown'];
+    const tags: string[] = license != undefined ? license.tags : ['unknown'];
 
     // create or add to a bucket
     const bucket = this.buckets.get(key) || {name, text, tags, packages: [] as PackagePair[]};
@@ -104,13 +104,13 @@ export default class DocBuilder {
           this.addWarnings(mod.validateUsage(pkg, usage), {packageId: pkg.package_id});
 
           // mangle the notice statement
-          if (mod.transformCopyright != null && notice != null) {
+          if (mod.transformCopyright != undefined && notice != undefined) {
             notice = mod.transformCopyright(notice);
           }
         }
 
         let statement = `** ${pkg.name}; version ${pkg.version} -- ${pkg.website}`;
-        if (notice != null && notice.length > 0) {
+        if (notice != undefined && notice.length > 0) {
           statement += `\n${notice}`;
         }
 
@@ -122,7 +122,7 @@ export default class DocBuilder {
       // add on the license text
       let fullText = text;
       for (const mod of mappedTags) {
-        if (mod.transformLicense != null) {
+        if (mod.transformLicense != undefined) {
           fullText = mod.transformLicense(fullText, sortedPackages);
         }
       }
@@ -146,7 +146,7 @@ export default class DocBuilder {
   }
 
   private addWarnings(warnings: ValidationResult[], extra: {[key: string]: any}) {
-    if (warnings != null) {
+    if (warnings != undefined) {
       if (!Array.isArray(warnings)) {
         throw new Error('Bug: Validator output should return an array of messages');
       }
@@ -157,7 +157,7 @@ export default class DocBuilder {
   }
 
   private startAnnotation(type, extra) {
-    this.openAnnotations[type] = {lines: [this.lineNum, null], ...extra};
+    this.openAnnotations[type] = {lines: [this.lineNum, undefined], ...extra};
   }
 
   private endAnnotation(type) {

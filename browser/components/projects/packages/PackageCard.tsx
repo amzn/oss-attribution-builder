@@ -104,7 +104,7 @@ class PackageCard extends Component<Props, {}> {
 
           {this.props.children}
 
-          { usage != null && <PackageCardUsage {...usage} /> }
+          { usage != undefined && <PackageCardUsage {...usage} /> }
         </div>
 
         <div className="card-footer">
@@ -112,7 +112,7 @@ class PackageCard extends Component<Props, {}> {
             {pkg.copyright}
           </pre>
 
-          {pkg.licenseText != null && pkg.licenseText !== '' && (
+          {pkg.licenseText != undefined && pkg.licenseText !== '' && (
             <pre style={preStyle}>
               {pkg.licenseText}
             </pre>

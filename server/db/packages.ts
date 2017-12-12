@@ -23,7 +23,7 @@ export interface Package {
   copyright?: string;
   license_text?: string;
   created_by?: string;
-  verified: boolean | null;
+  verified?: boolean;
 }
 
 export interface PackageVerify {
@@ -62,7 +62,7 @@ export async function createPackageRevision(name: string, version: string, websi
                                             createdBy: string): Promise<number> {
   // normalize some fields
   copyright = copyright.trim();
-  if (licenseText != null) {
+  if (licenseText != undefined) {
     licenseText = licenseText.replace(/^[\r\n]+|[\r\n]+$/g, '');
   }
 
@@ -92,7 +92,7 @@ export async function getUnverifiedPackages(limit: number = 25) {
   // and yes there is an index for the above query (see sql/projects.sql)
 }
 
-export async function verifyPackage(packageId: number, verified: boolean | null): Promise<void> {
+export async function verifyPackage(packageId: number, verified?: boolean): Promise<void> {
   await pg().none(
     'update packages set verified = $2 where package_id = $1',
     [packageId, verified],

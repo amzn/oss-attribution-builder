@@ -48,7 +48,7 @@ describe('license tags', function () {
 
   it('may export a questions object', function () {
     for (const mod of modules) {
-      if (mod.questions == null) {
+      if (mod.questions == undefined) {
         continue;
       }
 

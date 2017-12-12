@@ -52,7 +52,7 @@ export default class FreeformSelect extends Component<Props, {}> {
       return (<span><em>Add item <strong>{option.value}</strong></em></span>);
     }
 
-    if (optionRenderer != null) {
+    if (optionRenderer != undefined) {
       return optionRenderer(option);
     }
 

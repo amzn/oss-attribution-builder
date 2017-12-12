@@ -63,7 +63,8 @@ interface AuthBase {
    * For example, you could look up a user's full name in LDAP/AD.
    * Consider caching this method.
    */
-  getDisplayName(user: string): Promise<string | null>;
+  getDisplayName(user: string): Promise<string | null | undefined>;
+  // 'null' above remains for backwards compat, but elsewhere this should be undefined
 
   /**
    * Given a username, look up the list of groups the user is a member of.

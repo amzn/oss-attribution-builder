@@ -61,8 +61,8 @@ class AttributionDocBuilder extends Component<Props, State> {
       }
     }
 
-    if (found == null) {
-      return () => null;
+    if (found == undefined) {
+      return () => undefined;
     }
 
     return (event) => {
@@ -71,9 +71,9 @@ class AttributionDocBuilder extends Component<Props, State> {
   }
 
   static annotationMatch(annotation, warning) {
-    if (annotation.license != null) {
+    if (annotation.license != undefined) {
       return annotation.license === warning.license;
-    } else if (annotation.package != null) {
+    } else if (annotation.package != undefined) {
       return annotation.package === warning.package;
     }
 

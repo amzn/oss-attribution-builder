@@ -15,7 +15,7 @@
 import React = require('react');
 
 interface Props {
-  onClick: (event: any) => any;
+  onClick: (event?: any) => any;
 }
 
 interface State {
@@ -51,7 +51,7 @@ export default class DetatchButton extends React.Component<Props, State> {
       }, 500);
     } else if (mode === ConfirmState.Confirm) {
       clearTimeout(this.timeout);
-      this.props.onClick(null);
+      this.props.onClick();
     }
   }
 

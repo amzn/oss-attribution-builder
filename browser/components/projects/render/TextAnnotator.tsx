@@ -62,7 +62,7 @@ export default class TextAnnotator extends Component<Props, {}> {
         }
 
         return (
-          <TextLine key={i} highlight={highlight ? 'line-highlight' : null}>
+          <TextLine key={i} highlight={highlight ? 'line-highlight' : undefined}>
             {a}
           </TextLine>
         );

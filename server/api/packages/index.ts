@@ -34,10 +34,10 @@ export async function searchPackages(req: any, query: string): Promise<{results:
   }))};
 }
 
-export async function getPackage(req: any, packageId: number, extended = false): Promise<WebPackage | null> {
+export async function getPackage(req: any, packageId: number, extended = false): Promise<WebPackage | undefined> {
   const pkg = await db.getPackage(packageId);
-  if (pkg == null) {
-    return null;
+  if (pkg == undefined) {
+    return undefined;
   }
 
   // fetch extended information if asked for
@@ -83,11 +83,11 @@ export async function storePackage(req: any, packageId: number, info: Pick<WebPa
                                    'name' | 'version' | 'website' | 'copyright' | 'license' |
                                    'licenseText'>): Promise<number> {
   let shouldInsert = true;
-  if (packageId != null) {
+  if (packageId != undefined) {
     const existing = await db.getPackage(packageId);
 
     // if it didn't exist we should obviously insert, otherwise compare the data
-    if (existing != null) {
+    if (existing != undefined) {
       const subset = Immutable.fromJS({
         name: existing.name,
         version: existing.version,

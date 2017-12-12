@@ -37,7 +37,7 @@ export default class EditableText extends Component<Props, State> {
   }
 
   get enabled() {
-    if (this.props.enabled != null) {
+    if (this.props.enabled != undefined) {
       return this.props.enabled;
     }
 
@@ -49,7 +49,7 @@ export default class EditableText extends Component<Props, State> {
   }
 
   focus = (ele: HTMLElement) => {
-    if (ele != null && ele.focus != null) {
+    if (ele != undefined && ele.focus != undefined) {
       ele.focus();
     }
   }
@@ -64,7 +64,7 @@ export default class EditableText extends Component<Props, State> {
     const val = target.value;
 
     // don't close/save for empty values
-    if (val == null || val.trim().length === 0) {
+    if (val == undefined || val.trim().length === 0) {
       return;
     }
 
@@ -98,7 +98,7 @@ export default class EditableText extends Component<Props, State> {
       defaultValue: this.props.value,
       className: 'form-control',
       onBlur: this.save,
-      onKeyPress: (e) => e.key === 'Enter' ? this.save(e) : null,
+      onKeyPress: (e) => e.key === 'Enter' ? this.save(e) : undefined,
       required: true,
       style: {
         width: '100%',

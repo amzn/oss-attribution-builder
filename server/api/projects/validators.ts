@@ -71,7 +71,7 @@ async function validateContacts(contacts) {
   for (const contactType of Object.keys(contacts)) {
     for (const contact of contacts[contactType]) {
       const n = await auth.getDisplayName(contact);
-      if (n == null) {
+      if (n == undefined) {
         throw new RequestError(`Contact ${contact} could not be found.`);
       }
     }
@@ -100,12 +100,12 @@ export async function attachPackage(req, res, next) {
       throw new RequestError('Website is not a real URL.');
     }
 
-    // coerce undefined/emptyish keys to null
-    if (req.body.license == null || req.body.license.trim().length === 0) {
-      req.body.license = null;
+    // coerce undefined/emptyish keys to undefined
+    if (req.body.license == undefined || req.body.license.trim().length === 0) {
+      req.body.license = undefined;
     }
-    if (req.body.licenseText == null || req.body.licenseText.trim().length === 0) {
-      req.body.licenseText = null;
+    if (req.body.licenseText == undefined || req.body.licenseText.trim().length === 0) {
+      req.body.licenseText = undefined;
     }
 
     // either the license name or the full license text must be specified
@@ -150,7 +150,7 @@ export async function attachPackage(req, res, next) {
 
     // and that, if specified, the package exists
     let pkg = Promise.resolve();
-    if (req.body.packageId != null) {
+    if (req.body.packageId != undefined) {
       req.body.packageId = Number.parseInt(req.body.packageId);
       if (Number.isNaN(req.body.packageId)) {
         throw new RequestError('Package ID must be a number');
@@ -201,7 +201,7 @@ function ensureFieldsExist(fields, object) {
  * Determine whether a field is "valid" (non-zero) on an object.
  */
 function isValid(object, field) {
-  return object.hasOwnProperty(field) && object[field] != null && object[field].length !== 0;
+  return object.hasOwnProperty(field) && object[field] != undefined && object[field].length !== 0;
 }
 
 /**
@@ -209,7 +209,7 @@ function isValid(object, field) {
  */
 function rejectEmptyPromise(p, err) {
   return p.then((x) => {
-    if (x == null) {
+    if (x == undefined) {
       return Promise.reject(new RequestError(err));
     }
     return Promise.resolve(x);

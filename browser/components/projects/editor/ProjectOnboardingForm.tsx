@@ -16,6 +16,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import { connect } from 'react-redux';
+import { AccessLevel } from '../../../../server/api/projects/interfaces';
 import * as ProjectActions from '../../../modules/projects';
 import GroupSelect from '../acl/GroupSelect';
 
@@ -25,14 +26,17 @@ interface Props {
 }
 
 interface State {
-  ownerGroup: string;
+  ownerGroup?: string;
 }
 
 class ProjectOnboardingForm extends Component<Props, State> {
 
-  state = {
-    ownerGroup: null,
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      ownerGroup: undefined,
+    };
+  }
 
   componentDidMount() {
     $('[data-toggle="tooltip"]').tooltip({placement: 'bottom', container: 'body'});
@@ -41,6 +45,10 @@ class ProjectOnboardingForm extends Component<Props, State> {
   handleSubmit = (e) => {
     const { dispatch } = this.props;
     e.preventDefault();
+
+    const acl = this.state.ownerGroup ? {
+      [this.state.ownerGroup]: 'owner' as AccessLevel,
+    } : {};
 
     const fields = e.target.elements;
     dispatch(ProjectActions.createProject({
@@ -53,9 +61,7 @@ class ProjectOnboardingForm extends Component<Props, State> {
           fields.legalContact.value,
         ],
       },
-      acl: {
-        [this.state.ownerGroup]: 'owner',
-      },
+      acl,
       metadata: {
         open_sourcing: fields.openSourcing.value === 'true',
       },
@@ -133,8 +139,8 @@ class ProjectOnboardingForm extends Component<Props, State> {
               <GroupSelect
                 name="ownerGroup"
                 groups={this.props.groups}
-                value={this.state.ownerGroup}
-                onChange={(val) => this.setState({ownerGroup: val})}
+                value={this.state.ownerGroup!}
+                onChange={(val: any) => this.setState({ownerGroup: val})}
               />
             </div>
           </div>

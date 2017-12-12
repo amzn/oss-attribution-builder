@@ -33,14 +33,14 @@ interface Props {
 }
 
 interface State {
-  editPackageId: number | null;
+  editPackageId?: number;
   showPackageEditor: boolean;
 }
 
 class ProjectView extends Component<Props, State> {
 
   state = {
-    editPackageId: null,
+    editPackageId: undefined,
     showPackageEditor: false,
   };
 
@@ -64,8 +64,8 @@ class ProjectView extends Component<Props, State> {
       }
 
       if (fieldName === 'contacts') {
-        if (extended == null) {
-          throw new Error('contacts extended data must not be null');
+        if (extended == undefined) {
+          throw new Error('contacts extended data must not be undefined');
         }
 
         // transform a single contact field into a change of the contacts map
@@ -78,8 +78,8 @@ class ProjectView extends Component<Props, State> {
           },
         }));
       } else if (fieldName === 'meta') {
-        if (extended == null) {
-          throw new Error('meta extended data must not be null');
+        if (extended == undefined) {
+          throw new Error('meta extended data must not be undefined');
         }
 
         // transform a single meta edit into an updated meta map
@@ -109,7 +109,8 @@ class ProjectView extends Component<Props, State> {
       </select>
     );
 
-    const legalContact = project.contacts.legal && project.contacts.legal.length > 0 && project.contacts.legal[0];
+    const legalContact = (project.contacts.legal && project.contacts.legal.length > 0) ?
+      project.contacts.legal[0] : '';
 
     return (
       <div className="pb-5">
@@ -212,7 +213,7 @@ class ProjectView extends Component<Props, State> {
     }
 
     // don't show the package list if we're editing a specific package
-    if (showPackageEditor && editPackageId != null) {
+    if (showPackageEditor && editPackageId != undefined) {
       return;
     }
 
@@ -243,7 +244,7 @@ class ProjectView extends Component<Props, State> {
       </button>;
     }
 
-    if (editPackageId != null) {
+    if (editPackageId != undefined) {
       const usage = packagesUsed.find((x) => x.packageId === editPackageId);
       const pkg = packages[editPackageId];
       return <PackageEditor
@@ -251,7 +252,7 @@ class ProjectView extends Component<Props, State> {
         initialUsage={usage}
         onCompleted={() => this.setState({
           showPackageEditor: false,
-          editPackageId: null,
+          editPackageId: undefined,
         })}
       />;
     }
@@ -259,7 +260,7 @@ class ProjectView extends Component<Props, State> {
     return <PackageEditor
       onCompleted={() => this.setState({
         showPackageEditor: false,
-        editPackageId: null,
+        editPackageId: undefined,
       })}
     />;
   }

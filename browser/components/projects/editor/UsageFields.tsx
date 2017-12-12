@@ -55,8 +55,8 @@ export default class UsageFields extends React.Component<Props, State> {
     return <QuestionWidget key={i}
       name={name}
       question={questions[name]}
-      value={this.state.usage[name]}
-      onChange={(val) => this.handleChange(name, val)}
+      value={this.state.usage[name]!}
+      onChange={(val: any) => this.handleChange(name, val)}
     />;
   }
 

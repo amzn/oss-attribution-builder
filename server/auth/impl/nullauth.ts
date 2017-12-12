@@ -34,10 +34,10 @@ export default class NullAuth implements AuthBase {
   initialize(app: Express, passport: PassportStatic) {
     // register cookies and http basic strategies
     passport.use(new CookieStrategy({cookieName: 'nullauth-dummy-user'}, (token, done) => {
-      done(null, {user: token} as AuthUser);
+      done(undefined, {user: token} as AuthUser);
     }));
     passport.use(new BasicStrategy((user, pass, done) => {
-      done(null, user);
+      done(undefined, user);
     }));
 
     // configure dummy login page
@@ -59,10 +59,10 @@ export default class NullAuth implements AuthBase {
       || request.user.user || process.env.USER || 'unknown';
   }
 
-  async getDisplayName(user: string): Promise<string | null> {
+  async getDisplayName(user: string): Promise<string | undefined> {
     // special test case; this user will never "exist"
     if (user === 'nobody') {
-      return null;
+      return;
     }
     return user;
   }

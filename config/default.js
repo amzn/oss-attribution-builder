@@ -12,8 +12,8 @@ config.database = {
   port: 5432,
   database: 'postgres',
   user: 'postgres',
-  password: () => null,
-  ssl: null,
+  password: () => undefined,
+  ssl: undefined,
 };
 
 config.modules = {
