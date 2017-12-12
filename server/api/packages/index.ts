@@ -91,18 +91,18 @@ export async function storePackage(req: any, packageId: number, info: Pick<WebPa
       const subset = Immutable.fromJS({
         name: existing.name,
         version: existing.version,
-        website: existing.website,
-        copyright: existing.copyright,
-        license: existing.license,
-        licenseText: existing.license_text,
+        website: existing.website || undefined,
+        copyright: existing.copyright || undefined,
+        license: existing.license || undefined,
+        licenseText: existing.license_text || undefined,
       });
       const updated = Immutable.fromJS({
         name: info.name,
         version: info.version,
-        website: info.website,
-        copyright: info.copyright,
-        license: info.license,
-        licenseText: info.licenseText,
+        website: info.website || undefined,
+        copyright: info.copyright || undefined,
+        license: info.license || undefined,
+        licenseText: info.licenseText || undefined,
       });
 
       // should insert if they're not the same
