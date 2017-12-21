@@ -75,7 +75,7 @@ class App extends React.Component<Props, {}> {
       <div>
         <nav className="navbar navbar-expand-sm navbar-light bg-light">
           <NavLink exact to="/" className="navbar-brand" activeClassName="active">
-            <ExtensionPoint ext="logo-navbar">
+            <ExtensionPoint ext="navbar-logo">
               Attribution Builder
             </ExtensionPoint>
           </NavLink>

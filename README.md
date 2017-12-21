@@ -57,6 +57,12 @@ Tags allow you to add arbitrary validation rules to a license. They can be usefu
 
 For information on what tags can do and how to create your own, see [the tags README](server/licenses/tags/README.md).
 
+### Extensions
+
+The attribution builder offers some form of extensions that allow you to alter client-side site behavior and appearance, without needing to patch internals. This can make upgrades easier.
+
+See [the extensions README](browser/extensions/README.md) for details.
+
 ### Authentication module
 
 The attribution builder supports being able to restrict access to certain people or groups using project ACLs. These can also be used for administration and to "verify" packages (details on that in a later section). The default implementation `nullauth` is not very useful for most environments; you will want to write your own when launching more broadly.
