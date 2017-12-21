@@ -35,3 +35,8 @@ window.addEventListener('DOMContentLoaded', () => {
     document.getElementById('content'),
   );
 });
+
+// @ts-ignore
+// load up extensions (webpack hook)
+const extCtx = require.context('./extensions', false, /.ext.[jt]sx?$/);
+extCtx.keys().forEach(extCtx);

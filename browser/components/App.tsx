@@ -17,6 +17,7 @@ import { connect } from 'react-redux';
 import { NavLink, Route, Switch } from 'react-router-dom';
 
 import { fetchSiteInfo, setAdminMode, setGeneralError } from '../modules/common';
+import ExtensionPoint from '../util/ExtensionPoint';
 import Landing from './Landing';
 import PackageVerification from './projects/admin/PackageVerification';
 import PackageVerificationQueue from './projects/admin/PackageVerificationQueue';
@@ -74,7 +75,9 @@ class App extends React.Component<Props, {}> {
       <div>
         <nav className="navbar navbar-expand-sm navbar-light bg-light">
           <NavLink exact to="/" className="navbar-brand" activeClassName="active">
-            Attribution Builder
+            <ExtensionPoint ext="logo-navbar">
+              Attribution Builder
+            </ExtensionPoint>
           </NavLink>
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav mr-auto">
@@ -111,6 +114,7 @@ class App extends React.Component<Props, {}> {
                   <ToggleLink state={admin} onClick={this.toggleAdmin}>Admin</ToggleLink>
                 </div>
               }
+              <ExtensionPoint ext="footer" />
             </div>
           </div>
         </div>
