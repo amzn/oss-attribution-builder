@@ -42,4 +42,24 @@ A [React functional component].
         * `children` - the default header text
 * Return: a rendered React component.
 
+### `package-editor-end`
+
+Add additional instructions or logic after the package editor form (but before the save/add button).
+
+A [React functional component].
+
+* Input:
+    * `props` - React props:
+        * `project` - An object describing the current project. See [WebProject].
+        * `pkg` - An object describing the package information. See [WebPackage].
+        * `usage` - An object describing usage information. See [PackageUsage].
+        * `license` - An object describing the selected license. See [WebLicense].
+        * `questions` - A list of questions displayed on the form. Selections will be present in `usage`, not here. See [TagQuestion].
+* Return: a rendered React component.
+
 [React functional component]: https://reactjs.org/docs/components-and-props.html#functional-and-class-components
+[WebProject]: ../../server/api/projects/interfaces.ts
+[WebPackage]: ../../server/api/packages/interfaces.ts
+[PackageUsage]: ../../server/api/projects/interfaces.ts
+[WebLicense]: ../../server/api/licenses/interfaces.ts
+[TagQuestion]: ../../server/licenses/interfaces.ts

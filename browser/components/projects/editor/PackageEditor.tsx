@@ -19,6 +19,7 @@ import { connect } from 'react-redux';
 import { WebTag } from '../../../../server/api/licenses/interfaces';
 import { PackageUsage, WebProject } from '../../../../server/api/projects/interfaces';
 import * as ProjectActions from '../../../modules/projects';
+import ExtensionPoint from '../../../util/ExtensionPoint';
 import PackageFields, { PkgOutput } from './PackageFields';
 import UsageFields from './UsageFields';
 
@@ -93,8 +94,8 @@ class PackageEditor extends Component<Props, Partial<State>> {
   }
 
   render() {
-    const { initialPackage, initialUsage, licenses, tags } = this.props;
-    const { pkg } = this.state;
+    const { initialPackage, initialUsage, licenses, project, tags } = this.props;
+    const { pkg, usage } = this.state;
 
     // XXX: move this out of the render path?
     // collect questions from tags
@@ -137,6 +138,15 @@ class PackageEditor extends Component<Props, Partial<State>> {
             />
           </div>
         }
+
+        <ExtensionPoint
+          ext="package-editor-end"
+          project={project}
+          pkg={pkg}
+          usage={usage}
+          license={license}
+          questions={questions}
+        />
 
         <button type="submit" className="btn btn-primary">
           {initialPackage ?
