@@ -12,7 +12,8 @@ interface Props {
 const ExtensionPoint: React.SFC<Props> = (props): any => {
   const exts = getExtensions(props.ext);
   if (exts.length === 0) {
-    return props.children;
+    // tslint:disable-next-line:no-null-keyword
+    return props.children || null;
   }
 
   return exts.map((Ext, i) => <Ext key={`ext-${props.ext}-${i}`} {...props} />);
