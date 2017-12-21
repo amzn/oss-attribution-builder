@@ -9,7 +9,9 @@ require manual edits to pluggable interfaces.
 
 ## Unreleased
 
-(No current changes)
+### Added
+- Added extension points to customize the look and behavior of client-side components. See
+  the README in `browser/extensions` for info.
 
 ## 0.9.0 - 2017-12-11
 
