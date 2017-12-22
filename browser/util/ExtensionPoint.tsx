@@ -22,15 +22,42 @@ interface Props {
   [p: string]: any;
 }
 
-// `any` needed below; see https://github.com/DefinitelyTyped/DefinitelyTyped/issues/20356
-const ExtensionPoint: React.SFC<Props> = (props): any => {
-  const exts = getExtensions(props.ext);
-  if (exts.length === 0) {
-    // tslint:disable-next-line:no-null-keyword
-    return props.children || null;
+interface State {
+  crashed?: boolean;
+}
+
+export default class ExtensionPoint extends React.Component<Props, State> {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      crashed: false,
+    };
+  }
+  componentDidCatch(error, info) {
+    // tslint:disable:no-console
+    console.error(`Extension at point ${this.props.ext} crashed.`);
+    console.error('Component stack:', info.componentStack);
+    this.setState({crashed: true});
   }
 
-  return exts.map((Ext, i) => <Ext key={`ext-${props.ext}-${i}`} {...props} />);
-};
+  render() {
+    if (this.state.crashed) {
+      return (
+        <div className="alert alert-danger">
+          <strong>Bug:</strong> An extension that was supposed to render here crashed.
+          Details may be available in the browser console.
+        </div>
+      );
+    }
 
-export default ExtensionPoint;
+    const exts = getExtensions(this.props.ext);
+    if (exts.length === 0) {
+      // tslint:disable-next-line:no-null-keyword
+      return this.props.children || null;
+    }
+
+    return exts.map((Ext, i) => <Ext key={`ext-${this.props.ext}-${i}`} {...this.props} />);
+  }
+
+}
