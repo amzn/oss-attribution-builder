@@ -17,6 +17,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { fetchSiteInfo } from '../modules/common';
+import ExtensionPoint from '../util/ExtensionPoint';
 
 interface Props {
   dispatch: any;
@@ -36,19 +37,22 @@ class Landing extends React.Component<Props, {}> {
   render() {
     const { admin, displayName } = this.props;
 
-    return (
+    return [
       <div className="jumbotron">
         <h3>{displayName ? `Hello, ${displayName}` : 'Hello'}</h3>
-        <p>
-          This tool helps you build an attribution document to use in a distributed product.
-        </p>
-        We organize attribution documents by project.
-        You can create a new project or browse your projects below.
-        We'll ask you for some basic details about your product,
-        such as who your legal contact is and when you plan to distribute or launch.
-        Then you'll build a list of all of the open source packages you use and their licenses.
-        These packages and their licenses will form your attribution document.
-        <br/><br/>
+        <ExtensionPoint ext="landing-description">
+          <p>
+            This tool helps you build an attribution document to use in a distributed product.
+          </p>
+          <p>
+            We organize attribution documents by project.
+            You can create a new project or browse your projects below.
+            We'll ask you for some basic details about your product,
+            such as who your legal contact is and when you plan to distribute or launch.
+            Then you'll build a list of all of the open source packages you use and their licenses.
+            These packages and their licenses will form your attribution document.
+          </p>
+        </ExtensionPoint>
         <p>
           <Link to="/projects/new" className="btn btn-primary btn-lg">New Project</Link>{' '}
           <Link to="/projects/" className="btn btn-secondary btn-lg">My Projects</Link>{' '}
@@ -56,8 +60,9 @@ class Landing extends React.Component<Props, {}> {
             <Link to="/projects/?all=1" className="btn btn-secondary btn-sm">All Projects</Link>
           : ''}
         </p>
-      </div>
-    );
+      </div>,
+      <ExtensionPoint ext="landing-after" />,
+    ];
   }
 }
 

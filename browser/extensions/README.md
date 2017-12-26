@@ -31,6 +31,27 @@ A [React functional component].
     * `props` - React props. Empty.
 * Return: a rendered React component.
 
+### `landing-after`
+
+Add additional information to the landing/home page, after the "jumbotron" description and buttons.
+
+A [React functional component].
+
+* Input:
+    * `props` - React props. Empty.
+* Return: a rendered React component.
+
+### `landing-description`
+
+Add to or replace the description on the landing page, above the project buttons.
+
+A [React functional component].
+
+* Input:
+    * `props` - React props:
+        * `children` - default description
+* Return: a rendered React component.
+
 ### `navbar-logo`
 
 Replace the "Attribution Builder" text with your own text or logo.

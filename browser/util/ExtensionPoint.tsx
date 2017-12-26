@@ -34,6 +34,7 @@ export default class ExtensionPoint extends React.Component<Props, State> {
       crashed: false,
     };
   }
+
   componentDidCatch(error, info) {
     // tslint:disable:no-console
     console.error(`Extension at point ${this.props.ext} crashed.`);
