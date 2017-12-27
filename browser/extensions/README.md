@@ -78,6 +78,18 @@ A [React functional component].
         * `questions` - A list of questions displayed on the form. Selections will be present in `usage`, not here. See [TagQuestion].
 * Return: a rendered React component.
 
+### `page-not-found`
+
+Customize the 404 page (for client-side routes).
+
+A [React functional component].
+
+* Input:
+    * `props` - React props:
+        * `children` - Default 404 error content, inside a Bootstrap card body.
+        * `match` - A react-router match object; see its `path` property for the current location.
+* Return: a rendered React component.
+
 [React functional component]: https://reactjs.org/docs/components-and-props.html#functional-and-class-components
 [WebProject]: ../../server/api/projects/interfaces.ts
 [WebPackage]: ../../server/api/packages/interfaces.ts

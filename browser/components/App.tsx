@@ -19,6 +19,7 @@ import { NavLink, Route, Switch } from 'react-router-dom';
 import { fetchSiteInfo, setAdminMode, setGeneralError } from '../modules/common';
 import ExtensionPoint from '../util/ExtensionPoint';
 import Landing from './Landing';
+import NotFound from './NotFound';
 import PackageVerification from './projects/admin/PackageVerification';
 import PackageVerificationQueue from './projects/admin/PackageVerificationQueue';
 import Projects from './projects/browse/Projects';
@@ -103,6 +104,7 @@ class App extends React.Component<Props, {}> {
                 <Route path="/projects/:projectId" component={ProjectRouter} />
                 <Route exact path="/packages/verify" component={PackageVerificationQueue} />
                 <Route path="/packages/verify/:packageId" component={PackageVerification} />
+                <Route component={NotFound} />
               </Switch>
             </div>
           </div>
