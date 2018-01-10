@@ -89,6 +89,7 @@ class App extends React.Component<Props, {}> {
                 <NavLink exact to="/projects/new" className="nav-link" activeClassName="active">New Project</NavLink>
               </li>
             </ul>
+            <ExtensionPoint ext="navbar-end" />
           </div>
         </nav>
 

@@ -63,6 +63,16 @@ A [React functional component].
         * `children` - the default header text
 * Return: a rendered React component.
 
+### `navbar-end`
+
+Add additional items to the end of the navbar.
+
+A [React functional component].
+
+* Input:
+    * `props` - React props. Empty.
+* Return: a rendered React component.
+
 ### `package-editor-end`
 
 Add additional instructions or logic after the package editor form (but before the save/add button).
