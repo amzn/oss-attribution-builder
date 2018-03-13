@@ -23,8 +23,18 @@ Please ensure that your change still passes unit tests, and ideally integration/
 
 Generally, match the style of the surrounding code. We ship an EditorConfig file for indentation and TSLint configuration for TypeScript code. Please ensure your changes don't wildly deviate from those rules. You can run `npm run lint` to identify and automatically fix most style issues.
 
+## Code of Conduct
+This project has adopted the [Amazon Open Source Code of Conduct](https://aws.github.io/code-of-conduct). 
+For more information see the [Code of Conduct FAQ](https://aws.github.io/code-of-conduct-faq) or contact 
+opensource-codeofconduct@amazon.com with any additional questions or comments.
+
+
+## Security issue notifications
+If you discover a potential security issue in this project we ask that you notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/). Please do **not** create a public github issue.
+
+
 ## Licensing
 
-oss-attribution-builder is [Apache 2.0](LICENSE)-licensed. Contributions you submit will be released under that license.
+See the [LICENSE](https://github.com/amzn/oss-attribution-builder/blob/master/LICENSE) file for our project's licensing. We will ask you to confirm the licensing of your contribution.
 
 We may ask you to sign a [Contributor License Agreement (CLA)](http://en.wikipedia.org/wiki/Contributor_License_Agreement) for larger changes.
