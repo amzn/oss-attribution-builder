@@ -17,6 +17,7 @@ import { isAdmin, isUserInGroup } from '../../auth/util';
 import { DbProject } from '../../db/projects';
 import { AccessError } from '../../errors';
 import { AccessLevel, AccessLevelStrength } from './interfaces';
+import config from '../../config';
 
 /**
  * Check if the request's user is the project's contact list.
@@ -54,33 +55,51 @@ export async function effectivePermission(req: any, project: ProjectAccess): Pro
   const user = auth.extractRequestUser(req);
   const reqGroups = await auth.getGroups(user);
 
-  // start by checking the global list
-  // TODO: make global list ACL-like too
+  // start by checking the admin list
+  // (this can be replaced with the global ACL at some point)
   if (isAdmin(req, reqGroups)) {
     return 'owner';
   }
 
+  // check the global ACL
+  const globalLevel = getAclLevel(config.globalACL, reqGroups);
+  const globalStrength = globalLevel ? AccessLevelStrength[globalLevel] : 0;
+
   // then check the project ACL
+  const projectLevel = getAclLevel(project.acl, reqGroups);
+  const projectStrength = projectLevel ? AccessLevelStrength[projectLevel] : 0;
+
+  // pick the higher of the two
+  const [effective, effectiveStrength] = (projectStrength > globalStrength) ?
+    [projectLevel, projectStrength] : [globalLevel, globalStrength];
+
+  // then check the contact list (defaults to view permissions)
+  if (effectiveStrength < AccessLevelStrength.viewer && isInContacts(req, project)) {
+    return 'viewer';
+  }
+
+  return effective;
+}
+
+/**
+ * Given an ACL and a user's groups, return their access level.
+ */
+function getAclLevel(acl: DbProject['acl'], groups: string[]): AccessLevel | undefined {
   let effective: AccessLevel | undefined;
   let effectiveStrength = 0;
-  for (const entity of Object.keys(project.acl)) {
+  for (const entity of Object.keys(acl)) {
     // skip groups that aren't relevant for the requester
-    if (!isUserInGroup(entity, reqGroups)) {
+    if (!isUserInGroup(entity, groups)) {
       continue;
     }
 
     // if we find a level with stronger access, use that
-    const level = project.acl[entity];
+    const level = acl[entity];
     const strength = AccessLevelStrength[level];
     if (strength > effectiveStrength) {
       effective = level;
       effectiveStrength = strength;
     }
-  }
-
-  // then check the contact list (defaults to view permissions)
-  if (effectiveStrength < AccessLevelStrength.viewer && isInContacts(req, project)) {
-    effective = 'viewer';
   }
 
   return effective;

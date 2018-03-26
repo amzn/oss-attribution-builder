@@ -25,6 +25,10 @@ config.admin = {
   verifiers: new Set(['self:verifier']),
 };
 
+config.globalACL = {
+  'self:viewer': 'viewer',
+};
+
 // load once asked for
 function load() {
   return Promise.resolve(config);

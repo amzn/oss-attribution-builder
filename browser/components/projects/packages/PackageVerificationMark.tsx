@@ -29,7 +29,7 @@ interface Props {
 // with things that need to dynamically update.
 
 export default class PackageVerificationMark extends Component<Props, {}> {
-  private self: HTMLElement;
+  private self?: HTMLElement;
 
   componentDidMount() {
     $(this.self).tooltip();

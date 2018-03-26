@@ -23,7 +23,7 @@ interface Props {
 }
 
 export default class ErrorModal extends Component<Props, {}> {
-  private self: HTMLElement;
+  private self?: HTMLElement;
 
   componentDidMount() {
     // for some reason (bug in BS4.b2?) clicking the backdrop instead of close

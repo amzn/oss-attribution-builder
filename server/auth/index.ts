@@ -35,5 +35,6 @@ export async function userInfo(req: any): Promise<any> {
     permissions: {
       admin: canAdmin,
     },
+    globalACL: config.globalACL,
   };
 }

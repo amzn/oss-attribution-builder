@@ -32,7 +32,7 @@ interface Props {
 }
 
 class PackageCard extends Component<Props, {}> {
-  private ref: HTMLElement;
+  private ref?: HTMLElement;
   extendedFetched: boolean = false;
 
   static defaultProps = {
@@ -49,7 +49,7 @@ class PackageCard extends Component<Props, {}> {
   }
 
   componentDidMount() {
-    triggerOnVisible(this.ref, () => {
+    triggerOnVisible(this.ref!, () => {
       this.fetchExtended();
     });
   }

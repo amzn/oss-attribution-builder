@@ -22,6 +22,7 @@ import * as ProjectActions from '../../../modules/projects';
 interface Props {
   dispatch: (action: any) => any;
   project: WebProject;
+  globalACL: WebProject['acl'];
 }
 
 interface State {
@@ -87,7 +88,10 @@ class ProjectAclEditor extends React.Component<Props, State> {
   }
 
   render() {
+    const { globalACL } = this.props;
     const { sortedAcl } = this.state;
+
+    const hasGlobalACL = Object.keys(globalACL).length > 0;
 
     return <form onSubmit={this.save}>
       <h2>Manage project access</h2>
@@ -118,6 +122,26 @@ class ProjectAclEditor extends React.Component<Props, State> {
           </tr>
         </tbody>
       </table>
+
+      {hasGlobalACL &&
+        <div>
+          <p>The following also have acces to projects on this site:</p>
+          <table className="table table-bordered">
+            <thead>
+              <th style={{ width: '20%' }}>Permissions</th>
+              <th>Group</th>
+            </thead>
+            <tbody>
+              {Object.keys(globalACL).map(key =>
+                <tr key={key}>
+                  <td>{globalACL[key]}</td>
+                  <td>{key}</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      }
 
       <button type="submit" className="btn btn-primary">
         Save
@@ -158,5 +182,6 @@ function AclRow(props: AclRowProps) {
 }
 
 export default connect((state: any) => ({
+  globalACL: state.common.info.globalACL,
   project: state.projects.active,
 }))(ProjectAclEditor);
