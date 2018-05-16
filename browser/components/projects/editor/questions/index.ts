@@ -23,20 +23,20 @@ export interface BaseProps {
 }
 
 export class BaseWidget<T extends BaseProps> extends React.Component<T, {}> {
-
   protected coerceType(val: string): any {
-    const { question: { type } } = this.props;
+    const {
+      question: { type },
+    } = this.props;
 
     let out: any;
     if (type === 'string') {
       out = val;
     } else if (type === 'boolean') {
-      out = (val === 'true' || val === '1' || val === 'yes');
+      out = val === 'true' || val === '1' || val === 'yes';
     } else if (type === 'number') {
       out = Number.parseInt(val);
     }
 
     return out;
   }
-
 }

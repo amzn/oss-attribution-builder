@@ -14,10 +14,10 @@
 
 import auth from '../../auth';
 import { isAdmin, isUserInGroup } from '../../auth/util';
+import config from '../../config';
 import { DbProject } from '../../db/projects';
 import { AccessError } from '../../errors';
 import { AccessLevel, AccessLevelStrength } from './interfaces';
-import config from '../../config';
 
 /**
  * Check if the request's user is the project's contact list.
@@ -38,7 +38,11 @@ export type ProjectAccess = Pick<DbProject, 'contacts' | 'acl'>;
 /**
  * Throw an error if the request's user has no access.
  */
-export async function assertProjectAccess(req: any, project: ProjectAccess, level: AccessLevel): Promise<void> {
+export async function assertProjectAccess(
+  req: any,
+  project: ProjectAccess,
+  level: AccessLevel
+): Promise<void> {
   if (project != undefined) {
     const effective = await effectivePermission(req, project);
     if (effective != undefined) {
@@ -48,10 +52,15 @@ export async function assertProjectAccess(req: any, project: ProjectAccess, leve
     }
   }
 
-  throw new AccessError('This project does not exist or you do not have access to it.');
+  throw new AccessError(
+    'This project does not exist or you do not have access to it.'
+  );
 }
 
-export async function effectivePermission(req: any, project: ProjectAccess): Promise<AccessLevel | undefined> {
+export async function effectivePermission(
+  req: any,
+  project: ProjectAccess
+): Promise<AccessLevel | undefined> {
   const user = auth.extractRequestUser(req);
   const reqGroups = await auth.getGroups(user);
 
@@ -70,11 +79,16 @@ export async function effectivePermission(req: any, project: ProjectAccess): Pro
   const projectStrength = projectLevel ? AccessLevelStrength[projectLevel] : 0;
 
   // pick the higher of the two
-  const [effective, effectiveStrength] = (projectStrength > globalStrength) ?
-    [projectLevel, projectStrength] : [globalLevel, globalStrength];
+  const [effective, effectiveStrength] =
+    projectStrength > globalStrength
+      ? [projectLevel, projectStrength]
+      : [globalLevel, globalStrength];
 
   // then check the contact list (defaults to view permissions)
-  if (effectiveStrength < AccessLevelStrength.viewer && isInContacts(req, project)) {
+  if (
+    effectiveStrength < AccessLevelStrength.viewer &&
+    isInContacts(req, project)
+  ) {
     return 'viewer';
   }
 
@@ -84,7 +98,10 @@ export async function effectivePermission(req: any, project: ProjectAccess): Pro
 /**
  * Given an ACL and a user's groups, return their access level.
  */
-function getAclLevel(acl: DbProject['acl'], groups: string[]): AccessLevel | undefined {
+function getAclLevel(
+  acl: DbProject['acl'],
+  groups: string[]
+): AccessLevel | undefined {
   let effective: AccessLevel | undefined;
   let effectiveStrength = 0;
   for (const entity of Object.keys(acl)) {

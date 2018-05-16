@@ -23,8 +23,9 @@ export function validateSelf(name, text, tags) {
     return [
       {
         level: 1,
-        message: `The attribution builder has the text of ${name}, ` +
-          'but it doesn\'t have any additional instructions available. ' +
+        message:
+          `The attribution builder has the text of ${name}, ` +
+          "but it doesn't have any additional instructions available. " +
           'Review this license carefully to ensure you comply with its terms.',
       },
     ];
@@ -34,14 +35,14 @@ export function validateSelf(name, text, tags) {
   return [
     {
       level: 1,
-      message: `${proper} is not known by the attribution builder. ` +
+      message:
+        `${proper} is not known by the attribution builder. ` +
         'Review it carefully to ensure you comply with its terms.',
     },
   ];
 }
 
-export function validateUsage(pkg, usage) {
-}
+export function validateUsage(pkg, usage) {}
 
 export const questions = {
   ...require('./linkage').questions,

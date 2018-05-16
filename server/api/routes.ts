@@ -25,19 +25,25 @@ import * as projectValidators from './projects/validators';
 export let router = express.Router();
 
 router.use(bodyParser.json());
-router.use(bodyParser.urlencoded({
-  extended: true,
-}));
+router.use(
+  bodyParser.urlencoded({
+    extended: true,
+  })
+);
 
 /**
  * Send API call results, calling error middleware on failure.
  */
-function pack(promise: Promise<any>, res: any | undefined, next: any | undefined) {
+function pack(
+  promise: Promise<any>,
+  res: any | undefined,
+  next: any | undefined
+) {
   if (!res || !next) {
     throw new Error('Missing response or next middleware parameters');
   }
   return promise
-    .then((x) => {
+    .then(x => {
       if (x == undefined) {
         res.status(404).send('Object not found');
       } else {
@@ -64,9 +70,13 @@ router.get('/projects', async (req, res, next) => {
 /**
  * Create a new project.
  */
-router.post('/projects/new', projectValidators.createProject, async (req, res, next) => {
-  await pack(projectAPI.createProject(req, req.body), res, next);
-});
+router.post(
+  '/projects/new',
+  projectValidators.createProject,
+  async (req, res, next) => {
+    await pack(projectAPI.createProject(req, req.body), res, next);
+  }
+);
 
 /**
  * Get a particular project.
@@ -78,44 +88,85 @@ router.get('/projects/:projectId', async (req, res, next) => {
 /**
  * Edit a project's basic details.
  */
-router.patch('/projects/:projectId', projectValidators.patchProject, async (req, res, next) => {
-  await pack(projectAPI.patchProject(req, req.params.projectId, req.body), res, next);
-});
+router.patch(
+  '/projects/:projectId',
+  projectValidators.patchProject,
+  async (req, res, next) => {
+    await pack(
+      projectAPI.patchProject(req, req.params.projectId, req.body),
+      res,
+      next
+    );
+  }
+);
 
 /**
  * Attach a package to a project, optionally creating or updating the package.
  */
-router.post('/projects/:projectId/attach', projectValidators.attachPackage, async (req, res, next) => {
-  await pack(projectAPI.attachPackage(req, req.params.projectId, req.body), res, next);
-});
+router.post(
+  '/projects/:projectId/attach',
+  projectValidators.attachPackage,
+  async (req, res, next) => {
+    await pack(
+      projectAPI.attachPackage(req, req.params.projectId, req.body),
+      res,
+      next
+    );
+  }
+);
 
 /**
  * Detach a package from a project.
  */
 router.post('/projects/:projectId/detach', async (req, res, next) => {
-  await pack(projectAPI.detachPackage(req, req.params.projectId, req.body.packageId), res, next);
+  await pack(
+    projectAPI.detachPackage(req, req.params.projectId, req.body.packageId),
+    res,
+    next
+  );
 });
 
 /**
  * Replace a package instance with another, without changing the usage.
  */
-router.post('/projects/:projectId/replace', projectValidators.replacePackage, async (req, res, next) => {
-  await pack(projectAPI.replacePackage(req, req.params.projectId, req.body.oldId, req.body.newId), res, next);
-});
+router.post(
+  '/projects/:projectId/replace',
+  projectValidators.replacePackage,
+  async (req, res, next) => {
+    await pack(
+      projectAPI.replacePackage(
+        req,
+        req.params.projectId,
+        req.body.oldId,
+        req.body.newId
+      ),
+      res,
+      next
+    );
+  }
+);
 
 /**
  * Build an attribution document. Return the document along
  * with any warnings.
  */
 router.get('/projects/:projectId/build', async (req, res, next) => {
-  await pack(projectAPI.generateAttributionDocument(req, req.params.projectId), res, next);
+  await pack(
+    projectAPI.generateAttributionDocument(req, req.params.projectId),
+    res,
+    next
+  );
 });
 
 /**
  * Building a document using POST will trigger a store & download.
  */
 router.post('/projects/:projectId/build', async (req, res, next) => {
-  await pack(projectAPI.generateAttributionDocument(req, req.params.projectId, true), res, next);
+  await pack(
+    projectAPI.generateAttributionDocument(req, req.params.projectId, true),
+    res,
+    next
+  );
 });
 
 /*** Packages ***/
@@ -138,14 +189,31 @@ router.get('/packages/verification', async (req, res, next) => {
  * Get a single package.
  */
 router.get('/packages/:packageId', async (req, res, next) => {
-  await pack(packageAPI.getPackage(req, req.params.packageId, req.query.extended != undefined), res, next);
+  await pack(
+    packageAPI.getPackage(
+      req,
+      req.params.packageId,
+      req.query.extended != undefined
+    ),
+    res,
+    next
+  );
 });
 
 /**
  * Verify (accept/reject with comments) a single package.
  */
 router.post('/packages/:packageId/verify', async (req, res, next) => {
-  await pack(packageAPI.verifyPackage(req, req.params.packageId, req.body.verified, req.body.comments), res, next);
+  await pack(
+    packageAPI.verifyPackage(
+      req,
+      req.params.packageId,
+      req.body.verified,
+      req.body.comments
+    ),
+    res,
+    next
+  );
 });
 
 /*** Licenses ***/
@@ -158,14 +226,16 @@ router.get('/licenses/', async (req, res, next) => {
 });
 
 // error handling for all of the above
-router.use(function (err: any, req: any, res: any, next: any) {
-  if (err.name === 'UnauthorizedError'
-      || err.name === 'AccessError'
-      || err.name === 'RequestError') {
-    res.status(err.status).send({error: err.message});
+router.use(function(err: any, req: any, res: any, next: any) {
+  if (
+    err.name === 'UnauthorizedError' ||
+    err.name === 'AccessError' ||
+    err.name === 'RequestError'
+  ) {
+    res.status(err.status).send({ error: err.message });
     return;
   }
 
   winston.error(err.stack ? err.stack : err);
-  res.status(500).send({error: 'Internal error.'});
+  res.status(500).send({ error: 'Internal error.' });
 });

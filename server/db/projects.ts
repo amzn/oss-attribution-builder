@@ -25,11 +25,11 @@ export interface DbProject {
   planned_release?: Date;
   created_on: Date;
   // contact type: [list of contacts]
-  contacts: {[key: string]: string[]};
+  contacts: { [key: string]: string[] };
   // resource (user/group) name: access level
-  acl: {[key: string]: AccessLevel};
+  acl: { [key: string]: AccessLevel };
   packages_used: DbPackageUsage[];
-  metadata?: {[key: string]: any};
+  metadata?: { [key: string]: any };
 }
 
 export interface DbPackageUsage {
@@ -38,7 +38,10 @@ export interface DbPackageUsage {
 }
 
 export function getProject(projectId: string): Promise<DbProject> {
-  return pg().oneOrNone('select * from projects where project_id = $1', projectId);
+  return pg().oneOrNone(
+    'select * from projects where project_id = $1',
+    projectId
+  );
 }
 
 export function searchProjects(): Promise<DbProject[]> {
@@ -51,22 +54,41 @@ export function searchOwnProjects(groups: string[]): Promise<DbProject[]> {
   }
   return pg().query(
     'select * from projects where acl ?| $1 order by created_on desc',
-    [groups],
+    [groups]
   );
 }
 
-type ProjectInput = Pick<DbProject, 'title' | 'version' | 'description' | 'planned_release' |
-                                    'contacts' | 'acl' | 'metadata'>;
-export async function createProject(project: ProjectInput, who: string): Promise<string> {
+type ProjectInput = Pick<
+  DbProject,
+  | 'title'
+  | 'version'
+  | 'description'
+  | 'planned_release'
+  | 'contacts'
+  | 'acl'
+  | 'metadata'
+>;
+export async function createProject(
+  project: ProjectInput,
+  who: string
+): Promise<string> {
   const projectId = generateID(10);
 
   // add the entry itself
   await pg().none(
     'insert into projects(' +
-    'project_id, title, version, description, planned_release, contacts, acl, metadata, packages_used' +
-    ') values($1, $2, $3, $4, $5, $6, $7, $8, \'[]\'::jsonb)',
-    [projectId, project.title, project.version, project.description, project.planned_release,
-      project.contacts, project.acl, project.metadata],
+      'project_id, title, version, description, planned_release, contacts, acl, metadata, packages_used' +
+      ") values($1, $2, $3, $4, $5, $6, $7, $8, '[]'::jsonb)",
+    [
+      projectId,
+      project.title,
+      project.version,
+      project.description,
+      project.planned_release,
+      project.contacts,
+      project.acl,
+      project.metadata,
+    ]
   );
 
   // add auditing info
@@ -77,8 +99,11 @@ export async function createProject(project: ProjectInput, who: string): Promise
   return projectId;
 }
 
-export async function patchProject(projectId: string, changes: Partial<DbProject>,
-                                   who: string): Promise<void> {
+export async function patchProject(
+  projectId: string,
+  changes: Partial<DbProject>,
+  who: string
+): Promise<void> {
   // build a set up update statements
   const patches: string[] = [];
   for (const change of Object.keys(changes)) {
@@ -90,17 +115,21 @@ export async function patchProject(projectId: string, changes: Partial<DbProject
   // insert them all
   await pg().none(
     `update projects set ${patchStr} where project_id = $(projectId)`,
-    Object.assign({projectId}, changes),
+    Object.assign({ projectId }, changes)
   );
 
   // audit the change
   await addAuditItem(projectId, who, changes);
 }
 
-export async function updatePackagesUsed(projectId: string, packagesUsed: any, who: string): Promise<void> {
+export async function updatePackagesUsed(
+  projectId: string,
+  packagesUsed: any,
+  who: string
+): Promise<void> {
   await pg().none(
     'update projects set packages_used = $1 where project_id = $2',
-    [JSON.stringify(packagesUsed), projectId],
+    [JSON.stringify(packagesUsed), projectId]
   );
 
   await addAuditItem(projectId, who, {

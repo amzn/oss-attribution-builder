@@ -37,6 +37,8 @@ export async function canValidate(req) {
 
 export async function assertCanValidate(req) {
   if (!(await canValidate(req))) {
-    throw new AccessError('You do not have access to validate package metadata.');
+    throw new AccessError(
+      'You do not have access to validate package metadata.'
+    );
   }
 }

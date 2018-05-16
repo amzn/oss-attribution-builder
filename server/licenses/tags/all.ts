@@ -66,5 +66,4 @@ export function validateSelf(name, text, tags) {
   return warnings;
 }
 
-export function validateUsage(pkg, usage) {
-}
+export function validateUsage(pkg, usage) {}

@@ -29,6 +29,11 @@ if (process.env.NODE_ENV === 'development') {
   app.disableCSP();
 }
 
-app.start(config.server.port, config.server.hostname).then(() => {
-  winston.info(`Server running on port ${config.server.port} [${process.env.NODE_ENV}]`);
-}).catch((err) => console.error(err));
+app
+  .start(config.server.port, config.server.hostname)
+  .then(() => {
+    winston.info(
+      `Server running on port ${config.server.port} [${process.env.NODE_ENV}]`
+    );
+  })
+  .catch(err => console.error(err));

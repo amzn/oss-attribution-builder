@@ -17,8 +17,10 @@ import debounce from './debounce';
 export function inViewport(el: HTMLElement) {
   const r = el.getBoundingClientRect();
   return (
-    r.bottom > 0 && r.top < window.innerHeight &&
-    r.right > 0 && r.left < window.innerWidth
+    r.bottom > 0 &&
+    r.top < window.innerHeight &&
+    r.right > 0 &&
+    r.left < window.innerWidth
   );
 }
 

@@ -75,7 +75,7 @@ class App extends React.Component<Props, {}> {
     return (
       <div>
         <nav className="navbar navbar-expand-sm navbar-light bg-light">
-          <NavLink exact to="/" className="navbar-brand" activeClassName="active">
+          <NavLink exact={true} to="/" className="navbar-brand" activeClassName="active">
             <ExtensionPoint ext="navbar-logo">
               Attribution Builder
             </ExtensionPoint>
@@ -83,10 +83,10 @@ class App extends React.Component<Props, {}> {
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav mr-auto">
               <li className="nav-item">
-                <NavLink exact to="/projects/" className="nav-link" activeClassName="active">My Projects</NavLink>
+                <NavLink exact={true} to="/projects/" className="nav-link" activeClassName="active">My Projects</NavLink>
               </li>
               <li className="nav-item">
-                <NavLink exact to="/projects/new" className="nav-link" activeClassName="active">New Project</NavLink>
+                <NavLink exact={true} to="/projects/new" className="nav-link" activeClassName="active">New Project</NavLink>
               </li>
             </ul>
             <ExtensionPoint ext="navbar-end" />
@@ -99,11 +99,11 @@ class App extends React.Component<Props, {}> {
           <div className="row">
             <div className="mx-auto col-lg-10">
               <Switch>
-                <Route exact path="/" component={Landing} />
-                <Route exact path="/projects" component={Projects} />
-                <Route exact path="/projects/new" component={ProjectOnboardingForm} />
+                <Route exact={true} path="/" component={Landing} />
+                <Route exact={true} path="/projects" component={Projects} />
+                <Route exact={true} path="/projects/new" component={ProjectOnboardingForm} />
                 <Route path="/projects/:projectId" component={ProjectRouter} />
-                <Route exact path="/packages/verify" component={PackageVerificationQueue} />
+                <Route exact={true} path="/packages/verify" component={PackageVerificationQueue} />
                 <Route path="/packages/verify/:packageId" component={PackageVerification} />
                 <Route component={NotFound} />
               </Switch>

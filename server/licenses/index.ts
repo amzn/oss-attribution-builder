@@ -41,10 +41,13 @@ function loadLicenses(): LicenseMap {
   // start with SPDX licenses
   const spdxData = require('../../data/spdx-license-data.json');
   for (const id of Object.keys(spdxData)) {
-    licenseMap.set(id, Immutable.fromJS({
-      tags: ['all', 'spdx', 'unknown'],
-      text: spdxData[id].text,
-    }));
+    licenseMap.set(
+      id,
+      Immutable.fromJS({
+        tags: ['all', 'spdx', 'unknown'],
+        text: spdxData[id].text,
+      })
+    );
   }
   winston.info('Loaded %s SPDX licenses', licenseMap.size);
 
@@ -79,11 +82,13 @@ function processKnownLicense(id: string, spdxData: any) {
   }
 
   if (typeof text !== 'string') {
-    throw new Error(`License ${id} neither supplied license text, nor referenced SPDX text`);
+    throw new Error(
+      `License ${id} neither supplied license text, nor referenced SPDX text`
+    );
   }
 
   // trim excess newlines from start and end
   text = text.replace(/^\n+|\n+$/g, '');
 
-  return Immutable.fromJS({tags, text});
+  return Immutable.fromJS({ tags, text });
 }

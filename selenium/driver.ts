@@ -18,21 +18,23 @@ import webdriver = require('selenium-webdriver');
 jasmine.DEFAULT_TIMEOUT_INTERVAL = 30 * 1000;
 
 export type CustomDriver = webdriver.WebDriver & {
-                             getRelative: (path: string) => webdriver.promise.Promise<void>,
-                             setUser: (user: string) => webdriver.promise.Promise<void>,
-                           };
+  getRelative: (path: string) => webdriver.promise.Promise<void>;
+  setUser: (user: string) => webdriver.promise.Promise<void>;
+};
 
-export default async function (): Promise<CustomDriver> {
+export default async function(): Promise<CustomDriver> {
   const driver: any = await new webdriver.Builder()
     .usingServer('http://localhost:4444/wd/hub')
     .forBrowser('chrome')
     .build();
-  driver.getRelative = function (path: string) {
+  driver.getRelative = function(path: string) {
     return driver.get(`http://web:8000${path}`);
   };
-  driver.setUser = async function (user: string = 'selenium') {
+  driver.setUser = async function(user: string = 'selenium') {
     driver.getRelative('/dummy-no-auth');
-    await driver.manage().addCookie({name: 'nullauth-dummy-user', value: user});
+    await driver
+      .manage()
+      .addCookie({ name: 'nullauth-dummy-user', value: user });
   };
   await driver.setUser();
   return driver;

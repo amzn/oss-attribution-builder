@@ -11,7 +11,7 @@ for (const name of files) {
     const data = JSON.parse(content);
     out[data.licenseId] = {
       text: data.licenseText,
-    }
+    };
   }
 }
 

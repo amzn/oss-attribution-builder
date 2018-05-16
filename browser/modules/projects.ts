@@ -114,10 +114,10 @@ export function receiveAttributionDoc(data) {
  * Fetch projects. Updates state & dispatches when complete.
  */
 export function fetchProjects(queryString) {
-  return (dispatch) => {
+  return dispatch => {
     return fetchAuth(`/api/projects/${queryString}`)
-      .then((response) => response.json())
-      .then((json) => dispatch(receiveProjects(json)));
+      .then(response => response.json())
+      .then(json => dispatch(receiveProjects(json)));
   };
 }
 
@@ -125,10 +125,10 @@ export function fetchProjects(queryString) {
  * Fetch a single project by ID.
  */
 export function fetchProjectDetail(projectId) {
-  return (dispatch) => {
+  return dispatch => {
     return fetchAuth(`/api/projects/${projectId}`)
-      .then((response) => response.json())
-      .then((json) => dispatch(receiveProjectDetail(json)));
+      .then(response => response.json())
+      .then(json => dispatch(receiveProjectDetail(json)));
   };
 }
 
@@ -136,9 +136,10 @@ export function fetchProjectDetail(projectId) {
  * Submit a new project with some initial details.
  */
 export function createProject(details: Partial<WebProject>) {
-  return (dispatch) => {
-    return reqJSON('/api/projects/new', details)
-      .then((json) => history.push(`/projects/${json.projectId}`));
+  return dispatch => {
+    return reqJSON('/api/projects/new', details).then(json =>
+      history.push(`/projects/${json.projectId}`)
+    );
   };
 }
 
@@ -146,9 +147,10 @@ export function createProject(details: Partial<WebProject>) {
  * Patch a project with a set of updates.
  */
 export function patchProject(projectId, changes: Partial<WebProject>) {
-  return (dispatch) => {
-    return reqJSON(`/api/projects/${projectId}`, changes, 'PATCH')
-      .then((json) => dispatch(fetchProjectDetail(projectId)));
+  return dispatch => {
+    return reqJSON(`/api/projects/${projectId}`, changes, 'PATCH').then(json =>
+      dispatch(fetchProjectDetail(projectId))
+    );
   };
 }
 
@@ -156,9 +158,10 @@ export function patchProject(projectId, changes: Partial<WebProject>) {
  * Attach a (new or existing) package to a project. Reloads the project on completion.
  */
 export function attachPackageToProject(projectId, packageInfo) {
-  return (dispatch) => {
-    return reqJSON(`/api/projects/${projectId}/attach`, packageInfo)
-      .then(() => dispatch(fetchProjectDetail(projectId)));
+  return dispatch => {
+    return reqJSON(`/api/projects/${projectId}/attach`, packageInfo).then(() =>
+      dispatch(fetchProjectDetail(projectId))
+    );
   };
 }
 
@@ -166,16 +169,22 @@ export function attachPackageToProject(projectId, packageInfo) {
  * Remove a package from a project. Does not delete the package.
  */
 export function detachPackageFromProject(projectId: string, packageId: number) {
-  return (dispatch) => {
-    return reqJSON(`/api/projects/${projectId}/detach`, {packageId})
-      .then(() => dispatch(fetchProjectDetail(projectId)));
+  return dispatch => {
+    return reqJSON(`/api/projects/${projectId}/detach`, { packageId }).then(
+      () => dispatch(fetchProjectDetail(projectId))
+    );
   };
 }
 
-export function replacePackageForProject(projectId: string, oldId: number, newId: number) {
-  return (dispatch) => {
-    return reqJSON(`/api/projects/${projectId}/replace`, {oldId, newId})
-      .then(() => dispatch(fetchProjectDetail(projectId)));
+export function replacePackageForProject(
+  projectId: string,
+  oldId: number,
+  newId: number
+) {
+  return dispatch => {
+    return reqJSON(`/api/projects/${projectId}/replace`, { oldId, newId }).then(
+      () => dispatch(fetchProjectDetail(projectId))
+    );
   };
 }
 
@@ -183,10 +192,10 @@ export function replacePackageForProject(projectId: string, oldId: number, newId
  * Request an attribution document and any warnings it generates.
  */
 export function buildAttributionDoc(projectId) {
-  return (dispatch) => {
+  return dispatch => {
     return fetchAuth(`/api/projects/${projectId}/build`)
-      .then((response) => response.json())
-      .then((json) => dispatch(receiveAttributionDoc(json)));
+      .then(response => response.json())
+      .then(json => dispatch(receiveAttributionDoc(json)));
   };
 }
 
@@ -194,8 +203,9 @@ export function buildAttributionDoc(projectId) {
  * Permanently store an attribution document.
  */
 export function storeAttributionDoc(projectId) {
-  return (dispatch) => {
-    return reqJSON(`/api/projects/${projectId}/build`)
-      .then((json) => downloadText(`THIRD-PARTY-LICENSES_${projectId}.txt`, json.text));
+  return dispatch => {
+    return reqJSON(`/api/projects/${projectId}/build`).then(json =>
+      downloadText(`THIRD-PARTY-LICENSES_${projectId}.txt`, json.text)
+    );
   };
 }

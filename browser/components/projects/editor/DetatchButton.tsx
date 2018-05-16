@@ -62,7 +62,7 @@ export default class DetatchButton extends React.Component<Props, State> {
       onClick={this.clicked}
       disabled={mode === ConfirmState.Lockout}>
       {mode === ConfirmState.Confirm ? 'Delete?'
-      : <i className="fa fa-ban"></i>}
+      : <i className="fa fa-ban" />}
     </button>;
   }
 

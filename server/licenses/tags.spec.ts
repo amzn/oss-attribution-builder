@@ -19,11 +19,10 @@ import { TagModule } from './interfaces';
 
 const tagsDir = path.join(__dirname, 'tags');
 
-describe('license tags', function () {
-
+describe('license tags', function() {
   const modules: TagModule[] = [];
 
-  beforeAll(function (done) {
+  beforeAll(function(done) {
     fs.readdir(tagsDir, (err, files) => {
       if (err) {
         throw err;
@@ -39,14 +38,14 @@ describe('license tags', function () {
     });
   });
 
-  it('should export validation functions', function () {
+  it('should export validation functions', function() {
     for (const mod of modules) {
       expect(typeof mod.validateSelf).toEqual('function');
       expect(typeof mod.validateUsage).toEqual('function');
     }
   });
 
-  it('may export a questions object', function () {
+  it('may export a questions object', function() {
     for (const mod of modules) {
       if (mod.questions == undefined) {
         continue;
@@ -55,15 +54,27 @@ describe('license tags', function () {
       // runtime type checking, basically
       for (const key of Object.keys(mod.questions)) {
         const q = mod.questions[key];
-        expect(q.label).toEqual(jasmine.any(String), 'label key must be a string');
-        expect(q.required).toEqual(jasmine.any(Boolean), 'required key must be a boolean');
+        expect(q.label).toEqual(
+          jasmine.any(String),
+          'label key must be a string'
+        );
+        expect(q.required).toEqual(
+          jasmine.any(Boolean),
+          'required key must be a boolean'
+        );
         expect(q.type).toMatch(/string|boolean|number/, 'type key mismatch');
         expect(q.widget).toMatch(/radio|text|select/, 'widget key mismatch');
 
         if (q.options) {
-          expect(q.options).toEqual(jasmine.any(Array), 'options must be an array if present');
+          expect(q.options).toEqual(
+            jasmine.any(Array),
+            'options must be an array if present'
+          );
           for (const opt of q.options) {
-            expect(opt.length).toEqual(2, 'options array items must be 2-tuple arrays');
+            expect(opt.length).toEqual(
+              2,
+              'options array items must be 2-tuple arrays'
+            );
             expect(opt[0]).toBeDefined();
             expect(opt[1]).toEqual(jasmine.any(String));
           }
@@ -71,5 +82,4 @@ describe('license tags', function () {
       }
     }
   });
-
 });

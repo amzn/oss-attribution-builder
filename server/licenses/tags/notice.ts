@@ -18,11 +18,9 @@
 
 // tslint:disable:no-empty
 
-export function validateSelf(name, text, tags) {
-}
+export function validateSelf(name, text, tags) {}
 
-export function validateUsage(pkg, usage) {
-}
+export function validateUsage(pkg, usage) {}
 
 // we strip out the original copyright text up top
 export function transformCopyright(original) {
@@ -36,7 +34,9 @@ export function transformLicense(original, packages) {
     const { pkg } = pkgBundle;
 
     const indented = pkg.copyright.replace(/^|\n/g, '\n    ');
-    const notice = `* For ${pkg.name} see also this required NOTICE:${indented}`;
+    const notice = `* For ${
+      pkg.name
+    } see also this required NOTICE:${indented}`;
 
     notices.push(notice);
   }

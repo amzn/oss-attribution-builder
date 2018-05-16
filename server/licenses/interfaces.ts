@@ -13,7 +13,11 @@
  */
 
 export interface TagModule {
-  validateSelf: (name: string | undefined, text: string, tags: string[]) => ValidationResult[];
+  validateSelf: (
+    name: string | undefined,
+    text: string,
+    tags: string[]
+  ) => ValidationResult[];
   validateUsage: (pkg: any, usage: any) => ValidationResult[];
   transformCopyright?: (original: string) => string;
   transformLicense?: (original: string, packages) => string;

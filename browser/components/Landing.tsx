@@ -37,8 +37,8 @@ class Landing extends React.Component<Props, {}> {
   render() {
     const { admin, displayName } = this.props;
 
-    return [
-      <div className="jumbotron">
+    return <>
+      <div key={1} className="jumbotron">
         <h3>{displayName ? `Hello, ${displayName}` : 'Hello'}</h3>
         <ExtensionPoint ext="landing-description">
           <p>
@@ -60,9 +60,9 @@ class Landing extends React.Component<Props, {}> {
             <Link to="/projects/?all=1" className="btn btn-secondary btn-sm">All Projects</Link>
           : ''}
         </p>
-      </div>,
-      <ExtensionPoint ext="landing-after" />,
-    ];
+      </div>
+      <ExtensionPoint key={2} ext="landing-after" />
+    </>;
   }
 }
 

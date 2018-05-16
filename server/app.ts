@@ -28,7 +28,7 @@ import { config, load } from './config';
 import { connect } from './db';
 
 // install a crash handler to log errors
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', err => {
   winston.error('FATAL exception: ' + err);
   winston.error(err.stack);
   process.exit(99);
@@ -50,7 +50,7 @@ if (cspEnabled) {
   // don't use it with selenium, either, since it needs eval() to do a bunch of things.
   app.use((req, res, next) => {
     if (cspEnabled) {
-      res.set('Content-Security-Policy', 'script-src \'self\'');
+      res.set('Content-Security-Policy', "script-src 'self'");
     }
     return next();
   });
@@ -76,7 +76,7 @@ app.use('/', (req, res) => {
 /**
  * Load app configuration, initialize, and listen.
  */
-export const start = async function (port, hostname) {
+export const start = async function(port, hostname) {
   winston.info('Starting up...');
 
   // wait for configuration to resolve

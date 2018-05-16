@@ -21,7 +21,6 @@ import { BasicStrategy } from 'passport-http';
 import AuthBase, { AuthUser } from '../base';
 
 export default class NullAuth implements AuthBase {
-
   /**
    * We use both cookies and HTTP basic auth here:
    *
@@ -33,30 +32,51 @@ export default class NullAuth implements AuthBase {
    */
   initialize(app: Express, passport: PassportStatic) {
     // register cookies and http basic strategies
-    passport.use(new CookieStrategy({cookieName: 'nullauth-dummy-user'}, (token, done) => {
-      done(undefined, {user: token} as AuthUser);
-    }));
-    passport.use(new BasicStrategy((user, pass, done) => {
-      done(undefined, user);
-    }));
+    passport.use(
+      new CookieStrategy(
+        { cookieName: 'nullauth-dummy-user' },
+        (token, done) => {
+          done(undefined, { user: token } as AuthUser);
+        }
+      )
+    );
+    passport.use(
+      new BasicStrategy((user, pass, done) => {
+        done(undefined, user);
+      })
+    );
 
     // configure dummy login page
-    app.get('/dummy-login', passport.authenticate('basic', {session: false}), (req, res) => {
-      res.cookie('nullauth-dummy-user', req.user);
-      res.redirect('/');
-    });
+    app.get(
+      '/dummy-login',
+      passport.authenticate('basic', { session: false }),
+      (req, res) => {
+        res.cookie('nullauth-dummy-user', req.user);
+        res.redirect('/');
+      }
+    );
     // selenium needs a page with no authentication to set a cookie on
     app.get('/dummy-no-auth', (req, res) => {
       res.send('OK');
     });
     // and cookie auth for the rest
     app.use(cookieParser());
-    app.use(passport.authenticate('cookie', {session: false, failureRedirect: '/dummy-login'}));
+    app.use(
+      passport.authenticate('cookie', {
+        session: false,
+        failureRedirect: '/dummy-login',
+      })
+    );
   }
 
   extractRequestUser(request: any): string {
-    return request.get('X-REMOTE-USER') || request.get('X-FORWARDED-USER')
-      || request.user.user || process.env.USER || 'unknown';
+    return (
+      request.get('X-REMOTE-USER') ||
+      request.get('X-FORWARDED-USER') ||
+      request.user.user ||
+      process.env.USER ||
+      'unknown'
+    );
   }
 
   async getDisplayName(user: string): Promise<string | undefined> {
@@ -70,5 +90,4 @@ export default class NullAuth implements AuthBase {
   async getGroups(user: string): Promise<string[]> {
     return [`self:${user}`, 'everyone'];
   }
-
 }

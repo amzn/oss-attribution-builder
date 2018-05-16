@@ -1,37 +1,37 @@
-$white:                     #fff;
-$gray-100:                  #f8f9fa;
-$gray-200:                  #e9ecef;
-$gray-300:                  #dee2e6;
-$gray-400:                  #ced4da;
-$gray-500:                  #adb5bd;
-$gray-600:                  #868e96;
-$gray-700:                  #495057;
-$gray-800:                  #343a40;
-$gray-900:                  #212529;
-$black:                     #000;
+$white: #fff;
+$gray-100: #f8f9fa;
+$gray-200: #e9ecef;
+$gray-300: #dee2e6;
+$gray-400: #ced4da;
+$gray-500: #adb5bd;
+$gray-600: #868e96;
+$gray-700: #495057;
+$gray-800: #343a40;
+$gray-900: #212529;
+$black: #000;
 
 $theme-colors: (
-  primary:                  #088F95,
-  secondary:                $gray-400,
-  success:                  #395AAB,
-  info:                     #4AADB1,
-  warning:                  #FFC141,
-  danger:                   #F7790C,
-  light:                    $gray-200,
-  dark:                     #00585C
+  primary: #088f95,
+  secondary: $gray-400,
+  success: #395aab,
+  info: #4aadb1,
+  warning: #ffc141,
+  danger: #f7790c,
+  light: $gray-200,
+  dark: #00585c
 );
 
-$body-bg:                   $gray-100;
+$body-bg: $gray-100;
 
-$border-radius:             .15rem;
-$border-radius-lg:          .18rem;
-$border-radius-sm:          .12rem;
+$border-radius: 0.15rem;
+$border-radius-lg: 0.18rem;
+$border-radius-sm: 0.12rem;
 
-$font-size-base:            0.9rem;
+$font-size-base: 0.9rem;
 
-$h1-font-size:              2.2rem;
-$h2-font-size:              1.9rem;
-$h3-font-size:              1.6rem;
-$h4-font-size:              1.3rem;
-$h5-font-size:              1.1rem;
-$h6-font-size:              1rem;
+$h1-font-size: 2.2rem;
+$h2-font-size: 1.9rem;
+$h3-font-size: 1.6rem;
+$h4-font-size: 1.3rem;
+$h5-font-size: 1.1rem;
+$h6-font-size: 1rem;

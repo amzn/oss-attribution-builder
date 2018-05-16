@@ -35,7 +35,7 @@ export async function createProject(req, res, next) {
 
     // check contacts & ACLs for sanity
     await validateContacts(req.body.contacts);
-    await validateAcl(req, {acl: req.body.acl, contacts: req.body.contacts});
+    await validateAcl(req, { acl: req.body.acl, contacts: req.body.contacts });
   } catch (e) {
     return next(e);
   }
@@ -44,8 +44,15 @@ export async function createProject(req, res, next) {
 
 export async function patchProject(req, res, next) {
   try {
-    const valid = new Set(['title', 'version', 'description', 'plannedRelease', 'contacts',
-    'acl', 'metadata']);
+    const valid = new Set([
+      'title',
+      'version',
+      'description',
+      'plannedRelease',
+      'contacts',
+      'acl',
+      'metadata',
+    ]);
     for (const key of Object.keys(req.body)) {
       if (!valid.has(key)) {
         throw new RequestError(`'${key}' is not a valid field.`);
@@ -59,7 +66,7 @@ export async function patchProject(req, res, next) {
     if (req.body.hasOwnProperty('acl')) {
       // contact list doesn't matter for the sake of validating an updated ACL,
       // since we only care about losing owner permissions. contacts only have viewer.
-      await validateAcl(req, {acl: req.body.acl, contacts: {}});
+      await validateAcl(req, { acl: req.body.acl, contacts: {} });
     }
   } catch (e) {
     return next(e);
@@ -104,13 +111,18 @@ export async function attachPackage(req, res, next) {
     if (req.body.license == undefined || req.body.license.trim().length === 0) {
       req.body.license = undefined;
     }
-    if (req.body.licenseText == undefined || req.body.licenseText.trim().length === 0) {
+    if (
+      req.body.licenseText == undefined ||
+      req.body.licenseText.trim().length === 0
+    ) {
       req.body.licenseText = undefined;
     }
 
     // either the license name or the full license text must be specified
     if (!isValid(req.body, 'license') && !isValid(req.body, 'licenseText')) {
-      throw new RequestError('Either the license name or full text must be provided.');
+      throw new RequestError(
+        'Either the license name or full text must be provided.'
+      );
     }
 
     // check for a usage block
@@ -121,11 +133,15 @@ export async function attachPackage(req, res, next) {
     // ensure that all required questions (via tags) were answered
     const license = licenses.get(req.body.license);
     const tags = license ? license.get('tags').toArray() : ['unknown'];
-    const questions: TagQuestions = tags.map((name) => mapTag(name).questions || {})
-      .reduce((acc, curr) => ({
-        ...acc,
-        ...curr,
-      }), {} as TagQuestions);
+    const questions: TagQuestions = tags
+      .map(name => mapTag(name).questions || {})
+      .reduce(
+        (acc, curr) => ({
+          ...acc,
+          ...curr,
+        }),
+        {} as TagQuestions
+      );
     for (const key of Object.keys(questions)) {
       const q = questions[key];
       // validate it is present if required
@@ -133,20 +149,24 @@ export async function attachPackage(req, res, next) {
         if (!isValid(req.body.usage, key)) {
           throw new RequestError(`Usage question "${q.label}" is required.`);
         }
-
       }
       // validate it's a valid option if supplied
       const answer = req.body.usage[key];
       if (answer && q.options) {
-        const accepted = q.options.map((o) => o[0]);
+        const accepted = q.options.map(o => o[0]);
         if (!accepted.includes(answer)) {
-          throw new RequestError(`Answer to question "${q.label}" is not valid`);
+          throw new RequestError(
+            `Answer to question "${q.label}" is not valid`
+          );
         }
       }
     }
 
     // ensure the project exists
-    const project = rejectEmptyPromise(db.getProject(req.params.projectId), 'Project doesn\'t exist.');
+    const project = rejectEmptyPromise(
+      db.getProject(req.params.projectId),
+      "Project doesn't exist."
+    );
 
     // and that, if specified, the package exists
     let pkg = Promise.resolve();
@@ -155,7 +175,10 @@ export async function attachPackage(req, res, next) {
       if (Number.isNaN(req.body.packageId)) {
         throw new RequestError('Package ID must be a number');
       }
-      pkg = rejectEmptyPromise(packagedb.getPackage(req.body.packageId), 'Package doesn\'t exist.');
+      pkg = rejectEmptyPromise(
+        packagedb.getPackage(req.body.packageId),
+        "Package doesn't exist."
+      );
     }
 
     await Promise.all([project, pkg]);
@@ -201,14 +224,18 @@ function ensureFieldsExist(fields, object) {
  * Determine whether a field is "valid" (non-zero) on an object.
  */
 function isValid(object, field) {
-  return object.hasOwnProperty(field) && object[field] != undefined && object[field].length !== 0;
+  return (
+    object.hasOwnProperty(field) &&
+    object[field] != undefined &&
+    object[field].length !== 0
+  );
 }
 
 /**
  * Reject a promise if it resolves to null (or undefined).
  */
 function rejectEmptyPromise(p, err) {
-  return p.then((x) => {
+  return p.then(x => {
     if (x == undefined) {
       return Promise.reject(new RequestError(err));
     }

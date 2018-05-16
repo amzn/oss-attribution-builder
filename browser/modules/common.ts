@@ -21,7 +21,7 @@ export const SET_ADMIN_MODE = 'app/common/set-admin-mode';
 export const ADMIN_SESSION_KEY = 'admin-enabled';
 
 const initial = {
-  generalError: undefined as {message: string} | undefined,
+  generalError: undefined as { message: string } | undefined,
   info: {} as any,
   admin: sessionStorage.getItem(ADMIN_SESSION_KEY) === '1',
 };
@@ -41,7 +41,9 @@ export default function reducer(state = initial, action: any = {}) {
       };
 
     case SET_ADMIN_MODE:
-      action.enabled ? sessionStorage.setItem(ADMIN_SESSION_KEY, '1') : sessionStorage.removeItem(ADMIN_SESSION_KEY);
+      action.enabled
+        ? sessionStorage.setItem(ADMIN_SESSION_KEY, '1')
+        : sessionStorage.removeItem(ADMIN_SESSION_KEY);
       return {
         ...state,
         admin: action.enabled,
@@ -52,9 +54,9 @@ export default function reducer(state = initial, action: any = {}) {
   }
 }
 
-export function setGeneralError(error?: {message: string} | string) {
+export function setGeneralError(error?: { message: string } | string) {
   if (typeof error === 'string') {
-    error = {message: error};
+    error = { message: error };
   }
 
   return {

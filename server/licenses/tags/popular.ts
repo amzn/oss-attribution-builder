@@ -23,8 +23,6 @@ export const presentation = {
   shortText: '⭐️',
 };
 
-export function validateSelf(name, text, tags) {
-}
+export function validateSelf(name, text, tags) {}
 
-export function validateUsage(pkg, usage) {
-}
+export function validateUsage(pkg, usage) {}

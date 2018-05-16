@@ -17,11 +17,11 @@ import { WebLicense, WebTag } from './interfaces';
 
 interface LicenseResponse {
   licenses: WebLicense[];
-  tags: {[key: string]: WebTag};
+  tags: { [key: string]: WebTag };
 }
 
 let cachedLicenses: WebLicense[] = [];
-const cachedTags: {[key: string]: WebTag} = {};
+const cachedTags: { [key: string]: WebTag } = {};
 
 export async function listLicenses(): Promise<LicenseResponse> {
   // this is _slightly_ expensive, so cache it
@@ -36,42 +36,42 @@ export async function listLicenses(): Promise<LicenseResponse> {
 }
 
 function cacheLicenseData() {
-    // a little silly, but keep two license lists; one for those that ask to be
-    // displayed first and the other for those that don't care
-    const first: any[] = [];
-    const rest: any[] = [];
+  // a little silly, but keep two license lists; one for those that ask to be
+  // displayed first and the other for those that don't care
+  const first: any[] = [];
+  const rest: any[] = [];
 
-    // load each license...
-    for (const [id, data] of (licenses as any).entries()) {
-      const tags = data.get('tags');
+  // load each license...
+  for (const [id, data] of (licenses as any).entries()) {
+    const tags = data.get('tags');
 
-      // fill the tag cache as we go
-      let sortFirst = false;
-      for (const tag of tags) {
-        const mod = mapTag(tag);
-        cachedTags[tag] = {
-          presentation: mod.presentation,
-          questions: mod.questions,
-        };
-
-        // check the sort option, since we handle that part server-side
-        if (mod.presentation && mod.presentation.sortFirst) {
-          sortFirst = true;
-        }
-      }
-
-      const item = {
-        name: id,
-        tags,
+    // fill the tag cache as we go
+    let sortFirst = false;
+    for (const tag of tags) {
+      const mod = mapTag(tag);
+      cachedTags[tag] = {
+        presentation: mod.presentation,
+        questions: mod.questions,
       };
 
-      // send it to either of the lists by presentation preference
-      if (sortFirst) {
-        first.push(item);
-      } else {
-        rest.push(item);
+      // check the sort option, since we handle that part server-side
+      if (mod.presentation && mod.presentation.sortFirst) {
+        sortFirst = true;
       }
     }
 
-    cachedLicenses = first.concat(rest);
+    const item = {
+      name: id,
+      tags,
+    };
+
+    // send it to either of the lists by presentation preference
+    if (sortFirst) {
+      first.push(item);
+    } else {
+      rest.push(item);
+    }
+  }
+
+  cachedLicenses = first.concat(rest);
 }

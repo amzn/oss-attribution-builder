@@ -1,4 +1,3 @@
-
 // static configuration
 const config = {};
 
@@ -33,7 +32,6 @@ config.globalACL = {
 function load() {
   return Promise.resolve(config);
 }
-
 
 module.exports = {
   default: config,

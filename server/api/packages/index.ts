@@ -20,21 +20,30 @@ import * as db from '../../db/packages';
 import { assertCanValidate } from './auth';
 import { WebPackage } from './interfaces';
 
-export async function searchPackages(req: any, query: string): Promise<{results: Array<Partial<WebPackage>>}> {
+export async function searchPackages(
+  req: any,
+  query: string
+): Promise<{ results: Array<Partial<WebPackage>> }> {
   const packages = await db.searchPackages(query, 25);
-  return {results: packages.map((pkg) => ({
-    packageId: pkg.package_id,
-    name: pkg.name,
-    version: pkg.version,
-    website: pkg.website,
-    license: pkg.license,
-    copyright: pkg.copyright,
-    licenseText: pkg.license_text,
-    verified: pkg.verified,
-  }))};
+  return {
+    results: packages.map(pkg => ({
+      packageId: pkg.package_id,
+      name: pkg.name,
+      version: pkg.version,
+      website: pkg.website,
+      license: pkg.license,
+      copyright: pkg.copyright,
+      licenseText: pkg.license_text,
+      verified: pkg.verified,
+    })),
+  };
 }
 
-export async function getPackage(req: any, packageId: number, extended = false): Promise<WebPackage | undefined> {
+export async function getPackage(
+  req: any,
+  packageId: number,
+  extended = false
+): Promise<WebPackage | undefined> {
   const pkg = await db.getPackage(packageId);
   if (pkg == undefined) {
     return undefined;
@@ -79,9 +88,14 @@ export async function getPackage(req: any, packageId: number, extended = false):
  *
  * Returns the new (or existing) package ID.
  */
-export async function storePackage(req: any, packageId: number, info: Pick<WebPackage,
-                                   'name' | 'version' | 'website' | 'copyright' | 'license' |
-                                   'licenseText'>): Promise<number> {
+export async function storePackage(
+  req: any,
+  packageId: number,
+  info: Pick<
+    WebPackage,
+    'name' | 'version' | 'website' | 'copyright' | 'license' | 'licenseText'
+  >
+): Promise<number> {
   let shouldInsert = true;
   if (packageId != undefined) {
     const existing = await db.getPackage(packageId);
@@ -121,10 +135,14 @@ export async function storePackage(req: any, packageId: number, info: Pick<WebPa
       info.license as string,
       info.copyright as string,
       info.licenseText as string,
-      createdBy,
+      createdBy
     );
-    winston.info('Created a new package revision with ID %s (previous revision at %s) by %s',
-      newId, packageId ? packageId : '[none]', createdBy);
+    winston.info(
+      'Created a new package revision with ID %s (previous revision at %s) by %s',
+      newId,
+      packageId ? packageId : '[none]',
+      createdBy
+    );
   } else {
     newId = packageId;
     winston.info('Package %s has no submitted modifications', packageId);
@@ -133,8 +151,12 @@ export async function storePackage(req: any, packageId: number, info: Pick<WebPa
   return newId;
 }
 
-export async function verifyPackage(req: any, packageId: number, verified: boolean,
-                                    comments: string): Promise<Partial<WebPackage>> {
+export async function verifyPackage(
+  req: any,
+  packageId: number,
+  verified: boolean,
+  comments: string
+): Promise<Partial<WebPackage>> {
   const user = auth.extractRequestUser(req);
   await assertCanValidate(req);
   await Promise.all([
@@ -142,17 +164,19 @@ export async function verifyPackage(req: any, packageId: number, verified: boole
     db.verifyPackage(packageId, verified),
   ]);
   winston.info('Package %s verified (%s) by %s', packageId, verified, user);
-  return {packageId};
+  return { packageId };
 }
 
-export async function getVerificationQueue(req: any): Promise<{queue: Array<Partial<WebPackage>>}> {
+export async function getVerificationQueue(
+  req: any
+): Promise<{ queue: Array<Partial<WebPackage>> }> {
   await assertCanValidate(req);
   const results = await db.getUnverifiedPackages(25);
-  const queue = results.map((item) => ({
+  const queue = results.map(item => ({
     packageId: item.package_id,
     name: item.name,
     version: item.version,
     extra: { stats: { numProjects: parseInt(item.count, 10) } },
   }));
-  return {queue};
+  return { queue };
 }

@@ -29,10 +29,13 @@ import { AccessLevel, AccessLevelStrength, WebProject } from './interfaces';
 
 type ProjectIdPromise = Promise<Pick<WebProject, 'projectId'>>;
 
-export async function getProject(req: Request, projectId: string): Promise<WebProject> {
+export async function getProject(
+  req: Request,
+  projectId: string
+): Promise<WebProject> {
   const project = await db.getProject(projectId);
   await assertProjectAccess(req, project, 'viewer');
-  const accessLevel = await effectivePermission(req, project) as AccessLevel;
+  const accessLevel = (await effectivePermission(req, project)) as AccessLevel;
 
   // map DB types to a public API
   return {
@@ -44,7 +47,7 @@ export async function getProject(req: Request, projectId: string): Promise<WebPr
     plannedRelease: project.planned_release,
     contacts: project.contacts,
     acl: project.acl,
-    packagesUsed: project.packages_used.map((usage) => {
+    packagesUsed: project.packages_used.map(usage => {
       return {
         ...usage,
         package_id: undefined,
@@ -59,7 +62,9 @@ export async function getProject(req: Request, projectId: string): Promise<WebPr
   };
 }
 
-export async function searchProjects(req: Request): Promise<Array<Partial<WebProject>>> {
+export async function searchProjects(
+  req: Request
+): Promise<Array<Partial<WebProject>>> {
   const user = auth.extractRequestUser(req);
   const groups = await auth.getGroups(user);
 
@@ -86,23 +91,33 @@ function mapProjectShortInfo(dbData): Partial<WebProject> {
   };
 }
 
-export async function createProject(req: Request, body: WebProject): ProjectIdPromise {
+export async function createProject(
+  req: Request,
+  body: WebProject
+): ProjectIdPromise {
   const user = auth.extractRequestUser(req);
-  const projectId = await db.createProject({
-    title: body.title,
-    version: body.version,
-    description: body.description,
-    planned_release: body.plannedRelease,
-    contacts: body.contacts,
-    acl: body.acl,
-    metadata: body.metadata,
-  }, user);
+  const projectId = await db.createProject(
+    {
+      title: body.title,
+      version: body.version,
+      description: body.description,
+      planned_release: body.plannedRelease,
+      contacts: body.contacts,
+      acl: body.acl,
+      metadata: body.metadata,
+    },
+    user
+  );
 
   winston.info('Project %s created by %s', projectId, user);
-  return {projectId};
+  return { projectId };
 }
 
-export async function patchProject(req: Request, projectId, changes): ProjectIdPromise {
+export async function patchProject(
+  req: Request,
+  projectId,
+  changes
+): ProjectIdPromise {
   const user = auth.extractRequestUser(req);
   const project = await db.getProject(projectId);
   await assertProjectAccess(req, project, 'editor');
@@ -129,7 +144,7 @@ export async function patchProject(req: Request, projectId, changes): ProjectIdP
   await db.patchProject(projectId, mappedChanges, user);
 
   winston.info('Project %s modified by %s', projectId, user);
-  return {projectId};
+  return { projectId };
 }
 
 export async function attachPackage(req: Request, projectId: string, info) {
@@ -143,7 +158,12 @@ export async function attachPackage(req: Request, projectId: string, info) {
 
   // see if we need to edit the existing package
   const newId = await storePackage(req, packageId, {
-    name, version, website, copyright, license, licenseText,
+    name,
+    version,
+    website,
+    copyright,
+    license,
+    licenseText,
   });
 
   // update usage info to store on project
@@ -157,8 +177,7 @@ export async function attachPackage(req: Request, projectId: string, info) {
   // re-submitting means "edit". note that if the package details
   // were changed (instead of just usage info) then a new package
   // ID will have been created, and the old one won't get removed.
-  const used = project.packages_used
-    .filter((u) => u.package_id !== packageId); // *not* newId
+  const used = project.packages_used.filter(u => u.package_id !== packageId); // *not* newId
   used.push(usageInfo);
 
   // submit the update
@@ -167,24 +186,33 @@ export async function attachPackage(req: Request, projectId: string, info) {
   // finally, return the updated/inserted package ID
   const addedPackageId = usageInfo.package_id;
   winston.info('Attached package %s to project %s', addedPackageId, projectId);
-  return {packageId: addedPackageId};
+  return { packageId: addedPackageId };
 }
 
-export async function detachPackage(req: Request, projectId, packageId): ProjectIdPromise {
+export async function detachPackage(
+  req: Request,
+  projectId,
+  packageId
+): ProjectIdPromise {
   const user = auth.extractRequestUser(req);
   const project = await db.getProject(projectId);
   await assertProjectAccess(req, project, 'editor');
 
-  const newUsage = project.packages_used.filter((item) => {
+  const newUsage = project.packages_used.filter(item => {
     return item.package_id !== packageId;
   });
 
   await db.updatePackagesUsed(projectId, newUsage, user);
   winston.info('Detached package %s from project %s', packageId, projectId);
-  return {projectId};
+  return { projectId };
 }
 
-export async function replacePackage(req: Request, projectId: string, oldId: number, newId: number): ProjectIdPromise {
+export async function replacePackage(
+  req: Request,
+  projectId: string,
+  oldId: number,
+  newId: number
+): ProjectIdPromise {
   const user = auth.extractRequestUser(req);
   const project = await db.getProject(projectId);
   await assertProjectAccess(req, project, 'editor');
@@ -197,23 +225,35 @@ export async function replacePackage(req: Request, projectId: string, oldId: num
   }
 
   await db.updatePackagesUsed(projectId, usage, user);
-  winston.info('Replaced package %s -> %s on project %s', oldId, newId, projectId);
-  return {projectId};
+  winston.info(
+    'Replaced package %s -> %s on project %s',
+    oldId,
+    newId,
+    projectId
+  );
+  return { projectId };
 }
 
-export async function generateAttributionDocument(req: Request, projectId: string, store: boolean = false) {
+export async function generateAttributionDocument(
+  req: Request,
+  projectId: string,
+  store: boolean = false
+) {
   const user = auth.extractRequestUser(req);
   const project = await db.getProject(projectId);
   await assertProjectAccess(req, project, 'viewer');
 
-  const packageIds = project.packages_used.map((usage) => usage.package_id);
+  const packageIds = project.packages_used.map(usage => usage.package_id);
   const packageList = await packagedb.getPackages(packageIds);
 
   // reorganize the package list from db into a map
-  const packages: Map<number, packagedb.Package> = packageList.reduce((map, pkg) => {
-    map.set(pkg.package_id, pkg);
-    return map;
-  }, new Map());
+  const packages: Map<number, packagedb.Package> = packageList.reduce(
+    (map, pkg) => {
+      map.set(pkg.package_id, pkg);
+      return map;
+    },
+    new Map()
+  );
 
   // create attributions and add to generator
   const builder = new DocBuilder();
@@ -233,10 +273,15 @@ export async function generateAttributionDocument(req: Request, projectId: strin
 
   // save a copy if requested
   if (store) {
-    await documentdb.storeAttributionDocument(projectId, project.version, text, user);
+    await documentdb.storeAttributionDocument(
+      projectId,
+      project.version,
+      text,
+      user
+    );
     winston.info(`Document for project ${projectId} was stored by ${user}`);
-    return {text};
+    return { text };
   }
 
-  return {text, annotations, warnings, summary};
+  return { text, annotations, warnings, summary };
 }

@@ -22,7 +22,11 @@ export interface WebPackage {
   copyright?: string;
   createdBy?: string;
   verified?: boolean;
-  extra?: {verification?: PackageVerification, stats?: PackageStats, latest?: number};
+  extra?: {
+    verification?: PackageVerification;
+    stats?: PackageStats;
+    latest?: number;
+  };
 }
 
 export interface PackageVerification {

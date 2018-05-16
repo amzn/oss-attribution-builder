@@ -18,11 +18,9 @@ import * as wordwrap from 'wordwrap';
 
 // This tag notes that the license was pulled from SPDX sources.
 
-export function validateSelf(name, text, tags) {
-}
+export function validateSelf(name, text, tags) {}
 
-export function validateUsage(pkg, usage) {
-}
+export function validateUsage(pkg, usage) {}
 
 export function transformLicense(original, packages) {
   let text = original;

@@ -1,7 +1,9 @@
 {
   "defaultSeverity": "warning",
   "extends": [
-      "tslint:recommended"
+      "tslint:recommended",
+      "tslint-react",
+      "tslint-config-prettier"
   ],
   "rules": {
     "interface-name": [false],
@@ -14,21 +16,6 @@
     "no-unused-variable": [true],
     "object-literal-sort-keys": [false],
     "only-arrow-functions": [false],
-    "quotemark": [
-      true,
-      "single",
-      "jsx-double"
-    ],
-    "space-before-function-paren": [
-      true,
-      {
-        "anonymous": "always",
-        "asyncArrow": "always",
-        "constructor": "never",
-        "method": "never",
-        "named": "never"
-      }
-    ],
     "triple-equals": [true, "allow-undefined-check"]
   }
 }

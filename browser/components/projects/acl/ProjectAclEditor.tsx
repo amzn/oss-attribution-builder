@@ -100,7 +100,7 @@ class ProjectAclEditor extends React.Component<Props, State> {
           <tr>
             <th style={{ width: '20%' }}>Permissions</th>
             <th>Group</th>
-            <th style={{ width: '4ex' }}></th>
+            <th style={{ width: '4ex' }} />
           </tr>
         </thead>
         <tbody>

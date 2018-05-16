@@ -20,7 +20,7 @@ export const RECEIVE_LICENSES = 'app/licenses/receive-licenses';
 interface State {
   list: WebLicense[];
   map: Map<string, WebLicense>;
-  tags: {[key: string]: WebTag};
+  tags: { [key: string]: WebTag };
 }
 
 const initial: State = {
@@ -60,9 +60,9 @@ export function receiveLicenses(data) {
 /*** Bound action creators ***/
 
 export function fetchLicenses() {
-  return (dispatch) => {
+  return dispatch => {
     return fetchAuth('/api/licenses/')
-      .then((response) => response.json())
-      .then((json) => dispatch(receiveLicenses(json)));
+      .then(response => response.json())
+      .then(json => dispatch(receiveLicenses(json)));
   };
 }

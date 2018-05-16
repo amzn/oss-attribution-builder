@@ -24,7 +24,7 @@ export async function reqJSON(url: string, obj?: any, method: string = 'POST') {
   const response = await fetchAuth(url, {
     method,
     headers: {
-      'Accept': 'application/json',
+      Accept: 'application/json',
       'Content-Type': 'application/json',
     },
     body,

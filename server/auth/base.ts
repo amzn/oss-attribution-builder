@@ -24,7 +24,6 @@ import { PassportStatic } from 'passport';
  * For a sample implementation, see `nullauth`.
  */
 interface AuthBase {
-
   /**
    * Given an Express request object and a Passport instance, register any
    * needed routes & middleware to authenticate.
@@ -77,7 +76,6 @@ interface AuthBase {
    * Consider caching this method.
    */
   getGroups(user: string): Promise<string[]>;
-
 }
 
 export default AuthBase;

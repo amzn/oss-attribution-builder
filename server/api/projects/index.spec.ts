@@ -14,17 +14,17 @@
 
 import * as mockery from 'mockery';
 
-describe('projects', function () {
+describe('projects', function() {
   let api: any;
   let validators: any;
   let mock: any;
 
-  beforeEach(function () {
-    mockery.enable({useCleanCache: true, warnOnUnregistered: false});
+  beforeEach(function() {
+    mockery.enable({ useCleanCache: true, warnOnUnregistered: false });
     mock = {
       db: {},
       auth: {
-        extractRequestUser: (req) => req.user.user,
+        extractRequestUser: req => req.user.user,
       },
       packagedb: {},
       assertProjectAccess: jasmine.createSpy('assertProjectAccess'),
@@ -32,7 +32,7 @@ describe('projects', function () {
     };
 
     // project module mocks
-    mockery.registerMock('../../auth', {default: mock.auth});
+    mockery.registerMock('../../auth', { default: mock.auth });
     mockery.registerMock('../../db/projects', mock.db);
     mockery.registerMock('../../db/packages', mock.packagedb);
     mockery.registerMock('./auth', {
@@ -51,17 +51,19 @@ describe('projects', function () {
     validators = require('./validators');
   });
 
-  afterEach(function () {
+  afterEach(function() {
     mockery.deregisterAll();
     mockery.disable();
   });
 
-  describe('getProject', function () {
-    it('checks user access', async function (done) {
-      mock.db.getProject = jasmine.createSpy('getProject').and.returnValue(makeFakeDBProject());
+  describe('getProject', function() {
+    it('checks user access', async function(done) {
+      mock.db.getProject = jasmine
+        .createSpy('getProject')
+        .and.returnValue(makeFakeDBProject());
       mock.auth.getDisplayName = jasmine.createSpy('getDisplayName');
 
-      await api.getProject({user: {user: 'bob'}}, 'abcd');
+      await api.getProject({ user: { user: 'bob' } }, 'abcd');
 
       expect(mock.assertProjectAccess).toHaveBeenCalled();
 
@@ -69,12 +71,16 @@ describe('projects', function () {
     });
   });
 
-  describe('createProject', function () {
-
-    it('should insert a valid project', async function (done) {
-      mock.db.createProject = jasmine.createSpy('createProject').and.returnValue(1234);
-      mock.auth.getDisplayName = jasmine.createSpy('getDisplayName')
-        .and.callFake((u) => u === 'pretend-user' && Promise.resolve('Pretender'));
+  describe('createProject', function() {
+    it('should insert a valid project', async function(done) {
+      mock.db.createProject = jasmine
+        .createSpy('createProject')
+        .and.returnValue(1234);
+      mock.auth.getDisplayName = jasmine
+        .createSpy('getDisplayName')
+        .and.callFake(
+          u => u === 'pretend-user' && Promise.resolve('Pretender')
+        );
 
       const req = makeDummyRequest();
       const res = jasmine.createSpy('res');
@@ -88,20 +94,23 @@ describe('projects', function () {
       done();
     });
 
-    it('should reject invalid form data', async function (done) {
+    it('should reject invalid form data', async function(done) {
       const req = makeDummyRequest();
       req.body.description = undefined;
       const res = jasmine.createSpy('res');
       const next = jasmine.createSpy('next');
 
       await validators.createProject(req, res, next);
-      expect(next.calls.first().args[0].message).toMatch(/Missing.*description/);
+      expect(next.calls.first().args[0].message).toMatch(
+        /Missing.*description/
+      );
 
       done();
     });
 
-    it('should validate user existence', async function (done) {
-      mock.auth.getDisplayName = jasmine.createSpy('getDisplayName')
+    it('should validate user existence', async function(done) {
+      mock.auth.getDisplayName = jasmine
+        .createSpy('getDisplayName')
         .and.returnValue(Promise.resolve(undefined));
 
       const req = makeDummyRequest();
@@ -129,19 +138,21 @@ describe('projects', function () {
           contacts: {
             legal: ['pretend-user'],
           },
-          acl: {abc: 'owner'},
-          metadata: {open_sourcing: true},
+          acl: { abc: 'owner' },
+          metadata: { open_sourcing: true },
         },
       } as any;
     }
-
   });
 
-  describe('patchProject', function () {
-
-    it('should change the project', async function (done) {
-      mock.db.getProject = jasmine.createSpy('getProject').and.returnValue(makeFakeDBProject());
-      mock.db.patchProject = jasmine.createSpy('getProject').and.returnValue(Promise.resolve());
+  describe('patchProject', function() {
+    it('should change the project', async function(done) {
+      mock.db.getProject = jasmine
+        .createSpy('getProject')
+        .and.returnValue(makeFakeDBProject());
+      mock.db.patchProject = jasmine
+        .createSpy('getProject')
+        .and.returnValue(Promise.resolve());
 
       const req = makeDummyRequest();
       const res = jasmine.createSpy('res');
@@ -161,7 +172,7 @@ describe('projects', function () {
       done();
     });
 
-    it('should validate patched fields', async function (done) {
+    it('should validate patched fields', async function(done) {
       const req = makeDummyRequest();
       const res = jasmine.createSpy('res');
       const next = jasmine.createSpy('next');
@@ -188,16 +199,18 @@ describe('projects', function () {
         },
       } as any;
     }
-
   });
 
-  describe('attachPackage', function () {
-
-    it('should attach an existing package', async function (done) {
-      mock.db.getProject = jasmine.createSpy('getProject')
-        .and.callFake((x) => x === 'abcd' && Promise.resolve(makeFakeDBProject()));
-      mock.packagedb.getPackage = jasmine.createSpy('getPackage')
-        .and.callFake((x) => x === 90 && Promise.resolve(makeFakeDBPackage()));
+  describe('attachPackage', function() {
+    it('should attach an existing package', async function(done) {
+      mock.db.getProject = jasmine
+        .createSpy('getProject')
+        .and.callFake(
+          x => x === 'abcd' && Promise.resolve(makeFakeDBProject())
+        );
+      mock.packagedb.getPackage = jasmine
+        .createSpy('getPackage')
+        .and.callFake(x => x === 90 && Promise.resolve(makeFakeDBPackage()));
       mock.db.updatePackagesUsed = jasmine.createSpy('updatePackagesUsed');
 
       const req = makeDummyRequest();
@@ -217,13 +230,17 @@ describe('projects', function () {
       done();
     });
 
-    it('should create a new package if it did not exist', async function (done) {
+    it('should create a new package if it did not exist', async function(done) {
       // the only difference in this test is we're mocking a different method.
       // then we pretend it was a new package. ;D
       // anything that's not mocked will blow up in the actual code (cannot call undefined)
-      mock.db.getProject = jasmine.createSpy('getProject')
-        .and.callFake((x) => x === 'abcd' && Promise.resolve(makeFakeDBProject()));
-      mock.packagedb.createPackageRevision = jasmine.createSpy('createPackageRevision')
+      mock.db.getProject = jasmine
+        .createSpy('getProject')
+        .and.callFake(
+          x => x === 'abcd' && Promise.resolve(makeFakeDBProject())
+        );
+      mock.packagedb.createPackageRevision = jasmine
+        .createSpy('createPackageRevision')
         .and.returnValue(Promise.resolve(90));
       mock.db.updatePackagesUsed = jasmine.createSpy('updatePackagesUsed');
 
@@ -245,16 +262,22 @@ describe('projects', function () {
       done();
     });
 
-    it('should create a new package revision for field updates', async function (done) {
+    it('should create a new package revision for field updates', async function(done) {
       // similar to the above tests, but return a new package because a field changed.
       // in this case, the version was modified.
-      mock.db.getProject = jasmine.createSpy('getProject')
-        .and.callFake((x) => x === 'abcd' && Promise.resolve(makeFakeDBProject()));
-      mock.packagedb.getPackage = jasmine.createSpy('getPackage')
-        .and.callFake((x) => x === 90 && Promise.resolve(makeFakeDBPackage()));
-      mock.packagedb.createPackageRevision = jasmine.createSpy('createPackageRevision')
+      mock.db.getProject = jasmine
+        .createSpy('getProject')
+        .and.callFake(
+          x => x === 'abcd' && Promise.resolve(makeFakeDBProject())
+        );
+      mock.packagedb.getPackage = jasmine
+        .createSpy('getPackage')
+        .and.callFake(x => x === 90 && Promise.resolve(makeFakeDBPackage()));
+      mock.packagedb.createPackageRevision = jasmine
+        .createSpy('createPackageRevision')
         .and.returnValue(Promise.resolve(90));
-      mock.packagedb.createPackageRevision = jasmine.createSpy('createPackageRevision')
+      mock.packagedb.createPackageRevision = jasmine
+        .createSpy('createPackageRevision')
         .and.returnValue(Promise.resolve(91));
       mock.db.updatePackagesUsed = jasmine.createSpy('updatePackagesUsed');
 
@@ -276,76 +299,88 @@ describe('projects', function () {
       done();
     });
 
-    describe('input validation', function () {
+    describe('input validation', function() {
       let req;
       let res;
       let next;
 
-      beforeEach(function () {
-        mock.db.getProject = jasmine.createSpy('getProject')
-          .and.callFake((x) => x === 'abcd' && Promise.resolve(makeFakeDBProject()));
-        mock.packagedb.getPackage = jasmine.createSpy('getPackage')
-          .and.callFake((x) => x === 90 && Promise.resolve(makeFakeDBPackage()));
+      beforeEach(function() {
+        mock.db.getProject = jasmine
+          .createSpy('getProject')
+          .and.callFake(
+            x => x === 'abcd' && Promise.resolve(makeFakeDBProject())
+          );
+        mock.packagedb.getPackage = jasmine
+          .createSpy('getPackage')
+          .and.callFake(x => x === 90 && Promise.resolve(makeFakeDBPackage()));
 
         req = makeDummyRequest();
         res = jasmine.createSpy('res');
         next = jasmine.createSpy('next');
       });
 
-      it('checks for undefined fields', async function (done) {
+      it('checks for undefined fields', async function(done) {
         req.body.version = undefined;
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toMatch(/Missing.*version/);
         done();
       });
 
-      it('checks for empty-like licenses', async function (done) {
+      it('checks for empty-like licenses', async function(done) {
         req.body.licenseText = '       ';
         await validators.attachPackage(req, res, next);
         expect(req.body.licenseText).toBeUndefined();
         done();
       });
 
-      it('checks URL format', async function (done) {
+      it('checks URL format', async function(done) {
         req.body.website = 'not-a-url';
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toContain('URL');
         done();
       });
 
-      it('looks for license text or name', async function (done) {
+      it('looks for license text or name', async function(done) {
         req.body.license = undefined;
         req.body.licenseText = undefined;
         await validators.attachPackage(req, res, next);
-        expect(next.calls.first().args[0].message).toContain('license name or full text');
+        expect(next.calls.first().args[0].message).toContain(
+          'license name or full text'
+        );
         done();
       });
 
-      it('requires usage info', async function (done) {
+      it('requires usage info', async function(done) {
         req = makeDummyRequest();
         req.body.usage = undefined;
         await validators.attachPackage(req, res, next);
-        expect(next.calls.first().args[0].message).toContain('usage information');
+        expect(next.calls.first().args[0].message).toContain(
+          'usage information'
+        );
         done();
       });
 
-      it('checks for required questions', async function (done) {
+      it('checks for required questions', async function(done) {
         req.body.license = 'MyCustomLicense';
         req.body.usage.link = undefined; // "linkage" tag is on MyCustomLicense
         await validators.attachPackage(req, res, next);
-        expect(next.calls.first().args[0].message).toContain('question "Linkage"');
+        expect(next.calls.first().args[0].message).toContain(
+          'question "Linkage"'
+        );
         done();
       });
 
-      it('validates question answers', async function (done) {
+      it('validates question answers', async function(done) {
         req.body.license = 'MyCustomLicense';
         req.body.usage.link = 'wat'; // "linkage" tag is on MyCustomLicense
         await validators.attachPackage(req, res, next);
-        expect(next.calls.first().args[0].message).toContain('question "Linkage" is not valid');
+        expect(next.calls.first().args[0].message).toContain(
+          'question "Linkage" is not valid'
+        );
         done();
       });
 
-      it('packageId must be coerced', async function (done) {
+      it('packageId must be coerced', async function(done) {
         req.body.packageId = '90';
         await validators.attachPackage(req, res, next);
         expect(mock.packagedb.getPackage).toHaveBeenCalled();
@@ -353,14 +388,15 @@ describe('projects', function () {
         expect(packageId).toBe(90);
         done();
       });
-
     });
 
-    it('should ensure the project itself exists', async function (done) {
-      mock.db.getProject = jasmine.createSpy('getProject')
-        .and.callFake((x) => x === 'abcd' && Promise.resolve(undefined));
-      mock.packagedb.getPackage = jasmine.createSpy('getPackage')
-        .and.callFake((x) => x === 90 && Promise.resolve(makeFakeDBPackage()));
+    it('should ensure the project itself exists', async function(done) {
+      mock.db.getProject = jasmine
+        .createSpy('getProject')
+        .and.callFake(x => x === 'abcd' && Promise.resolve(undefined));
+      mock.packagedb.getPackage = jasmine
+        .createSpy('getPackage')
+        .and.callFake(x => x === 90 && Promise.resolve(makeFakeDBPackage()));
 
       const req = makeDummyRequest();
       const res = jasmine.createSpy('res');
@@ -372,11 +408,15 @@ describe('projects', function () {
       done();
     });
 
-    it('should ensure the package being attached exists', async function (done) {
-      mock.db.getProject = jasmine.createSpy('getProject')
-        .and.callFake((x) => x === 'abcd' && Promise.resolve(makeFakeDBProject()));
-      mock.packagedb.getPackage = jasmine.createSpy('getPackage')
-        .and.callFake((x) => x === 90 && Promise.resolve(undefined));
+    it('should ensure the package being attached exists', async function(done) {
+      mock.db.getProject = jasmine
+        .createSpy('getProject')
+        .and.callFake(
+          x => x === 'abcd' && Promise.resolve(makeFakeDBProject())
+        );
+      mock.packagedb.getPackage = jasmine
+        .createSpy('getPackage')
+        .and.callFake(x => x === 90 && Promise.resolve(undefined));
 
       const req = makeDummyRequest();
       const res = jasmine.createSpy('res');
@@ -415,11 +455,13 @@ describe('projects', function () {
     }
   });
 
-  describe('replacePackage', function () {
-
-    it('replaces a package ID and nothing else', async function (done) {
-      mock.db.getProject = jasmine.createSpy('getProject')
-        .and.callFake((x) => x === 'abcd' && Promise.resolve(makeFakeDBProject()));
+  describe('replacePackage', function() {
+    it('replaces a package ID and nothing else', async function(done) {
+      mock.db.getProject = jasmine
+        .createSpy('getProject')
+        .and.callFake(
+          x => x === 'abcd' && Promise.resolve(makeFakeDBProject())
+        );
       mock.db.updatePackagesUsed = jasmine.createSpy('updatePackagesUsed');
 
       const req = makeDummyRequest();
@@ -455,7 +497,6 @@ describe('projects', function () {
         },
       };
     }
-
   });
 
   function makeFakeDBProject() {
@@ -466,10 +507,10 @@ describe('projects', function () {
       description: 'my special description',
       created_on: '2000-01-01 01:01:01',
       planned_release: '2001-01-01 01:01:01',
-      contacts: {'fake person': 'legal'},
-      acl: {owngroup: 'owner'},
+      contacts: { 'fake person': 'legal' },
+      acl: { owngroup: 'owner' },
       packages_used: [
-        {package_id: 90, modified: true, link: 'dynamic', notes: 'blah blah'},
+        { package_id: 90, modified: true, link: 'dynamic', notes: 'blah blah' },
       ],
       metadata: {},
     } as any;
@@ -486,5 +527,4 @@ describe('projects', function () {
       license_text: undefined,
     } as any;
   }
-
 });

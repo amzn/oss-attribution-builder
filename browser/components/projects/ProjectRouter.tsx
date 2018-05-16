@@ -63,7 +63,7 @@ class ProjectRouter extends React.Component<Props, {}> {
         } />
       </nav>
       <Switch>
-        <Route exact path="/projects/:projectId" component={ProjectView} />
+        <Route exact={true} path="/projects/:projectId" component={ProjectView} />
         <Route path="/projects/:projectId/acl" component={ProjectAclEditor} />
         <Route path="/projects/:projectId/build" component={AttributionDocBuilder} />
       </Switch>

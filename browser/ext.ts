@@ -30,5 +30,5 @@ export function getExtensions(extensionPoint: string): ReactSFC[] {
 
 export function mapExtensions(extensionPoint: string, ...args: any[]): any[] {
   const exts = registry[extensionPoint] || [];
-  return exts.map((e) => e(...args));
+  return exts.map(e => e(...args));
 }

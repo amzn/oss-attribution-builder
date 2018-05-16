@@ -36,9 +36,8 @@ interface Annotation {
 }
 
 export default class DocBuilder {
-
   private buckets = new Map<string, LicenseBucket>();
-  private openAnnotations: {[key: string]: Annotation} = {};
+  private openAnnotations: { [key: string]: Annotation } = {};
   private finalAnnotations: Annotation[] = [];
   private lineNum = 0;
   private chunks: string[] = [];
@@ -64,15 +63,21 @@ export default class DocBuilder {
 
     // sort unknown licenses at the end (~)
     const prefix = name || '';
-    const key = license != undefined ? `${prefix}~${hash}` : `~${prefix}~${hash}`;
+    const key =
+      license != undefined ? `${prefix}~${hash}` : `~${prefix}~${hash}`;
 
     // determine tags
     const tags: string[] = license != undefined ? license.tags : ['unknown'];
 
     // create or add to a bucket
-    const bucket = this.buckets.get(key) || {name, text, tags, packages: [] as PackagePair[]};
+    const bucket = this.buckets.get(key) || {
+      name,
+      text,
+      tags,
+      packages: [] as PackagePair[],
+    };
 
-    bucket.packages.push({pkg, usage});
+    bucket.packages.push({ pkg, usage });
     this.buckets.set(key, bucket);
   }
 
@@ -83,16 +88,23 @@ export default class DocBuilder {
     // go through each bucket (packages with same license)
     const sortedBuckets = Array.from(this.buckets.keys()).sort();
     for (const key of sortedBuckets) {
-      const { name, text, tags, packages } = this.buckets.get(key) as LicenseBucket;
+      const { name, text, tags, packages } = this.buckets.get(
+        key
+      ) as LicenseBucket;
 
-      const mappedTags = tags.map((tagName) => {
+      const mappedTags = tags.map(tagName => {
         const mod = mapTag(tagName);
-        this.addWarnings(mod.validateSelf(name, text, tags), {license: key, name});
+        this.addWarnings(mod.validateSelf(name, text, tags), {
+          license: key,
+          name,
+        });
         return mod;
       });
 
       // then sort the packages in the bucket to print out their copyright statements
-      const sortedPackages = packages.sort((a, b) => a.pkg.name.localeCompare(b.pkg.name));
+      const sortedPackages = packages.sort((a, b) =>
+        a.pkg.name.localeCompare(b.pkg.name)
+      );
 
       // first output the copyright statements
       for (const pkgBundle of sortedPackages) {
@@ -101,7 +113,9 @@ export default class DocBuilder {
 
         for (const mod of mappedTags) {
           // attach any package-level warnings
-          this.addWarnings(mod.validateUsage(pkg, usage), {packageId: pkg.package_id});
+          this.addWarnings(mod.validateUsage(pkg, usage), {
+            packageId: pkg.package_id,
+          });
 
           // mangle the notice statement
           if (mod.transformCopyright != undefined && notice != undefined) {
@@ -109,12 +123,14 @@ export default class DocBuilder {
           }
         }
 
-        let statement = `** ${pkg.name}; version ${pkg.version} -- ${pkg.website}`;
+        let statement = `** ${pkg.name}; version ${pkg.version} -- ${
+          pkg.website
+        }`;
         if (notice != undefined && notice.length > 0) {
           statement += `\n${notice}`;
         }
 
-        this.startAnnotation('package', {packageId: pkg.package_id});
+        this.startAnnotation('package', { packageId: pkg.package_id });
         this.addChunk(statement);
         this.endAnnotation('package');
       }
@@ -128,7 +144,7 @@ export default class DocBuilder {
       }
 
       this.addChunk('');
-      this.startAnnotation('license', {license: key});
+      this.startAnnotation('license', { license: key });
       this.addChunk(fullText);
       this.endAnnotation('license');
 
@@ -145,19 +161,24 @@ export default class DocBuilder {
     this.chunks.push(str);
   }
 
-  private addWarnings(warnings: ValidationResult[], extra: {[key: string]: any}) {
+  private addWarnings(
+    warnings: ValidationResult[],
+    extra: { [key: string]: any }
+  ) {
     if (warnings != undefined) {
       if (!Array.isArray(warnings)) {
-        throw new Error('Bug: Validator output should return an array of messages');
+        throw new Error(
+          'Bug: Validator output should return an array of messages'
+        );
       }
       for (const w of warnings) {
-        this.finalWarnings.push({...w, ...extra});
+        this.finalWarnings.push({ ...w, ...extra });
       }
     }
   }
 
   private startAnnotation(type, extra) {
-    this.openAnnotations[type] = {lines: [this.lineNum, undefined], ...extra};
+    this.openAnnotations[type] = { lines: [this.lineNum, undefined], ...extra };
   }
 
   private endAnnotation(type) {
@@ -185,7 +206,7 @@ export default class DocBuilder {
     const usedTags = {};
     this.buckets.forEach((b, key) => {
       usedLicenses[key] = {
-        packages: b.packages.map((p) => [p.pkg.name, p.pkg.version]),
+        packages: b.packages.map(p => [p.pkg.name, p.pkg.version]),
         tags: b.tags,
       };
       for (const t of b.tags) {
@@ -214,5 +235,4 @@ export default class DocBuilder {
     hash.update(text);
     return hash.digest('hex');
   }
-
 }

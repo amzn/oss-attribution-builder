@@ -79,21 +79,21 @@ class ProjectOnboardingForm extends Component<Props, State> {
           <div className="form-group row">
             <label htmlFor="title" className="col-md-3 col-form-label">Title</label>
             <div className="col-md-7">
-              <input type="text" id="title" className="form-control" required />
+              <input type="text" id="title" className="form-control" required={true} />
             </div>
           </div>
 
           <div className="form-group row">
             <label htmlFor="version" className="col-md-3 col-form-label">Version</label>
             <div className="col-md-7">
-              <input type="text" id="version" className="form-control" required />
+              <input type="text" id="version" className="form-control" required={true} />
             </div>
           </div>
 
           <div className="form-group row">
             <label htmlFor="description" className="col-md-3 col-form-label">What does it do?</label>
             <div className="col-md-7">
-              <textarea id="description" className="form-control" required />
+              <textarea id="description" className="form-control" required={true} />
             </div>
           </div>
 
@@ -102,12 +102,12 @@ class ProjectOnboardingForm extends Component<Props, State> {
             <div className="col-md-7">
               <div className="form-check form-check-inline">
                 <label className="form-check-label">
-                  <input type="radio" name="openSourcing" value="true" required /> Yes
+                  <input type="radio" name="openSourcing" value="true" required={true} /> Yes
                 </label>
               </div>
               <div className="form-check form-check-inline">
                 <label className="form-check-label">
-                  <input type="radio" name="openSourcing" value="false" required /> No
+                  <input type="radio" name="openSourcing" value="false" required={true} /> No
                 </label>
               </div>
             </div>
@@ -118,7 +118,7 @@ class ProjectOnboardingForm extends Component<Props, State> {
               Who is your legal contact?
             </label>
             <div className="col-md-7">
-              <input type="text" id="legalContact" className="form-control" required />
+              <input type="text" id="legalContact" className="form-control" required={true} />
             </div>
           </div>
 
@@ -127,7 +127,7 @@ class ProjectOnboardingForm extends Component<Props, State> {
               Planned release date
             </label>
             <div className="col-md-7">
-              <input type="date" id="plannedRelease" className="form-control" placeholder="YYYY-MM-DD" required />
+              <input type="date" id="plannedRelease" className="form-control" placeholder="YYYY-MM-DD" required={true} />
             </div>
           </div>
 
