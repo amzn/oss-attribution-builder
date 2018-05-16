@@ -1,9 +1,9 @@
 {
-  "defaultSeverity": "warning",
+  "defaultSeverity": "error",
   "extends": [
-      "tslint:recommended",
-      "tslint-react",
-      "tslint-config-prettier"
+    "tslint:recommended",
+    "tslint-react",
+    "tslint-config-prettier"
   ],
   "rules": {
     "interface-name": [false],

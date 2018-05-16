@@ -14,7 +14,7 @@
     "start": "export NODE_ENV=production && npm run build && node ./build/server/localserver.js",
     "test": "npm run build && jasmine 'build/server/**/*.spec.js'",
     "test-ui": "trap 'docker-compose -f docker-compose.selenium.yml stop' INT HUP EXIT; docker-compose -f docker-compose.selenium.yml up -d --build && tsc && jasmine 'build/selenium/*.spec.js'",
-    "lint": "prettier --write '**/*.{ts,js,css,scss}' && tslint -c tslint.json -p . --fix && tslint -c tslint.json -p browser --fix"
+    "lint": "prettier --write '**/*.{ts,js,css,scss}' '!build/**/*' && tslint -c tslint.json -p . --fix && tslint -c tslint.json -p browser --fix"
   },
   "author": "Jacob Peddicord <peddicor@amazon.com>",
   "license": "Apache-2.0",
@@ -67,7 +67,6 @@
     "ts-loader": "^2.3.2",
     "tslint": "^5.10.0",
     "tslint-config-prettier": "^1.12.0",
-    "tslint-language-service": "^0.9.9",
     "tslint-react": "^3.6.0",
     "typescript": "~2.6.2",
     "url-loader": "^0.5.9",

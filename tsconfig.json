@@ -6,9 +6,6 @@
       "dom",
       "es2016"
     ],
-    "plugins": [
-      {"name": "tslint-language-service"}
-    ],
     "sourceMap": true,
     "rootDir": "./",
     "outDir": "./build/",
