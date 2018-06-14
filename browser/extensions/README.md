@@ -88,7 +88,7 @@ A [React functional component].
         * `questions` - A list of questions displayed on the form. Selections will be present in `usage`, not here. See [TagQuestion].
 * Return: a rendered React component.
 
-### `page-start`
+### `page-end`
 
 Add content to the end of the page.
 
