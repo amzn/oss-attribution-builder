@@ -19,7 +19,7 @@
   "author": "Jacob Peddicord <peddicor@amazon.com>",
   "license": "Apache-2.0",
   "engines": {
-    "node": "^6.9.0"
+    "node": "^8.0.0"
   },
   "devDependencies": {
     "@types/body-parser": "1.16.4",

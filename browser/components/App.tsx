@@ -73,7 +73,9 @@ class App extends React.Component<Props, {}> {
   render() {
     const { generalError, canAdmin, admin } = this.props;
     return (
-      <div>
+      <>
+        <ExtensionPoint ext="page-start" />
+
         <nav className="navbar navbar-expand-sm navbar-light bg-light">
           <NavLink exact={true} to="/" className="navbar-brand" activeClassName="active">
             <ExtensionPoint ext="navbar-logo">
@@ -122,8 +124,8 @@ class App extends React.Component<Props, {}> {
           </div>
         </div>
 
-      </div>
-
+        <ExtensionPoint ext="page-end" />
+      </>
     );
   }
 
