@@ -15,6 +15,7 @@
 import * as React from 'react';
 import { BaseProps, BaseWidget } from './index';
 import RadioWidget from './RadioWidget';
+import TextWidget from './TextWidget';
 
 export default class QuestionWidget extends BaseWidget<BaseProps> {
 
@@ -24,6 +25,8 @@ export default class QuestionWidget extends BaseWidget<BaseProps> {
     let Widget;
     if (question.widget === 'radio') {
       Widget = RadioWidget;
+    } else if (question.widget === 'text') {
+      Widget = TextWidget;
     }
 
     return <Widget {...this.props} />;

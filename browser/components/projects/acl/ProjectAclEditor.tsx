@@ -128,8 +128,10 @@ class ProjectAclEditor extends React.Component<Props, State> {
           <p>The following also have acces to projects on this site:</p>
           <table className="table table-bordered">
             <thead>
-              <th style={{ width: '20%' }}>Permissions</th>
-              <th>Group</th>
+              <tr>
+                <th style={{ width: '20%' }}>Permissions</th>
+                <th>Group</th>
+              </tr>
             </thead>
             <tbody>
               {Object.keys(globalACL).map(key =>
