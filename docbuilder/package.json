@@ -1,0 +1,25 @@
+{
+  "name": "oss-docbuilder-unfinished",
+  "private": true,
+  "version": "0.0.1",
+  "description": "An open source attribution document (credits screen) generator",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "lint": "prettier -l '**/*.ts' 'examples/**/*.{js,ts}'",
+    "lint:fix": "prettier --write '**/*.ts' 'examples/**/*.{js,ts}'",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jacob Peddicord <peddicor@amazon.com>",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "@types/uuid": "^3.4.3",
+    "spdx-license-list": "^4.1.0",
+    "uuid": "^3.3.2"
+  },
+  "devDependencies": {
+    "prettier": "^1.13.7",
+    "tslint": "^5.11.0",
+    "typescript": "^2.9.2"
+  }
+}
