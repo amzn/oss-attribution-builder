@@ -7,7 +7,8 @@
     "lib": [
       "dom", // XXX
       "es2015"
-    ]
+    ],
+    "outDir": "build"
   },
   "exclude": [
     "node_modules"

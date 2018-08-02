@@ -30,3 +30,11 @@ export interface PackagePair {
   pkg: Package;
   usage: Usage;
 }
+
+export interface LicenseBucket {
+  id: string;
+  name?: string;
+  text: string;
+  tags: string[];
+  packages: PackagePair[];
+}

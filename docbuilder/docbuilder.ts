@@ -16,16 +16,8 @@ import { createHash } from 'crypto';
 import uuidv4 from 'uuid/v4';
 import spdxLicenses from 'spdx-license-list/full';
 
-import { Package, PackagePair, Usage } from './structure';
-// import { licenses, mapTag } from './index';
-// import { ValidationResult } from './interfaces';
-
-interface LicenseBucket {
-  name?: string;
-  text: string;
-  tags: string[];
-  packages: PackagePair[];
-}
+import { LicenseBucket, Package, PackagePair, Usage } from './structure';
+import OutputRenderer from './outputs/base';
 
 interface Annotation {
   lines: [number, number | undefined];
@@ -34,11 +26,8 @@ interface Annotation {
 
 export default class DocBuilder {
   private buckets = new Map<string, LicenseBucket>();
-  private openAnnotations: { [key: string]: Annotation } = {};
-  private finalAnnotations: Annotation[] = [];
-  private lineNum = 0;
-  private chunks: string[] = [];
-  // private finalWarnings: ValidationResult[] = [];
+
+  constructor(private renderer: OutputRenderer<string>) {}
 
   addPackage(pkg: Package, usage: Usage) {
     // add an identifier if not present
@@ -64,14 +53,15 @@ export default class DocBuilder {
 
     // sort unknown licenses at the end (~)
     const prefix = name || '';
-    const key =
+    const id =
       license != undefined ? `${prefix}~${hash}` : `~${prefix}~${hash}`;
 
     // determine tags
     const tags: string[] = license != undefined ? license.tags : ['unknown'];
 
     // create or add to a bucket
-    const bucket = this.buckets.get(key) || {
+    const bucket = this.buckets.get(id) || {
+      id,
       name,
       text,
       tags,
@@ -79,136 +69,26 @@ export default class DocBuilder {
     };
 
     bucket.packages.push({ pkg, usage });
-    this.buckets.set(key, bucket);
+    this.buckets.set(id, bucket);
   }
 
   build() {
-    this.chunks = [];
-    this.lineNum = 0;
+    const licenseBuckets = this.finalize();
+    return this.renderer.render(licenseBuckets);
+  }
 
-    // go through each bucket (packages with same license)
-    const sortedBuckets = Array.from(this.buckets.keys()).sort();
-    for (const key of sortedBuckets) {
-      const { name, text, tags, packages } = this.buckets.get(
-        key
-      ) as LicenseBucket;
-
-      /*
-      const mappedTags = tags.map(tagName => {
-        const mod = mapTag(tagName);
-        this.addWarnings(mod.validateSelf(name, text, tags), {
-          license: key,
-          name,
-        });
-        return mod;
+  private finalize() {
+    // sort buckets by id (name, roughly)
+    const sortedBuckets = Array.from(this.buckets.keys())
+      .sort()
+      .map(id => {
+        // sort packages in each bucket
+        const bucket = this.buckets.get(id)!;
+        bucket.packages.sort((a, b) => a.pkg.name.localeCompare(b.pkg.name));
+        return bucket;
       });
-      */
-
-      // then sort the packages in the bucket to print out their copyright statements
-      const sortedPackages = packages.sort((a, b) =>
-        a.pkg.name.localeCompare(b.pkg.name)
-      );
-
-      // first output the copyright statements
-      for (const pkgBundle of sortedPackages) {
-        const { pkg, usage } = pkgBundle;
-        let notice = pkg.copyright;
-
-        /*
-        for (const mod of mappedTags) {
-          // attach any package-level warnings
-          this.addWarnings(mod.validateUsage(pkg, usage), {
-            packageId: pkg.id,
-          });
-
-          // mangle the notice statement
-          if (mod.transformCopyright != undefined && notice != undefined) {
-            notice = mod.transformCopyright(notice);
-          }
-        }
-        */
-
-        let statement = `** ${pkg.name}; version ${pkg.version} -- ${
-          pkg.website
-        }`;
-        if (notice != undefined && notice.length > 0) {
-          statement += `\n${notice}`;
-        }
-
-        this.startAnnotation('package', { uuid: pkg.uuid });
-        this.addChunk(statement);
-        this.endAnnotation('package');
-      }
-
-      // add on the license text
-      let fullText = text;
-      // for (const mod of mappedTags) {
-      //   if (mod.transformLicense != undefined) {
-      //     fullText = mod.transformLicense(fullText, sortedPackages);
-      //   }
-      // }
-
-      this.addChunk('');
-      this.startAnnotation('license', { license: key });
-      this.addChunk(fullText);
-      this.endAnnotation('license');
-
-      this.addChunk('\n-----\n');
-    }
-
-    // chop off the last chunk and join up
-    return this.chunks.slice(0, -1).join('\n');
+    return sortedBuckets;
   }
-
-  private addChunk(str: string) {
-    const len = str.split(/\r?\n/).length;
-    this.lineNum += len;
-    this.chunks.push(str);
-  }
-
-  /*
-  private addWarnings(
-    warnings: ValidationResult[],
-    extra: { [key: string]: any }
-  ) {
-    if (warnings != undefined) {
-      if (!Array.isArray(warnings)) {
-        throw new Error(
-          'Bug: Validator output should return an array of messages'
-        );
-      }
-      for (const w of warnings) {
-        this.finalWarnings.push({ ...w, ...extra });
-      }
-    }
-  }
-  */
-
-  private startAnnotation(type: string, extra: any) {
-    this.openAnnotations[type] = { lines: [this.lineNum, undefined], ...extra };
-  }
-
-  private endAnnotation(type: string) {
-    const open = this.openAnnotations[type];
-    open.type = type;
-    open.lines[1] = this.lineNum;
-    this.finalAnnotations.push(open);
-    delete this.openAnnotations[type];
-  }
-
-  /**
-   * Get a list of annotations in the format:
-   *   {lines: [start inclusive, end exclusive], type: type, ...extras}
-   */
-  get annotations() {
-    return this.finalAnnotations;
-  }
-
-  /*
-  get warnings() {
-    return this.finalWarnings;
-  }
-  */
 
   get summary() {
     const usedLicenses: any = {};

@@ -12,9 +12,11 @@
  * permissions and limitations under the License.
  */
 
-const DocBuilder = require('../index').default;
+const DocBuilder = require('../build/index').default;
+const TextRenderer = require('../build/outputs/text').default;
 
-const builder = new DocBuilder();
+const renderer = new TextRenderer();
+const builder = new DocBuilder(renderer);
 
 const samplePackage = {
   name: 'Test Package',
@@ -26,5 +28,7 @@ const sampleUsage = {};
 builder.addPackage(samplePackage, sampleUsage);
 
 const output = builder.build();
+const annotations = renderer.annotations();
 
 console.log(output);
+console.log(annotations);
