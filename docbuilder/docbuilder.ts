@@ -16,8 +16,9 @@ import { createHash } from 'crypto';
 import uuidv4 from 'uuid/v4';
 import spdxLicenses from 'spdx-license-list/full';
 
-import { LicenseBucket, Package, PackagePair, Usage } from './structure';
+import { LicenseBucket, Package } from './structure';
 import OutputRenderer from './outputs/base';
+import MetadataSource from './inputs/base';
 
 interface Annotation {
   lines: [number, number | undefined];
@@ -29,7 +30,7 @@ export default class DocBuilder {
 
   constructor(private renderer: OutputRenderer<string>) {}
 
-  addPackage(pkg: Package, usage: Usage) {
+  addPackage(pkg: Package) {
     // add an identifier if not present
     if (!pkg.uuid) {
       pkg.uuid = uuidv4();
@@ -48,6 +49,10 @@ export default class DocBuilder {
       text = license != undefined ? license.licenseText : name;
     }
 
+    // TODO: dedupe copyright strings from the license text; those should
+    // only be in copyright fields. having them in the license text kinda
+    // ruins license grouping and adds messy duplication to the output.
+
     // create a key based on the text (or name, if text is empty)
     const hash = DocBuilder.licenseHash(text);
 
@@ -65,11 +70,21 @@ export default class DocBuilder {
       name,
       text,
       tags,
-      packages: [] as PackagePair[],
+      packages: [] as Package[],
     };
 
-    bucket.packages.push({ pkg, usage });
+    bucket.packages.push(pkg);
     this.buckets.set(id, bucket);
+  }
+
+  read(source: MetadataSource) {
+    const packages = source.listPackages();
+
+    for (const packageId of packages) {
+      const pkg = source.getPackage(packageId)!;
+
+      this.addPackage(pkg);
+    }
   }
 
   build() {
@@ -84,7 +99,7 @@ export default class DocBuilder {
       .map(id => {
         // sort packages in each bucket
         const bucket = this.buckets.get(id)!;
-        bucket.packages.sort((a, b) => a.pkg.name.localeCompare(b.pkg.name));
+        bucket.packages.sort((a, b) => a.name.localeCompare(b.name));
         return bucket;
       });
     return sortedBuckets;
@@ -95,7 +110,7 @@ export default class DocBuilder {
     const usedTags: any = {};
     this.buckets.forEach((b, key) => {
       usedLicenses[key] = {
-        packages: b.packages.map(p => [p.pkg.name, p.pkg.version]),
+        packages: b.packages.map(p => [p.name, p.version]),
         tags: b.tags,
       };
       for (const t of b.tags) {

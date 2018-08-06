@@ -25,7 +25,7 @@ export default class TextRenderer implements OutputRenderer<string> {
       this.startAnnotation('bucket', { id: bucket.id });
 
       // output package names and copyright statements
-      for (const {pkg, usage} of bucket.packages) {
+      for (const pkg of bucket.packages) {
         let statement = `** ${pkg.name}; version ${pkg.version} -- ${pkg.website}`;
         if (pkg.copyright) {
           statement += `\n${pkg.copyright}`;
@@ -52,7 +52,6 @@ export default class TextRenderer implements OutputRenderer<string> {
   }
 
   get annotations(): Annotation[] {
-    console.log('arstarstasr')
     return this.finalAnnotations;
   }
 

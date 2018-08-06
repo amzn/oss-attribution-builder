@@ -8,9 +8,11 @@
       "dom", // XXX
       "es2015"
     ],
-    "outDir": "build"
+    "outDir": "lib",
+    "declaration": true
   },
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "lib"
   ]
 }

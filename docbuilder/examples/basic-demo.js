@@ -12,23 +12,28 @@
  * permissions and limitations under the License.
  */
 
-const DocBuilder = require('../build/index').default;
-const TextRenderer = require('../build/outputs/text').default;
+const DocBuilder = require('../lib').default;
+const TextRenderer = require('../lib/outputs/text').default;
+const JSONSource = require('../lib/inputs/json').default;
 
 const renderer = new TextRenderer();
 const builder = new DocBuilder(renderer);
 
-const samplePackage = {
-  name: 'Test Package',
-  version: '1.0',
-  license: 'MIT',
-};
-const sampleUsage = {};
+const packageData = JSON.stringify({
+  packages: [
+    {
+      name: 'Test Package',
+      version: '1.0',
+      license: 'MIT',
+    },
+  ],
+});
 
-builder.addPackage(samplePackage, sampleUsage);
+const source = new JSONSource(packageData);
+builder.read(source);
 
 const output = builder.build();
-const annotations = renderer.annotations();
+const annotations = renderer.annotations;
 
 console.log(output);
 console.log(annotations);

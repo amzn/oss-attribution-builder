@@ -20,15 +20,7 @@ export interface Package {
   license?: string;
   text?: string;
   copyright?: string;
-}
-
-export interface Usage {
-  [key: string]: string;
-}
-
-export interface PackagePair {
-  pkg: Package;
-  usage: Usage;
+  extra?: any;
 }
 
 export interface LicenseBucket {
@@ -36,5 +28,5 @@ export interface LicenseBucket {
   name?: string;
   text: string;
   tags: string[];
-  packages: PackagePair[];
+  packages: Package[];
 }
