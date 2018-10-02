@@ -7,16 +7,17 @@ config.server = {
   port: 8000,
 };
 
-(config.database = {
+config.database = {
   host: 'localhost',
   port: 5432,
   database: 'postgres',
   user: 'postgres',
   password: () => null,
   ssl: null,
-}),
-  (module.exports = {
-    default: config,
-    config: config,
-    load: base.load,
-  });
+};
+
+module.exports = {
+  default: config,
+  config: config,
+  load: base.load,
+};
