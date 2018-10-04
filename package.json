@@ -9,7 +9,7 @@
   "main": "server/app.js",
   "scripts": {
     "build": "tsc && webpack && npm run copy-static",
-    "copy-static": "mkdir -p build/server && cp -r config data build && cp -r assets build/server",
+    "copy-static": "mkdir -p build/server && cp -r config build && cp -r assets build/server",
     "dev": "export NODE_ENV=development CONFIG_NAME=dev && npm run build && concurrently -k \"docker-compose -f docker-compose.dev.yml up\" \"tsc -w\" \"nodemon -d 1 -w build build/server/localserver.js\" \"webpack-dev-server\"",
     "start": "export NODE_ENV=production && npm run build && node ./build/server/localserver.js",
     "test": "npm run build && jasmine 'build/server/**/*.spec.js'",
@@ -85,6 +85,7 @@
     "passport": "^0.4.0",
     "pg-promise": "^6.3.8",
     "source-map-support": "^0.4.0",
+    "spdx-license-list": "^4.1.0",
     "whatwg-fetch": "^2.0.4",
     "winston": "^2.4.2",
     "winston-daily-rotate-file": "^1.4.3",

@@ -28,13 +28,13 @@ function loadLicenses(): LicenseMap {
   const licenseMap = new Map<string, Immutable.Map<string, any>>();
 
   // start with SPDX licenses
-  const spdxData = require('../../data/spdx-license-data.json');
+  const spdxData = require('spdx-license-list/full');
   for (const id of Object.keys(spdxData)) {
     licenseMap.set(
       id,
       Immutable.fromJS({
         tags: ['all', 'spdx', 'unknown'],
-        text: spdxData[id].text,
+        text: spdxData[id].licenseText,
       })
     );
   }
@@ -65,7 +65,7 @@ function processKnownLicense(id: string, spdxData: any) {
     winston.info('Overwriting SPDX license %s', id);
     if (info.text === true) {
       winston.info('Re-using %s license text', id);
-      text = spdxData[id].text;
+      text = spdxData[id].licenseText;
       tags.push('spdx'); // restore spdx tag if opting in to text
     }
   }
