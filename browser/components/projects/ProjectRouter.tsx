@@ -22,6 +22,7 @@ import * as ProjectActions from '../../modules/projects';
 import ProjectAclEditor from './acl/ProjectAclEditor';
 import ProjectView from './editor/ProjectView';
 import AttributionDocBuilder from './render/AttributionDocBuilder';
+import CloneProject from './refs/CloneProject';
 
 interface Props {
   dispatch: (action: any) => any;
@@ -30,46 +31,83 @@ interface Props {
 }
 
 class ProjectRouter extends React.Component<Props, {}> {
-
   componentWillMount() {
-    const { dispatch, match: { params } } = this.props;
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
     dispatch(ProjectActions.fetchProjectDetail(params.projectId));
   }
 
   componentWillUpdate(nextProps) {
-    const { dispatch, match: { params } } = this.props;
+    const {
+      dispatch,
+      match: { params },
+    } = this.props;
     if (params.projectId === nextProps.match.params.projectId) {
       return;
     }
 
-    dispatch(ProjectActions.fetchProjectDetail(nextProps.match.params.projectId));
+    dispatch(
+      ProjectActions.fetchProjectDetail(nextProps.match.params.projectId)
+    );
   }
 
   render() {
-    const { project, match: { params: { projectId } } } = this.props;
+    const {
+      project,
+      match: {
+        params: { projectId },
+      },
+    } = this.props;
 
     if (project == undefined || projectId !== project.projectId) {
       return <div className="text-muted">Loading project information...</div>;
     }
 
-    return <div>
-      <nav className="breadcrumb">
-        <Link to={`/projects/${projectId}`} className="breadcrumb-item">Project Editor</Link>
-        <Route path="/projects/:projectId/build" render={() =>
-          <span className="breadcrumb-item active">Attribution Document</span>
-        } />
-        <Route path="/projects/:projectId/acl" render={() =>
-          <span className="breadcrumb-item active">Access List</span>
-        } />
-      </nav>
-      <Switch>
-        <Route exact={true} path="/projects/:projectId" component={ProjectView} />
-        <Route path="/projects/:projectId/acl" component={ProjectAclEditor} />
-        <Route path="/projects/:projectId/build" component={AttributionDocBuilder} />
-      </Switch>
-    </div>;
+    return (
+      <div>
+        <nav className="breadcrumb">
+          <Link to={`/projects/${projectId}`} className="breadcrumb-item">
+            Project Editor
+          </Link>
+          <Route
+            path="/projects/:projectId/build"
+            render={() => (
+              <span className="breadcrumb-item active">
+                Attribution Document
+              </span>
+            )}
+          />
+          <Route
+            path="/projects/:projectId/acl"
+            render={() => (
+              <span className="breadcrumb-item active">Access List</span>
+            )}
+          />
+          <Route
+            path="/projects/:projectId/clone"
+            render={() => (
+              <span className="breadcrumb-item active">Clone</span>
+            )}
+          />
+        </nav>
+        <Switch>
+          <Route
+            exact={true}
+            path="/projects/:projectId"
+            component={ProjectView}
+          />
+          <Route path="/projects/:projectId/acl" component={ProjectAclEditor} />
+          <Route
+            path="/projects/:projectId/build"
+            component={AttributionDocBuilder}
+          />
+          <Route path="/projects/:projectId/clone" component={CloneProject} />
+        </Switch>
+      </div>
+    );
   }
-
 }
 
 export default connect((state: any) => ({

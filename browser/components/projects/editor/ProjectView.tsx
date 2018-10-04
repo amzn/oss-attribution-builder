@@ -38,14 +38,15 @@ interface State {
 }
 
 class ProjectView extends Component<Props, State> {
-
   state = {
     editPackageId: undefined,
     showPackageEditor: false,
   };
 
   getOwners() {
-    const { project: { acl } } = this.props;
+    const {
+      project: { acl },
+    } = this.props;
     const owners: string[] = [];
     for (const user of Object.keys(acl)) {
       const access = acl[user];
@@ -58,7 +59,7 @@ class ProjectView extends Component<Props, State> {
 
   makeChangeEvent = (fieldName: string, bool?: boolean, extended?: string) => {
     const { dispatch, project } = this.props;
-    return (value) => {
+    return value => {
       if (bool) {
         value = value === 'true';
       }
@@ -71,32 +72,38 @@ class ProjectView extends Component<Props, State> {
         // transform a single contact field into a change of the contacts map
         // note that this is only capable of supporting a single contact of
         // each type, but this could easily be changed
-        dispatch(ProjectActions.patchProject(project.projectId, {
-          contacts: {
-            ...project.contacts,
-            [extended]: [value],
-          },
-        }));
+        dispatch(
+          ProjectActions.patchProject(project.projectId, {
+            contacts: {
+              ...project.contacts,
+              [extended]: [value],
+            },
+          })
+        );
       } else if (fieldName === 'meta') {
         if (extended == undefined) {
           throw new Error('meta extended data must not be undefined');
         }
 
         // transform a single meta edit into an updated meta map
-        dispatch(ProjectActions.patchProject(project.projectId, {
-          metadata: {
-            ...project.metadata,
-            [extended]: value,
-          },
-        }));
+        dispatch(
+          ProjectActions.patchProject(project.projectId, {
+            metadata: {
+              ...project.metadata,
+              [extended]: value,
+            },
+          })
+        );
       } else {
         // everything else
-        dispatch(ProjectActions.patchProject(project.projectId, {
-          [fieldName]: value,
-        }));
+        dispatch(
+          ProjectActions.patchProject(project.projectId, {
+            [fieldName]: value,
+          })
+        );
       }
     };
-  }
+  };
 
   render() {
     const { project } = this.props;
@@ -109,47 +116,90 @@ class ProjectView extends Component<Props, State> {
       </select>
     );
 
-    const legalContact = (project.contacts.legal && project.contacts.legal.length > 0) ?
-      project.contacts.legal[0] : '';
+    const legalContact =
+      project.contacts.legal && project.contacts.legal.length > 0
+        ? project.contacts.legal[0]
+        : '';
 
     return (
       <div className="pb-5">
-        {project.access.level === 'owner' ?
-          <div id="acl-owner-info" className="float-right text-muted small EditableText">
-            <Link to={`/projects/${project.projectId}/acl`}>owned by {this.getOwners()}</Link>
-          </div>
-        :
-          <div id="acl-owner-info" className="float-right text-muted small">
+        <div className="float-right">
+          <div id="acl-owner-info" className="text-muted small">
             owned by {this.getOwners()}
           </div>
-        }
+
+          <div className="dropdown text-right mt-2">
+            <button
+              className="btn btn-outline-dark btn-sm dropdown-toggle"
+              data-toggle="dropdown"
+              id="tools-dropdown-toggle"
+            >
+              Tools
+            </button>
+            <div className="dropdown-menu dropdown-menu-right">
+              {project.access.level === 'owner' ? (
+                <Link
+                  to={`/projects/${project.projectId}/acl`}
+                  className="dropdown-item"
+                >
+                  Edit Permissions
+                </Link>
+              ) : (
+                <a
+                  href="#"
+                  title="You must be a project owner to edit permissions."
+                  className="dropdown-item disabled"
+                >
+                  Edit Permissions
+                </a>
+              )}
+              {/*
+              <Link
+                to={`/projects/${project.projectId}/clone`}
+                className="dropdown-item"
+              >
+                Clone this Project
+              </Link>
+              */}
+            </div>
+          </div>
+        </div>
 
         <h2 id="project-heading">
           <EditableText
             value={project.title}
             enabled={project.access.canEdit}
-            onChange={this.makeChangeEvent('title')}>
+            onChange={this.makeChangeEvent('title')}
+          >
             {project.title}
-          </EditableText>
-          {' '}
+          </EditableText>{' '}
           <small id="project-version">
             <EditableText
               value={project.version}
               enabled={project.access.canEdit}
-              onChange={this.makeChangeEvent('version')}>
+              onChange={this.makeChangeEvent('version')}
+            >
               version {project.version}
             </EditableText>
           </small>
         </h2>
 
-        <p><small>Created <strong title={project.createdOn.format()}>{project.createdOn.fromNow()}</strong></small>.</p>
+        <p>
+          <small>
+            Created{' '}
+            <strong title={project.createdOn.format()}>
+              {project.createdOn.fromNow()}
+            </strong>
+          </small>.
+        </p>
 
         <p className="lead" id="project-description">
           <EditableText
             value={project.description}
             enabled={project.access.canEdit}
             onChange={this.makeChangeEvent('description')}
-            editor={<textarea/>}>
+            editor={<textarea />}
+          >
             {project.description}
           </EditableText>
         </p>
@@ -161,7 +211,8 @@ class ProjectView extends Component<Props, State> {
               value={project.plannedRelease.format('YYYY-MM-DD')}
               enabled={project.access.canEdit}
               onChange={this.makeChangeEvent('plannedRelease')}
-              editor={<input type="date" pattern="\d{4}\-\d{2}-\d{2}"/>}>
+              editor={<input type="date" pattern="\d{4}\-\d{2}-\d{2}" />}
+            >
               {project.plannedRelease.format('ddd, MMMM Do YYYY')}
             </EditableText>
           </dd>
@@ -171,7 +222,8 @@ class ProjectView extends Component<Props, State> {
             <EditableText
               value={legalContact}
               enabled={project.access.canEdit}
-              onChange={this.makeChangeEvent('contacts', false, 'legal')}>
+              onChange={this.makeChangeEvent('contacts', false, 'legal')}
+            >
               {legalContact}
             </EditableText>
           </dd>
@@ -182,34 +234,45 @@ class ProjectView extends Component<Props, State> {
               value={project.metadata.open_sourcing.toString()}
               enabled={project.access.canEdit}
               onChange={this.makeChangeEvent('meta', true, 'open_sourcing')}
-              editor={selectYesNo}>
+              editor={selectYesNo}
+            >
               {project.metadata.open_sourcing ? 'Yes' : 'No'}
             </EditableText>
           </dd>
         </dl>
 
-        <h3>Open Source Packages Used</h3>
+        <h3 className="mt-4">Open Source Packages Used</h3>
         {this.renderUsedPackages()}
         {this.renderPackageEditor()}
 
-        {showPackageEditor || project.packagesUsed.length === 0 ? '' :
+        {showPackageEditor || project.packagesUsed.length === 0 ? (
+          ''
+        ) : (
           <div className="pull-right" id="build-buttons">
-            <Link to={`/projects/${project.projectId}/build`} className="btn btn-success btn-lg">
+            <Link
+              to={`/projects/${project.projectId}/build`}
+              className="btn btn-success btn-lg"
+            >
               Build Attribution Document
             </Link>
           </div>
-        }
+        )}
       </div>
     );
   }
 
   renderUsedPackages() {
-    const { project: { packagesUsed } } = this.props;
+    const {
+      project: { packagesUsed },
+    } = this.props;
     const { showPackageEditor, editPackageId } = this.state;
     if (packagesUsed.length === 0) {
-      return <div className="alert alert-info mt-3">
-        <strong>Your project is empty!</strong> Add the open source packages you use here.
-      </div>;
+      return (
+        <div className="alert alert-info mt-3">
+          <strong>Your project is empty!</strong> Add the open source packages
+          you use here.
+        </div>
+      );
     }
 
     // don't show the package list if we're editing a specific package
@@ -217,54 +280,71 @@ class ProjectView extends Component<Props, State> {
       return;
     }
 
-    return packagesUsed.map((usage, index) =>
+    return packagesUsed.map((usage, index) => (
       <ProjectPackage
         key={usage.packageId}
         usage={usage}
-        onEditPackage={() => this.setState({
-          showPackageEditor: true,
-          editPackageId: usage.packageId,
-        })}
-      />,
-    );
+        onEditPackage={() =>
+          this.setState({
+            showPackageEditor: true,
+            editPackageId: usage.packageId,
+          })
+        }
+      />
+    ));
   }
 
   renderPackageEditor() {
     const { showPackageEditor, editPackageId } = this.state;
-    const { packages, project: { packagesUsed, access } } = this.props;
+    const {
+      packages,
+      project: { packagesUsed, access },
+    } = this.props;
 
     if (!access.canEdit) {
       return;
     }
 
     if (!showPackageEditor) {
-      return <button id="add-package" className="btn btn-primary"
-        onClick={() => this.setState({showPackageEditor: true})}>
-        <i className="fa fa-plus" /> Add Package
-      </button>;
+      return (
+        <button
+          id="add-package"
+          className="btn btn-primary"
+          onClick={() => this.setState({ showPackageEditor: true })}
+        >
+          <i className="fa fa-plus" /> Add Package
+        </button>
+      );
     }
 
     if (editPackageId != undefined) {
-      const usage = packagesUsed.find((x) => x.packageId === editPackageId);
+      const usage = packagesUsed.find(x => x.packageId === editPackageId);
       const pkg = packages[editPackageId];
-      return <PackageEditor
-        initialPackage={pkg}
-        initialUsage={usage}
-        onCompleted={() => this.setState({
-          showPackageEditor: false,
-          editPackageId: undefined,
-        })}
-      />;
+      return (
+        <PackageEditor
+          initialPackage={pkg}
+          initialUsage={usage}
+          onCompleted={() =>
+            this.setState({
+              showPackageEditor: false,
+              editPackageId: undefined,
+            })
+          }
+        />
+      );
     }
 
-    return <PackageEditor
-      onCompleted={() => this.setState({
-        showPackageEditor: false,
-        editPackageId: undefined,
-      })}
-    />;
+    return (
+      <PackageEditor
+        onCompleted={() =>
+          this.setState({
+            showPackageEditor: false,
+            editPackageId: undefined,
+          })
+        }
+      />
+    );
   }
-
 }
 
 export default connect((state: any) => ({

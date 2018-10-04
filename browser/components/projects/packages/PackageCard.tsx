@@ -37,10 +37,7 @@ class PackageCard extends Component<Props, {}> {
 
   static defaultProps = {
     packages: {},
-    // wat?
-    // https://github.com/Microsoft/TypeScript/pull/19966
-    // https://github.com/Microsoft/TypeScript/issues/11465
-    preStyle: {overflow: 'auto' as 'auto', maxHeight: '150px'},
+    preStyle: {overflow: 'auto', maxHeight: '150px'},
   };
 
   componentWillMount() {

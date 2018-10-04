@@ -66,6 +66,7 @@ describe('project authentication', function() {
   });
 
   it('can load the acl editor', async function() {
+    driver.findElement(By.id('tools-dropdown-toggle')).click();
     driver.findElement(By.css('a[href$="/acl"]')).click();
     await driver.wait(until.elementLocated(By.id('project-acl-editor')));
   });
