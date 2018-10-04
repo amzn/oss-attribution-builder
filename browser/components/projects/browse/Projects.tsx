@@ -26,7 +26,6 @@ interface Props {
 }
 
 class Projects extends Component<Props, {}> {
-
   componentWillMount() {
     const { dispatch, location } = this.props;
     dispatch(ProjectActions.fetchProjects(location.search));
@@ -43,11 +42,8 @@ class Projects extends Component<Props, {}> {
 
   render() {
     const { projects } = this.props;
-    return (
-      <ProjectList projects={projects}/>
-    );
+    return <ProjectList projects={projects} />;
   }
-
 }
 
 export default connect((state: any) => {

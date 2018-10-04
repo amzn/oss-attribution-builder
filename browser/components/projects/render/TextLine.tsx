@@ -22,7 +22,6 @@ interface Props {
 }
 
 export default class TextLine extends Component<Props, {}> {
-
   render() {
     const { children, highlight, scrollTo } = this.props;
 

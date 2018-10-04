@@ -33,7 +33,6 @@ interface State {
 }
 
 class PackageVerification extends Component<Props, State> {
-
   allChecked = false;
 
   state = {
@@ -51,76 +50,108 @@ class PackageVerification extends Component<Props, State> {
         val = e.currentTarget.checked;
       }
 
-      this.setState({[name]: val} as State);
+      this.setState({ [name]: val } as State);
     };
-  }
+  };
 
   renderVerifyOption = (name: string, text: string) => {
     const fullName = `verify_${name}`;
     return (
       <div className="checkbox">
         <label>
-          <input type="checkbox" name={fullName} onChange={this.changeEvent(fullName)}
-                checked={this.state[fullName]} /> {text}
+          <input
+            type="checkbox"
+            name={fullName}
+            onChange={this.changeEvent(fullName)}
+            checked={this.state[fullName]}
+          />{' '}
+          {text}
         </label>
       </div>
     );
-  }
+  };
 
   submitForm = (e: any) => {
-    const { dispatch, match: { params: { packageId } } } = this.props;
+    const {
+      dispatch,
+      match: {
+        params: { packageId },
+      },
+    } = this.props;
     e.preventDefault();
-    dispatch(PackageActions.verifyPackage(packageId, this.allChecked, this.state.comments));
-  }
+    dispatch(
+      PackageActions.verifyPackage(
+        packageId,
+        this.allChecked,
+        this.state.comments
+      )
+    );
+  };
 
   validate = () => {
     this.allChecked = ['website', 'license', 'copyright']
-      .map((x) => this.state[`verify_${x}`])
+      .map(x => this.state[`verify_${x}`])
       .reduce((a, b) => a && b, true);
 
     return this.allChecked || this.state.comments.trim().length > 0;
-  }
+  };
 
   render() {
-    const { match: { params: { packageId } } } = this.props;
+    const {
+      match: {
+        params: { packageId },
+      },
+    } = this.props;
 
     const valid = this.validate();
 
     return (
       <div className="row">
-
         <div className="col-md-8">
           <PackageCard
             packageId={packageId}
-            preStyle={{overflow: 'auto', maxHeight: '400px'}}
+            preStyle={{ overflow: 'auto', maxHeight: '400px' }}
           />
         </div>
 
         <div className="col-md-4">
           <form onSubmit={this.submitForm}>
             {this.renderVerifyOption('license', 'License name/text is correct')}
-            {this.renderVerifyOption('copyright', 'Copyright statement is correct')}
+            {this.renderVerifyOption(
+              'copyright',
+              'Copyright statement is correct'
+            )}
             {this.renderVerifyOption('website', 'Website is correct')}
             <div className="form-group">
               <label htmlFor="comments">Comments?</label>
-              <textarea className="form-control" id="comments" name="comments"
-                        onChange={this.changeEvent('comments')} value={this.state.comments} />
+              <textarea
+                className="form-control"
+                id="comments"
+                name="comments"
+                onChange={this.changeEvent('comments')}
+                value={this.state.comments}
+              />
             </div>
             <div className="btn-group float-right">
-              <button className="btn btn-primary" type="submit" disabled={!valid}>Save</button>
+              <button
+                className="btn btn-primary"
+                type="submit"
+                disabled={!valid}
+              >
+                Save
+              </button>
             </div>
             {valid || (
               <div className="form-text text-muted">
-                You must verify all items are valid, or provide comments explaining which are incorrect.
+                You must verify all items are valid, or provide comments
+                explaining which are incorrect.
               </div>
             )}
           </form>
         </div>
-
       </div>
     );
   }
-
 }
 
 export default connect((state: any) => ({

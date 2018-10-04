@@ -18,7 +18,6 @@ import RadioWidget from './RadioWidget';
 import TextWidget from './TextWidget';
 
 export default class QuestionWidget extends BaseWidget<BaseProps> {
-
   render() {
     const { question } = this.props;
 
@@ -31,5 +30,4 @@ export default class QuestionWidget extends BaseWidget<BaseProps> {
 
     return <Widget {...this.props} />;
   }
-
 }

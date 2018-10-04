@@ -32,7 +32,7 @@ window.addEventListener('DOMContentLoaded', () => {
         <Route component={App} />
       </Router>
     </Provider>,
-    document.getElementById('content'),
+    document.getElementById('content')
   );
 });
 

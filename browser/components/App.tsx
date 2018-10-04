@@ -16,7 +16,11 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { NavLink, Route, Switch } from 'react-router-dom';
 
-import { fetchSiteInfo, setAdminMode, setGeneralError } from '../modules/common';
+import {
+  fetchSiteInfo,
+  setAdminMode,
+  setGeneralError,
+} from '../modules/common';
 import ExtensionPoint from '../util/ExtensionPoint';
 import Landing from './Landing';
 import NotFound from './NotFound';
@@ -36,7 +40,6 @@ interface Props {
 }
 
 class App extends React.Component<Props, {}> {
-
   componentWillMount() {
     const { dispatch } = this.props;
     dispatch(fetchSiteInfo());
@@ -45,30 +48,34 @@ class App extends React.Component<Props, {}> {
   dismissError = () => {
     const { dispatch } = this.props;
     dispatch(setGeneralError(undefined));
-  }
+  };
 
   mapError(err) {
     if (err.code === 403) {
-      return (<ErrorModal
-        message={err.message}
-        onDismiss={this.dismissError}
-        title="You might not have access to this resource"
-        explain="If you think you need access to this item, contact the site administrator."
-      />);
+      return (
+        <ErrorModal
+          message={err.message}
+          onDismiss={this.dismissError}
+          title="You might not have access to this resource"
+          explain="If you think you need access to this item, contact the site administrator."
+        />
+      );
     }
 
-    return (<ErrorModal
-      message={err.message}
-      onDismiss={this.dismissError}
-      title="Something went wrong"
-      explain="Please try that again."
-    />);
+    return (
+      <ErrorModal
+        message={err.message}
+        onDismiss={this.dismissError}
+        title="Something went wrong"
+        explain="Please try that again."
+      />
+    );
   }
 
   toggleAdmin = () => {
     const { dispatch, admin } = this.props;
     dispatch(setAdminMode(!admin));
-  }
+  };
 
   render() {
     const { generalError, canAdmin, admin } = this.props;
@@ -77,7 +84,12 @@ class App extends React.Component<Props, {}> {
         <ExtensionPoint ext="page-start" />
 
         <nav className="navbar navbar-expand-sm navbar-light bg-light">
-          <NavLink exact={true} to="/" className="navbar-brand" activeClassName="active">
+          <NavLink
+            exact={true}
+            to="/"
+            className="navbar-brand"
+            activeClassName="active"
+          >
             <ExtensionPoint ext="navbar-logo">
               Attribution Builder
             </ExtensionPoint>
@@ -85,17 +97,31 @@ class App extends React.Component<Props, {}> {
           <div className="collapse navbar-collapse">
             <ul className="navbar-nav mr-auto">
               <li className="nav-item">
-                <NavLink exact={true} to="/projects/" className="nav-link" activeClassName="active">My Projects</NavLink>
+                <NavLink
+                  exact={true}
+                  to="/projects/"
+                  className="nav-link"
+                  activeClassName="active"
+                >
+                  My Projects
+                </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink exact={true} to="/projects/new" className="nav-link" activeClassName="active">New Project</NavLink>
+                <NavLink
+                  exact={true}
+                  to="/projects/new"
+                  className="nav-link"
+                  activeClassName="active"
+                >
+                  New Project
+                </NavLink>
               </li>
             </ul>
             <ExtensionPoint ext="navbar-end" />
           </div>
         </nav>
 
-        { generalError != undefined && this.mapError(generalError) }
+        {generalError != undefined && this.mapError(generalError)}
 
         <div className="container mt-4">
           <div className="row">
@@ -103,10 +129,21 @@ class App extends React.Component<Props, {}> {
               <Switch>
                 <Route exact={true} path="/" component={Landing} />
                 <Route exact={true} path="/projects" component={Projects} />
-                <Route exact={true} path="/projects/new" component={ProjectOnboardingForm} />
+                <Route
+                  exact={true}
+                  path="/projects/new"
+                  component={ProjectOnboardingForm}
+                />
                 <Route path="/projects/:projectId" component={ProjectRouter} />
-                <Route exact={true} path="/packages/verify" component={PackageVerificationQueue} />
-                <Route path="/packages/verify/:packageId" component={PackageVerification} />
+                <Route
+                  exact={true}
+                  path="/packages/verify"
+                  component={PackageVerificationQueue}
+                />
+                <Route
+                  path="/packages/verify/:packageId"
+                  component={PackageVerification}
+                />
                 <Route component={NotFound} />
               </Switch>
             </div>
@@ -114,11 +151,13 @@ class App extends React.Component<Props, {}> {
 
           <div className="row mt-4">
             <div className="mx-auto col-lg-10">
-              {canAdmin &&
+              {canAdmin && (
                 <div className="pull-right">
-                  <ToggleLink state={admin} onClick={this.toggleAdmin}>Admin</ToggleLink>
+                  <ToggleLink state={admin} onClick={this.toggleAdmin}>
+                    Admin
+                  </ToggleLink>
                 </div>
-              }
+              )}
               <ExtensionPoint ext="footer" />
             </div>
           </div>
@@ -128,11 +167,11 @@ class App extends React.Component<Props, {}> {
       </>
     );
   }
-
 }
 
 export default connect((state: any) => ({
   generalError: state.common.generalError,
-  canAdmin: state.common.info.permissions && state.common.info.permissions.admin,
+  canAdmin:
+    state.common.info.permissions && state.common.info.permissions.admin,
   admin: state.common.admin,
 }))(App);

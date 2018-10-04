@@ -27,7 +27,6 @@ interface State {
 }
 
 export default class EditableText extends Component<Props, State> {
-
   constructor(props) {
     super(props);
 
@@ -45,14 +44,14 @@ export default class EditableText extends Component<Props, State> {
   }
 
   edit = () => {
-    this.setState({editing: true});
-  }
+    this.setState({ editing: true });
+  };
 
   focus = (ele: HTMLElement) => {
     if (ele != undefined && ele.focus != undefined) {
       ele.focus();
     }
-  }
+  };
 
   save = (e: React.KeyboardEvent<HTMLElement>) => {
     const target = e.target as HTMLInputElement;
@@ -68,7 +67,7 @@ export default class EditableText extends Component<Props, State> {
       return;
     }
 
-    this.setState({editing: false});
+    this.setState({ editing: false });
 
     // ignore unchanged fields
     if (val === this.props.value) {
@@ -76,7 +75,7 @@ export default class EditableText extends Component<Props, State> {
     }
 
     this.props.onChange(val);
-  }
+  };
 
   render() {
     if (!this.state.editing) {
@@ -87,27 +86,22 @@ export default class EditableText extends Component<Props, State> {
           </span>
         );
       } else {
-        return (
-          <span>{this.props.children}</span>
-        );
+        return <span>{this.props.children}</span>;
       }
     }
 
-    let editor = this.props.editor || (<input type="text" />);
+    let editor = this.props.editor || <input type="text" />;
     editor = React.cloneElement(editor, {
       defaultValue: this.props.value,
       className: 'form-control',
       onBlur: this.save,
-      onKeyPress: (e) => e.key === 'Enter' ? this.save(e) : undefined,
+      onKeyPress: e => (e.key === 'Enter' ? this.save(e) : undefined),
       required: true,
       style: {
         width: '100%',
       },
       ref: this.focus,
     });
-    return (
-      <span>{editor}</span>
-    );
+    return <span>{editor}</span>;
   }
-
 }

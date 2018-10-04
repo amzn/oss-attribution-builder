@@ -39,7 +39,7 @@ interface Props extends OwnProps {
   dispatch: (action: any) => any;
   project: any;
   packages: PackageActions.PackageSet;
-  tags: {[key: string]: WebTag};
+  tags: { [key: string]: WebTag };
 }
 
 interface State {
@@ -47,7 +47,6 @@ interface State {
 }
 
 class ProjectPackage extends React.Component<Props, State> {
-
   constructor(props) {
     super(props);
 
@@ -58,31 +57,46 @@ class ProjectPackage extends React.Component<Props, State> {
 
   detachPackage = () => {
     const { dispatch, project, usage } = this.props;
-    dispatch(ProjectActions.detachPackageFromProject(project.projectId, usage.packageId));
-  }
+    dispatch(
+      ProjectActions.detachPackageFromProject(
+        project.projectId,
+        usage.packageId
+      )
+    );
+  };
 
-  showDelta = (e) => {
+  showDelta = e => {
     const { dispatch, packages, usage } = this.props;
 
     // at this point, we have the extra section already, so fetch the lastest revision
     const pkg = packages[usage.packageId];
     dispatch(PackageActions.fetchPackage(pkg.extra!.latest!));
 
-    this.setState({showDelta: true});
-  }
+    this.setState({ showDelta: true });
+  };
 
   replacePackage = (newId: number) => {
     const { dispatch, project, usage } = this.props;
-    dispatch(ProjectActions.replacePackageForProject(project.projectId, usage.packageId, newId));
-    this.setState({showDelta: false});
-  }
+    dispatch(
+      ProjectActions.replacePackageForProject(
+        project.projectId,
+        usage.packageId,
+        newId
+      )
+    );
+    this.setState({ showDelta: false });
+  };
 
   render() {
     const { usage, packages, onEditPackage } = this.props;
     const { showDelta } = this.state;
 
     const buttons = [
-      <button key={'edit'} className="btn btn-secondary package-edit-button" onClick={onEditPackage}>
+      <button
+        key={'edit'}
+        className="btn btn-secondary package-edit-button"
+        onClick={onEditPackage}
+      >
         <i className="fa fa-pencil" />
       </button>,
       <DetatchButton key={'detach'} onClick={this.detachPackage} />,
@@ -93,13 +107,21 @@ class ProjectPackage extends React.Component<Props, State> {
 
     // see if the we have newer metadata available
     const pkg = packages[usage.packageId];
-    if (pkg != undefined && pkg.extra != undefined &&
-      pkg.extra.latest != undefined && pkg.extra.latest !== usage.packageId) {
-        // add an update button
+    if (
+      pkg != undefined &&
+      pkg.extra != undefined &&
+      pkg.extra.latest != undefined &&
+      pkg.extra.latest !== usage.packageId
+    ) {
+      // add an update button
       buttons.unshift(
-        <button key={'update'} className="btn btn-sm btn-info" onClick={this.showDelta}>
+        <button
+          key={'update'}
+          className="btn btn-sm btn-info"
+          onClick={this.showDelta}
+        >
           <i className="fa fa-bolt" /> Update
-        </button>,
+        </button>
       );
     }
 
@@ -109,13 +131,11 @@ class ProjectPackage extends React.Component<Props, State> {
       child = <div className="alert alert-info">{this.renderDelta()}</div>;
     }
 
-    return <PackageCard
-      packageId={usage.packageId}
-      usage={usage}
-      buttons={buttons}
-    >
-      {child}
-    </PackageCard>;
+    return (
+      <PackageCard packageId={usage.packageId} usage={usage} buttons={buttons}>
+        {child}
+      </PackageCard>
+    );
   }
 
   renderDelta() {
@@ -132,27 +152,35 @@ class ProjectPackage extends React.Component<Props, State> {
       if (oldPkg[field] !== newPkg[field]) {
         listElements.push(
           <dt key={field}>{label}</dt>,
-          <dd key={`${field}_v`} className="fixed-text"><div>{newPkg[field]}</div></dd>,
+          <dd key={`${field}_v`} className="fixed-text">
+            <div>{newPkg[field]}</div>
+          </dd>
         );
       }
     }
 
-    return <div>
-      <p>
-        We have updated information available for <strong>{oldPkg.name} <em>{oldPkg.version}</em></strong>.
-        These changes include:
-      </p>
-      <dl>{listElements}</dl>
-      <p>
-        If this looks correct, you can apply these changes to your project:
-      </p>
-      <button className="btn btn-sm btn-success"
-        onClick={() => this.replacePackage(newPkg.packageId)}>
-        Accept changes
-      </button>
-    </div>;
+    return (
+      <div>
+        <p>
+          We have updated information available for{' '}
+          <strong>
+            {oldPkg.name} <em>{oldPkg.version}</em>
+          </strong>
+          . These changes include:
+        </p>
+        <dl>{listElements}</dl>
+        <p>
+          If this looks correct, you can apply these changes to your project:
+        </p>
+        <button
+          className="btn btn-sm btn-success"
+          onClick={() => this.replacePackage(newPkg.packageId)}
+        >
+          Accept changes
+        </button>
+      </div>
+    );
   }
-
 }
 
 export default connect((state: any, props: OwnProps) => ({

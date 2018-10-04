@@ -26,7 +26,6 @@ interface Props {
 }
 
 class PackageVerificationQueue extends Component<Props, {}> {
-
   componentDidMount() {
     const { dispatch } = this.props;
     dispatch(fetchVerificationQueue());
@@ -39,17 +38,23 @@ class PackageVerificationQueue extends Component<Props, {}> {
       <table className="table">
         <caption>Packages needing verification, in order of popularity</caption>
         <tbody>
-          {queue.map((pkg) => (
+          {queue.map(pkg => (
             <tr key={pkg.packageId}>
-              <td><Link to={`/packages/verify/${pkg.packageId}`}>{pkg.name} {pkg.version}</Link></td>
-              <td>{pkg.extra!.stats!.numProjects} project{pkg.extra!.stats!.numProjects !== 1 && 's'}</td>
+              <td>
+                <Link to={`/packages/verify/${pkg.packageId}`}>
+                  {pkg.name} {pkg.version}
+                </Link>
+              </td>
+              <td>
+                {pkg.extra!.stats!.numProjects} project
+                {pkg.extra!.stats!.numProjects !== 1 && 's'}
+              </td>
             </tr>
           ))}
         </tbody>
       </table>
     );
   }
-
 }
 
 export default connect((state: any) => ({

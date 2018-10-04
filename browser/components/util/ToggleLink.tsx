@@ -21,7 +21,6 @@ interface Props {
 }
 
 export default class ToggleLink extends Component<Props, {}> {
-
   render() {
     const { state, onClick, children } = this.props;
 
@@ -29,10 +28,8 @@ export default class ToggleLink extends Component<Props, {}> {
 
     return (
       <button type="button" className="btn btn-link" onClick={onClick}>
-        <i className={icon} />
-        {' '}{children}
+        <i className={icon} /> {children}
       </button>
     );
-
   }
 }

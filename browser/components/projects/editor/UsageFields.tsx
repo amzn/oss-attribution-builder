@@ -29,7 +29,6 @@ interface State {
 }
 
 export default class UsageFields extends React.Component<Props, State> {
-
   static defaultProps = {
     initial: {},
   };
@@ -37,46 +36,60 @@ export default class UsageFields extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
-      usage: {...this.props.initial},
+      usage: { ...this.props.initial },
     };
   }
 
   handleChange = (name, val) => {
-    this.setState({usage: {
-      ...this.state.usage,
-      [name]: val,
-    }}, () => {
-      this.props.onChange(this.state.usage);
-    });
-  }
+    this.setState(
+      {
+        usage: {
+          ...this.state.usage,
+          [name]: val,
+        },
+      },
+      () => {
+        this.props.onChange(this.state.usage);
+      }
+    );
+  };
 
   renderQuestion = (name: string, i: number) => {
     const { questions } = this.props;
-    return <QuestionWidget key={i}
-      name={name}
-      question={questions[name]}
-      value={this.state.usage[name]!}
-      onChange={(val: any) => this.handleChange(name, val)}
-    />;
-  }
+    return (
+      <QuestionWidget
+        key={i}
+        name={name}
+        question={questions[name]}
+        value={this.state.usage[name]!}
+        onChange={(val: any) => this.handleChange(name, val)}
+      />
+    );
+  };
 
   render() {
     const { questions } = this.props;
     const { usage } = this.state;
 
-    return <div>
+    return (
       <div>
-        {Object.keys(questions).map(this.renderQuestion)}
-      </div>
+        <div>{Object.keys(questions).map(this.renderQuestion)}</div>
 
-      <div className="form-group row">
-        <label htmlFor="packageComments" className="col-md-3">Additional comments</label>
-        <div className="col-md-9">
-          <textarea name="notes" id="packageComments" className="form-control"
-            value={usage.notes} onChange={(e) => this.handleChange('notes', e.target.value)} />
+        <div className="form-group row">
+          <label htmlFor="packageComments" className="col-md-3">
+            Additional comments
+          </label>
+          <div className="col-md-9">
+            <textarea
+              name="notes"
+              id="packageComments"
+              className="form-control"
+              value={usage.notes}
+              onChange={e => this.handleChange('notes', e.target.value)}
+            />
+          </div>
         </div>
       </div>
-    </div>;
+    );
   }
-
 }

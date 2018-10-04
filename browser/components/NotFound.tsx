@@ -21,7 +21,7 @@ interface Props {
   match: match<any>;
 }
 
-const Landing: React.SFC<Props> = (props) => {
+const Landing: React.SFC<Props> = props => {
   return (
     <div className="card bg-warning mb-2">
       <div className="card-header">Not Found</div>
@@ -29,8 +29,8 @@ const Landing: React.SFC<Props> = (props) => {
         <ExtensionPoint ext="page-not-found" match={props.match}>
           <h4 className="card-title">Page not found</h4>
           <p className="card-text">
-            The resource you were looking for doesn't exist here.
-            Check your location for typos and try again.
+            The resource you were looking for doesn't exist here. Check your
+            location for typos and try again.
           </p>
         </ExtensionPoint>
       </div>

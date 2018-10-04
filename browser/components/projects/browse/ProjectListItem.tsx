@@ -24,18 +24,14 @@ interface Props {
 }
 
 export default class ProjectListItem extends Component<Props, {}> {
-
   render() {
     return (
       <li className="list-group-item">
         <Link to={`/projects/${this.props.projectId}`}>
           {this.props.title} {this.props.version}
         </Link>
-        <small className="ml-1">
-          created on {this.props.createdOn}
-        </small>
+        <small className="ml-1">created on {this.props.createdOn}</small>
       </li>
     );
   }
-
 }

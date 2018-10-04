@@ -27,7 +27,6 @@ interface State {
 }
 
 export default class ExtensionPoint extends React.Component<Props, State> {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -39,15 +38,15 @@ export default class ExtensionPoint extends React.Component<Props, State> {
     // tslint:disable:no-console
     console.error(`Extension at point ${this.props.ext} crashed.`);
     console.error('Component stack:', info.componentStack);
-    this.setState({crashed: true});
+    this.setState({ crashed: true });
   }
 
   render() {
     if (this.state.crashed) {
       return (
         <div className="alert alert-danger">
-          <strong>Bug:</strong> An extension that was supposed to render here crashed.
-          Details may be available in the browser console.
+          <strong>Bug:</strong> An extension that was supposed to render here
+          crashed. Details may be available in the browser console.
         </div>
       );
     }
@@ -58,7 +57,8 @@ export default class ExtensionPoint extends React.Component<Props, State> {
       return this.props.children || null;
     }
 
-    return exts.map((Ext, i) => <Ext key={`ext-${this.props.ext}-${i}`} {...this.props} />);
+    return exts.map((Ext, i) => (
+      <Ext key={`ext-${this.props.ext}-${i}`} {...this.props} />
+    ));
   }
-
 }

@@ -37,7 +37,7 @@ class PackageCard extends Component<Props, {}> {
 
   static defaultProps = {
     packages: {},
-    preStyle: {overflow: 'auto', maxHeight: '150px'},
+    preStyle: { overflow: 'auto', maxHeight: '150px' },
   };
 
   componentWillMount() {
@@ -67,59 +67,58 @@ class PackageCard extends Component<Props, {}> {
     }
     this.extendedFetched = true;
     dispatch(fetchPackage(packageId, true));
-  }
+  };
 
   render() {
     const { packageId, packages, usage, buttons, preStyle } = this.props;
-    const pkg = packages[packageId] || {} as WebPackage;
+    const pkg = packages[packageId] || ({} as WebPackage);
 
     return (
-      <div className="card package-card mb-2" ref={(r) => { if (r) { this.ref = r; } } }>
+      <div
+        className="card package-card mb-2"
+        ref={r => {
+          if (r) {
+            this.ref = r;
+          }
+        }}
+      >
         <div className="card-body">
-
           <div className="float-right">
-
             <div className="btn-toolbar">
               <div className="btn-group btn-group-sm">
-                <a className="btn btn-link" href={pkg.website} target="_blank">Website</a>
+                <a className="btn btn-link" href={pkg.website} target="_blank">
+                  Website
+                </a>
               </div>
 
-              <div className="btn-group btn-group-sm">
-                {buttons}
-              </div>
+              <div className="btn-group btn-group-sm">{buttons}</div>
             </div>
           </div>
 
           <h4>
-            <PackageVerificationMark pkg={pkg} />{' '}
-            {pkg.name}{' '}
+            <PackageVerificationMark pkg={pkg} /> {pkg.name}{' '}
             <small>
-              <span title={`id ${pkg.packageId}`}>{pkg.version}{' '}</span>
+              <span title={`id ${pkg.packageId}`}>{pkg.version} </span>
               <span className="badge badge-info">{pkg.license}</span>
             </small>
           </h4>
 
           {this.props.children}
 
-          { usage != undefined && <PackageCardUsage {...usage} /> }
+          {usage != undefined && <PackageCardUsage {...usage} />}
         </div>
 
         <div className="card-footer">
-          <pre style={preStyle}>
-            {pkg.copyright}
-          </pre>
+          <pre style={preStyle}>{pkg.copyright}</pre>
 
-          {pkg.licenseText != undefined && pkg.licenseText !== '' && (
-            <pre style={preStyle}>
-              {pkg.licenseText}
-            </pre>
-          )}
+          {pkg.licenseText != undefined &&
+            pkg.licenseText !== '' && (
+              <pre style={preStyle}>{pkg.licenseText}</pre>
+            )}
         </div>
-
       </div>
     );
   }
-
 }
 
 export default connect((state: any) => ({

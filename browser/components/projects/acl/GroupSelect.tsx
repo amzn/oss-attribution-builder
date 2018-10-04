@@ -23,16 +23,20 @@ interface Props {
 }
 
 export default function GroupSelect(props: Props) {
-  return <Select
-    name={props.name}
-    options={mapGroups(props.groups)}
-    value={props.value}
-    onChange={(sel: Option | null) => props.onChange(sel ? sel.value as string : undefined)}
-  />;
+  return (
+    <Select
+      name={props.name}
+      options={mapGroups(props.groups)}
+      value={props.value}
+      onChange={(sel: Option | null) =>
+        props.onChange(sel ? (sel.value as string) : undefined)
+      }
+    />
+  );
 }
 
 function mapGroups(groups) {
-  return groups.map((group) => {
+  return groups.map(group => {
     const firstColon = group.indexOf(':');
     if (firstColon === -1) {
       return {

@@ -21,21 +21,21 @@ export interface Props {
 }
 
 export default class PackageCardUsage extends Component<Props, {}> {
-
   render() {
     const { notes } = this.props;
 
     const usage = Object.keys(this.props)
-      .filter((prop) => !['packageId', 'notes'].includes(prop))
-      .map((prop) => `${prop}: ${this.props[prop]}`)
+      .filter(prop => !['packageId', 'notes'].includes(prop))
+      .map(prop => `${prop}: ${this.props[prop]}`)
       .join('; ');
 
     return (
       <div>
         {usage && <em>In this project: {usage}</em>}
-        <p style={{whiteSpace: 'pre-wrap'}} className="text-muted mb-0">{notes}</p>
+        <p style={{ whiteSpace: 'pre-wrap' }} className="text-muted mb-0">
+          {notes}
+        </p>
       </div>
     );
   }
-
 }

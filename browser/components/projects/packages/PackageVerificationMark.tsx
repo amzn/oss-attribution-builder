@@ -36,15 +36,29 @@ export default class PackageVerificationMark extends Component<Props, {}> {
   }
 
   componentDidUpdate() {
-    $(this.self).find('[data-toggle="popover"]').popover({placement: 'bottom', container: 'body', trigger: 'click'});
+    $(this.self)
+      .find('[data-toggle="popover"]')
+      .popover({ placement: 'bottom', container: 'body', trigger: 'click' });
   }
 
   renderInner = () => {
     const { pkg } = this.props;
 
     // don't render if we don't have everything loaded
-    if (pkg == undefined || pkg.verified == undefined || pkg.extra == undefined) {
-      return <span ref={(r) => { if (r) { this.self = r; } } } />;
+    if (
+      pkg == undefined ||
+      pkg.verified == undefined ||
+      pkg.extra == undefined
+    ) {
+      return (
+        <span
+          ref={r => {
+            if (r) {
+              this.self = r;
+            }
+          }}
+        />
+      );
     }
 
     let content = 'Loading details...';
@@ -58,38 +72,45 @@ export default class PackageVerificationMark extends Component<Props, {}> {
 
     if (pkg.verified) {
       return (
-        <span className="badge badge-success"
+        <span
+          className="badge badge-success"
           data-toggle="popover"
           data-title="Package info verified as correct"
           data-content={content}
-          >
+        >
           <i className="fa fa-star" />
         </span>
       );
     } else {
       return (
-        <span className="badge badge-danger"
+        <span
+          className="badge badge-danger"
           data-toggle="popover"
           data-title="Package info marked incorrect"
           data-content={content}
-          >
+        >
           <i className="fa fa-thumbs-o-down" />
         </span>
-     );
+      );
     }
-  }
+  };
 
   render() {
     return (
-      <span ref={(r) => { if (r) { this.self = r; } } } style={{cursor: 'pointer'}}
+      <span
+        ref={r => {
+          if (r) {
+            this.self = r;
+          }
+        }}
+        style={{ cursor: 'pointer' }}
         data-toggle="tooltip"
         data-placement="right"
         title="Click for details"
         className="mr-2"
-        >
+      >
         {this.renderInner()}
       </span>
     );
   }
-
 }

@@ -30,7 +30,6 @@ interface State {
 }
 
 class ProjectOnboardingForm extends Component<Props, State> {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -39,34 +38,39 @@ class ProjectOnboardingForm extends Component<Props, State> {
   }
 
   componentDidMount() {
-    $('[data-toggle="tooltip"]').tooltip({placement: 'bottom', container: 'body'});
+    $('[data-toggle="tooltip"]').tooltip({
+      placement: 'bottom',
+      container: 'body',
+    });
   }
 
-  handleSubmit = (e) => {
+  handleSubmit = e => {
     const { dispatch } = this.props;
     e.preventDefault();
 
-    const acl = this.state.ownerGroup ? {
-      [this.state.ownerGroup]: 'owner' as AccessLevel,
-    } : {};
+    const acl = this.state.ownerGroup
+      ? {
+          [this.state.ownerGroup]: 'owner' as AccessLevel,
+        }
+      : {};
 
     const fields = e.target.elements;
-    dispatch(ProjectActions.createProject({
-      title: fields.title.value,
-      version: fields.version.value,
-      description: fields.description.value,
-      plannedRelease: fields.plannedRelease.value,
-      contacts: {
-        legal: [
-          fields.legalContact.value,
-        ],
-      },
-      acl,
-      metadata: {
-        open_sourcing: fields.openSourcing.value === 'true',
-      },
-    }));
-  }
+    dispatch(
+      ProjectActions.createProject({
+        title: fields.title.value,
+        version: fields.version.value,
+        description: fields.description.value,
+        plannedRelease: fields.plannedRelease.value,
+        contacts: {
+          legal: [fields.legalContact.value],
+        },
+        acl,
+        metadata: {
+          open_sourcing: fields.openSourcing.value === 'true',
+        },
+      })
+    );
+  };
 
   render() {
     return (
@@ -77,37 +81,71 @@ class ProjectOnboardingForm extends Component<Props, State> {
           </div>
 
           <div className="form-group row">
-            <label htmlFor="title" className="col-md-3 col-form-label">Title</label>
+            <label htmlFor="title" className="col-md-3 col-form-label">
+              Title
+            </label>
             <div className="col-md-7">
-              <input type="text" id="title" className="form-control" required={true} />
+              <input
+                type="text"
+                id="title"
+                className="form-control"
+                required={true}
+              />
             </div>
           </div>
 
           <div className="form-group row">
-            <label htmlFor="version" className="col-md-3 col-form-label">Version</label>
+            <label htmlFor="version" className="col-md-3 col-form-label">
+              Version
+            </label>
             <div className="col-md-7">
-              <input type="text" id="version" className="form-control" required={true} />
+              <input
+                type="text"
+                id="version"
+                className="form-control"
+                required={true}
+              />
             </div>
           </div>
 
           <div className="form-group row">
-            <label htmlFor="description" className="col-md-3 col-form-label">What does it do?</label>
+            <label htmlFor="description" className="col-md-3 col-form-label">
+              What does it do?
+            </label>
             <div className="col-md-7">
-              <textarea id="description" className="form-control" required={true} />
+              <textarea
+                id="description"
+                className="form-control"
+                required={true}
+              />
             </div>
           </div>
 
           <div className="form-group row">
-            <label className="col-md-3 col-form-label">Are you open sourcing any internal code?</label>
+            <label className="col-md-3 col-form-label">
+              Are you open sourcing any internal code?
+            </label>
             <div className="col-md-7">
               <div className="form-check form-check-inline">
                 <label className="form-check-label">
-                  <input type="radio" name="openSourcing" value="true" required={true} /> Yes
+                  <input
+                    type="radio"
+                    name="openSourcing"
+                    value="true"
+                    required={true}
+                  />{' '}
+                  Yes
                 </label>
               </div>
               <div className="form-check form-check-inline">
                 <label className="form-check-label">
-                  <input type="radio" name="openSourcing" value="false" required={true} /> No
+                  <input
+                    type="radio"
+                    name="openSourcing"
+                    value="false"
+                    required={true}
+                  />{' '}
+                  No
                 </label>
               </div>
             </div>
@@ -118,7 +156,12 @@ class ProjectOnboardingForm extends Component<Props, State> {
               Who is your legal contact?
             </label>
             <div className="col-md-7">
-              <input type="text" id="legalContact" className="form-control" required={true} />
+              <input
+                type="text"
+                id="legalContact"
+                className="form-control"
+                required={true}
+              />
             </div>
           </div>
 
@@ -127,7 +170,13 @@ class ProjectOnboardingForm extends Component<Props, State> {
               Planned release date
             </label>
             <div className="col-md-7">
-              <input type="date" id="plannedRelease" className="form-control" placeholder="YYYY-MM-DD" required={true} />
+              <input
+                type="date"
+                id="plannedRelease"
+                className="form-control"
+                placeholder="YYYY-MM-DD"
+                required={true}
+              />
             </div>
           </div>
 
@@ -140,17 +189,18 @@ class ProjectOnboardingForm extends Component<Props, State> {
                 name="ownerGroup"
                 groups={this.props.groups}
                 value={this.state.ownerGroup!}
-                onChange={(val: any) => this.setState({ownerGroup: val})}
+                onChange={(val: any) => this.setState({ ownerGroup: val })}
               />
             </div>
           </div>
 
           <div className="form-group row">
             <div className="col-md-7 offset-md-3">
-              <button type="submit" className="btn btn-primary btn-lg">Next</button>
+              <button type="submit" className="btn btn-primary btn-lg">
+                Next
+              </button>
             </div>
           </div>
-
         </form>
       </div>
     );

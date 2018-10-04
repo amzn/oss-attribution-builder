@@ -21,8 +21,8 @@ import { WebProject } from '../../../server/api/projects/interfaces';
 import * as ProjectActions from '../../modules/projects';
 import ProjectAclEditor from './acl/ProjectAclEditor';
 import ProjectView from './editor/ProjectView';
-import AttributionDocBuilder from './render/AttributionDocBuilder';
 import CloneProject from './refs/CloneProject';
+import AttributionDocBuilder from './render/AttributionDocBuilder';
 
 interface Props {
   dispatch: (action: any) => any;
@@ -87,9 +87,7 @@ class ProjectRouter extends React.Component<Props, {}> {
           />
           <Route
             path="/projects/:projectId/clone"
-            render={() => (
-              <span className="breadcrumb-item active">Clone</span>
-            )}
+            render={() => <span className="breadcrumb-item active">Clone</span>}
           />
         </nav>
         <Switch>

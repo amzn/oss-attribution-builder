@@ -15,9 +15,9 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 
+import { Link } from 'react-router-dom';
 import { WebProject } from '../../../../server/api/projects/interfaces';
 import GroupSelect from '../acl/GroupSelect';
-import { Link } from 'react-router-dom';
 // import history from '../../../history';
 // import * as ProjectActions from '../../../modules/projects';
 
@@ -45,12 +45,15 @@ class CloneProject extends React.Component<Props, State> {
 
     return (
       <form onSubmit={this.cloneSubmit}>
-        <h2>Clone {project.title} <small>{project.version}</small></h2>
+        <h2>
+          Clone {project.title} <small>{project.version}</small>
+        </h2>
 
         <p>
           You are about to clone{' '}
           <strong>
-            "{project.title}" (version "{project.version}")
+            "{project.title}" (version "{project.version}
+            ")
           </strong>{' '}
           into a new project. Your new project will be completely separate from
           the project you're cloning; it won't receive updates when the original
@@ -61,42 +64,63 @@ class CloneProject extends React.Component<Props, State> {
           single attribution document, consider linking the projects together.
           (LINK TODO)
         </p>
-        <p>Pick a new title and version for your project, and then select a group that will own the project.</p>
+        <p>
+          Pick a new title and version for your project, and then select a group
+          that will own the project.
+        </p>
 
-
-         <div className="form-group row">
-            <label htmlFor="title" className="col-md-3 col-form-label">New Title</label>
-            <div className="col-md-7">
-              <input type="text" id="title" className="form-control" required={true} defaultValue={project.title} />
-            </div>
+        <div className="form-group row">
+          <label htmlFor="title" className="col-md-3 col-form-label">
+            New Title
+          </label>
+          <div className="col-md-7">
+            <input
+              type="text"
+              id="title"
+              className="form-control"
+              required={true}
+              defaultValue={project.title}
+            />
           </div>
+        </div>
 
-          <div className="form-group row">
-            <label htmlFor="version" className="col-md-3 col-form-label">New Version</label>
-            <div className="col-md-7">
-              <input type="text" id="version" className="form-control" required={true} defaultValue={project.version} />
-            </div>
+        <div className="form-group row">
+          <label htmlFor="version" className="col-md-3 col-form-label">
+            New Version
+          </label>
+          <div className="col-md-7">
+            <input
+              type="text"
+              id="version"
+              className="form-control"
+              required={true}
+              defaultValue={project.version}
+            />
           </div>
+        </div>
 
-          <div className="form-group row">
-            <label htmlFor="ownerGroup" className="col-md-3 col-form-label">
-              New Project Owner (group)
-            </label>
-            <div className="col-md-7" id="ownerGroup-container">
-              <GroupSelect
-                name="ownerGroup"
-                groups={this.props.groups}
-                value={this.state.ownerGroup!}
-                onChange={(val: any) => this.setState({ownerGroup: val})}
-              />
-            </div>
+        <div className="form-group row">
+          <label htmlFor="ownerGroup" className="col-md-3 col-form-label">
+            New Project Owner (group)
+          </label>
+          <div className="col-md-7" id="ownerGroup-container">
+            <GroupSelect
+              name="ownerGroup"
+              groups={this.props.groups}
+              value={this.state.ownerGroup!}
+              onChange={(val: any) => this.setState({ ownerGroup: val })}
+            />
           </div>
+        </div>
 
-          <div className="form-group row">
-            <label className="col-md-7 offset-md-3">
-              <input type="checkbox" id="keepAcl"/> Keep current permissions too <Link to={`/projects/${project.projectId}/acl`} target="_blank">(view)</Link>
-            </label>
-          </div>
+        <div className="form-group row">
+          <label className="col-md-7 offset-md-3">
+            <input type="checkbox" id="keepAcl" /> Keep current permissions too{' '}
+            <Link to={`/projects/${project.projectId}/acl`} target="_blank">
+              (view)
+            </Link>
+          </label>
+        </div>
 
         <button type="submit" className="btn btn-primary">
           Clone

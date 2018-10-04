@@ -26,10 +26,9 @@ interface Props {
 }
 
 export default class FreeformSelect extends Component<Props, {}> {
-
-  onChange = (selected) => {
+  onChange = selected => {
     this.props.onChange(selected);
-  }
+  };
 
   private filterOptions(options, filter) {
     if (!filter || filter.length === 0) {
@@ -37,27 +36,30 @@ export default class FreeformSelect extends Component<Props, {}> {
     }
 
     const search = filter.toLowerCase();
-    options = options.filter((o) => o.label.toLowerCase().includes(search));
+    options = options.filter(o => o.label.toLowerCase().includes(search));
 
-    return [
-      {value: filter, label: filter, create: true},
-      ...options,
-    ];
+    return [{ value: filter, label: filter, create: true }, ...options];
   }
 
-  private optionRenderer = (option) => {
+  private optionRenderer = option => {
     const { optionRenderer } = this.props;
 
     if (option && option.create) {
-      return (<span><em>Add item <strong>{option.value}</strong></em></span>);
+      return (
+        <span>
+          <em>
+            Add item <strong>{option.value}</strong>
+          </em>
+        </span>
+      );
     }
 
     if (optionRenderer != undefined) {
       return optionRenderer(option);
     }
 
-    return (<span>{option.label}</span>);
-  }
+    return <span>{option.label}</span>;
+  };
 
   render() {
     return (
@@ -72,5 +74,4 @@ export default class FreeformSelect extends Component<Props, {}> {
       />
     );
   }
-
 }

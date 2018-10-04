@@ -39,31 +39,37 @@ export default class DetatchButton extends React.Component<Props, State> {
     };
   }
 
-  clicked = (e) => {
+  clicked = e => {
     const { mode } = this.state;
     if (mode === ConfirmState.Initial) {
-      this.setState({mode: ConfirmState.Lockout});
+      this.setState({ mode: ConfirmState.Lockout });
       setTimeout(() => {
-        this.setState({mode: ConfirmState.Confirm});
+        this.setState({ mode: ConfirmState.Confirm });
         this.timeout = setTimeout(() => {
-          this.setState({mode: ConfirmState.Initial});
+          this.setState({ mode: ConfirmState.Initial });
         }, 3000);
       }, 500);
     } else if (mode === ConfirmState.Confirm) {
       clearTimeout(this.timeout);
       this.props.onClick();
     }
-  }
+  };
 
   render() {
     const { mode } = this.state;
-    return <button
-      className={`btn btn-secondary package-remove-button ${mode === ConfirmState.Confirm && 'btn-danger'}`}
-      onClick={this.clicked}
-      disabled={mode === ConfirmState.Lockout}>
-      {mode === ConfirmState.Confirm ? 'Delete?'
-      : <i className="fa fa-ban" />}
-    </button>;
+    return (
+      <button
+        className={`btn btn-secondary package-remove-button ${mode ===
+          ConfirmState.Confirm && 'btn-danger'}`}
+        onClick={this.clicked}
+        disabled={mode === ConfirmState.Lockout}
+      >
+        {mode === ConfirmState.Confirm ? (
+          'Delete?'
+        ) : (
+          <i className="fa fa-ban" />
+        )}
+      </button>
+    );
   }
-
 }

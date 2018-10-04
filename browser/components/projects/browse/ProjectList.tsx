@@ -21,15 +21,13 @@ interface Props {
 }
 
 export default class ProjectList extends Component<Props, {}> {
-
   render() {
     return (
       <ul className="list-group">
-        {this.props.projects.map((project, index) =>
-          <ProjectListItem {...project} key={index} />,
-        )}
+        {this.props.projects.map((project, index) => (
+          <ProjectListItem {...project} key={index} />
+        ))}
       </ul>
     );
   }
-
 }

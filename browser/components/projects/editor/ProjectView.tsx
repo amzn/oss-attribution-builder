@@ -190,7 +190,8 @@ class ProjectView extends Component<Props, State> {
             <strong title={project.createdOn.format()}>
               {project.createdOn.fromNow()}
             </strong>
-          </small>.
+          </small>
+          .
         </p>
 
         <p className="lead" id="project-description">

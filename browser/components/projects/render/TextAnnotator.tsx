@@ -21,7 +21,6 @@ interface Props {
 }
 
 export default class TextAnnotator extends Component<Props, {}> {
-
   /**
    * From selected annotations (highlights), return a set of lines
    * that should be highlighted. "Unrolls" line ranges.
@@ -38,14 +37,14 @@ export default class TextAnnotator extends Component<Props, {}> {
     }
 
     return lines;
-  }
+  };
 
   render() {
     const { children } = this.props;
 
     const highlightedLines = this.getHighlightedLines();
 
-    const mapLines = (lines) => {
+    const mapLines = lines => {
       let firstHighlight = false;
 
       return lines.map((a, i) => {
@@ -62,17 +61,16 @@ export default class TextAnnotator extends Component<Props, {}> {
         }
 
         return (
-          <TextLine key={i} highlight={highlight ? 'line-highlight' : undefined}>
+          <TextLine
+            key={i}
+            highlight={highlight ? 'line-highlight' : undefined}
+          >
             {a}
           </TextLine>
         );
       });
     };
 
-    return (
-      <pre>
-        {mapLines(children)}
-      </pre>
-    );
+    return <pre>{mapLines(children)}</pre>;
   }
 }

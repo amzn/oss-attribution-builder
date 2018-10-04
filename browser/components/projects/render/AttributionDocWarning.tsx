@@ -21,7 +21,6 @@ interface Props {
 }
 
 export default class AttributionDocWarning extends Component<Props, {}> {
-
   render() {
     const { warning, onClick } = this.props;
     const { level, message } = warning;
@@ -61,5 +60,4 @@ export default class AttributionDocWarning extends Component<Props, {}> {
       </div>
     );
   }
-
 }
