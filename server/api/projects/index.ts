@@ -36,13 +36,12 @@ export async function getProject(
     plannedRelease: project.planned_release,
     contacts: project.contacts,
     acl: project.acl,
-    packagesUsed: project.packages_used.map(usage => {
-      return {
-        ...usage,
-        package_id: undefined,
-        packageId: usage.package_id,
-      };
-    }),
+    packagesUsed: project.packages_used.map(usage => ({
+      ...usage,
+      package_id: undefined,
+      packageId: usage.package_id,
+    })),
+    refs: project.refs,
     metadata: project.metadata || {},
     access: {
       level: accessLevel,
@@ -94,6 +93,10 @@ export async function createProject(
       contacts: body.contacts,
       acl: body.acl,
       metadata: body.metadata,
+      // do *not* accept raw user input for refs!
+      // refs can implicitly grant access to other projects' contents.
+      // allowing users to refer to other projects would be a security issue.
+      refs: {},
     },
     user
   );
@@ -273,4 +276,38 @@ export async function generateAttributionDocument(
   }
 
   return { text, annotations, warnings, summary };
+}
+
+export async function cloneProject(
+  req: Request,
+  originalProjectId: string
+): ProjectIdPromise {
+  const user = auth.extractRequestUser(req);
+  const originalProject = await db.getProject(originalProjectId);
+  await assertProjectAccess(req, originalProject, 'viewer');
+
+  const body = req.body;
+  const projectId = await db.createProject(
+    {
+      title: body.title,
+      version: body.version,
+      description: originalProject.description,
+      planned_release: originalProject.planned_release,
+      contacts: originalProject.contacts,
+      acl: body.acl,
+      refs: {
+        [originalProjectId]: { type: 'cloned_from' },
+      },
+      metadata: originalProject.metadata,
+    },
+    user
+  );
+
+  winston.info(
+    'Project %s cloned from %s by %s',
+    projectId,
+    originalProjectId,
+    user
+  );
+  return { projectId };
 }

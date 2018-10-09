@@ -9,9 +9,11 @@ CREATE TABLE projects
   contacts JSONB,
   acl JSONB,
   packages_used JSONB NOT NULL,
+  refs JSONB NOT NULL DEFAULT '{}',
   metadata JSONB
 );
 CREATE INDEX projects_packages_used_gin ON projects USING GIN (packages_used jsonb_path_ops);
+CREATE INDEX projects_refs_gin ON projects USING GIN (refs);
 
 CREATE TABLE attribution_documents
 (

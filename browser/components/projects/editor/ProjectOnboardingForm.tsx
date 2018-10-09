@@ -26,13 +26,6 @@ class ProjectOnboardingForm extends Component<Props, State> {
     };
   }
 
-  componentDidMount() {
-    $('[data-toggle="tooltip"]').tooltip({
-      placement: 'bottom',
-      container: 'body',
-    });
-  }
-
   handleSubmit = e => {
     const { dispatch } = this.props;
     e.preventDefault();
@@ -141,7 +134,7 @@ class ProjectOnboardingForm extends Component<Props, State> {
           </div>
 
           <div className="form-group row">
-            <label htmlFor="legalContact" className="col-md-3 col-form-label">
+            <label htmlFor="legalContact" className="col-md-3 col-form-label" data-toggle="tooltip">
               Who is your legal contact?
             </label>
             <div className="col-md-7">

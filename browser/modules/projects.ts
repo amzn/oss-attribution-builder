@@ -198,3 +198,13 @@ export function storeAttributionDoc(projectId) {
     );
   };
 }
+
+/**
+ * Clone a project.
+ */
+export function cloneProject(projectId: string, newDetails: Pick<WebProject, 'title' | 'version' | 'acl'>) {
+  return async dispatch => {
+    const json = await reqJSON(`/api/projects/${projectId}/clone`, newDetails);
+    history.push(`/projects/${json.projectId}`);
+  };
+}

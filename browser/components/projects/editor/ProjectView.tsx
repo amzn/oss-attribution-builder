@@ -142,14 +142,12 @@ class ProjectView extends Component<Props, State> {
                   Edit Permissions
                 </a>
               )}
-              {/*
               <Link
                 to={`/projects/${project.projectId}/clone`}
                 className="dropdown-item"
               >
                 Clone this Project
               </Link>
-              */}
             </div>
           </div>
         </div>
@@ -221,7 +219,11 @@ class ProjectView extends Component<Props, State> {
           <dt className="col-md-3">Open sourcing</dt>
           <dd className="col-md-9" id="project-open-sourcing">
             <EditableText
-              value={project.metadata.open_sourcing.toString()}
+              value={
+                project.metadata.open_sourcing
+                  ? project.metadata.open_sourcing.toString()
+                  : 'false'
+              }
               enabled={project.access.canEdit}
               onChange={this.makeChangeEvent('meta', true, 'open_sourcing')}
               editor={selectYesNo}
@@ -229,6 +231,9 @@ class ProjectView extends Component<Props, State> {
               {project.metadata.open_sourcing ? 'Yes' : 'No'}
             </EditableText>
           </dd>
+
+          <dt className="col-md-3">Related Projects</dt>
+          <dd className="col-md-9">{Object.keys(project.refs)}</dd>
         </dl>
 
         <h3 className="mt-4">Open Source Packages Used</h3>

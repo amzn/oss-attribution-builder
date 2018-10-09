@@ -1,7 +1,6 @@
 // Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { AccessLevel } from '../api/projects/interfaces';
 import generateID from '../util/idgen';
 import pg from './index';
 import { addAuditItem } from './projects_audit';
@@ -14,10 +13,11 @@ export interface DbProject {
   planned_release?: Date;
   created_on: Date;
   // contact type: [list of contacts]
-  contacts: { [key: string]: string[] };
+  contacts: { [type: string]: string[] };
   // resource (user/group) name: access level
-  acl: { [key: string]: AccessLevel };
+  acl: { [resource: string]: AccessLevel };
   packages_used: DbPackageUsage[];
+  refs: { [projectId: string]: DbProjectRef };
   metadata?: { [key: string]: any };
 }
 
@@ -25,6 +25,13 @@ export interface DbPackageUsage {
   package_id: number;
   [key: string]: any;
 }
+
+export interface DbProjectRef {
+  type: 'cloned_from' | 'related' | 'includes';
+  [key: string]: any;
+}
+
+export type AccessLevel = 'owner' | 'editor' | 'viewer';
 
 export function getProject(projectId: string): Promise<DbProject> {
   return pg().oneOrNone(
@@ -55,6 +62,7 @@ type ProjectInput = Pick<
   | 'planned_release'
   | 'contacts'
   | 'acl'
+  | 'refs'
   | 'metadata'
 >;
 export async function createProject(
@@ -66,8 +74,8 @@ export async function createProject(
   // add the entry itself
   await pg().none(
     'insert into projects(' +
-      'project_id, title, version, description, planned_release, contacts, acl, metadata, packages_used' +
-      ") values($1, $2, $3, $4, $5, $6, $7, $8, '[]'::jsonb)",
+      'project_id, title, version, description, planned_release, contacts, acl, refs, metadata, packages_used' +
+      ") values($1, $2, $3, $4, $5, $6, $7, $8, $9, '[]'::jsonb)",
     [
       projectId,
       project.title,
@@ -76,6 +84,7 @@ export async function createProject(
       project.planned_release,
       project.contacts,
       project.acl,
+      project.refs,
       project.metadata,
     ]
   );

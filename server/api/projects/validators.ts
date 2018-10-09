@@ -41,6 +41,7 @@ export async function patchProject(req, res, next) {
       'contacts',
       'acl',
       'metadata',
+      // do *not* allow direct modification of 'refs'!
     ]);
     for (const key of Object.keys(req.body)) {
       if (!valid.has(key)) {
@@ -191,6 +192,23 @@ export async function replacePackage(req, res, next) {
     if (Number.isNaN(req.body.oldId) || Number.isNaN(req.body.newId)) {
       throw new RequestError('Package IDs must be numbers');
     }
+  } catch (e) {
+    return next(e);
+  }
+  return next();
+}
+
+export async function cloneProject(req, res, next) {
+  try {
+    const fields = {
+      title: 'project name',
+      version: 'project version',
+      acl: 'project access list',
+    };
+    ensureFieldsExist(fields, req.body);
+
+    // check ACL for sanity
+    await validateAcl(req, { acl: req.body.acl, contacts: {} });
   } catch (e) {
     return next(e);
   }

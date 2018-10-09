@@ -158,6 +158,17 @@ router.post('/projects/:projectId/build', async (req, res, next) => {
   );
 });
 
+/**
+ * Clone a project.
+ */
+router.post(
+  '/projects/:projectId/clone',
+  projectValidators.cloneProject,
+  async (req, res, next) => {
+    await pack(projectAPI.cloneProject(req, req.params.projectId), res, next);
+  }
+);
+
 /*** Packages ***/
 
 /**
@@ -227,4 +238,9 @@ router.use(function(err: any, req: any, res: any, next: any) {
 
   winston.error(err.stack ? err.stack : err);
   res.status(500).send({ error: 'Internal error.' });
+});
+
+// 404 handler (for API-specific routes)
+router.use((req, res, next) => {
+  res.status(404).send({ error: 'Not a valid route.' });
 });

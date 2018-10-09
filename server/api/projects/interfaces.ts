@@ -1,6 +1,8 @@
 // Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import { AccessLevel, DbProjectRef } from '../../db/projects';
+
 export interface WebProject {
   projectId: string;
   title: string;
@@ -11,6 +13,7 @@ export interface WebProject {
   contacts: { [key: string]: string[] };
   acl: { [key: string]: AccessLevel };
   packagesUsed: PackageUsage[];
+  refs: { [projectId: string]: DbProjectRef }
   metadata: { [key: string]: any };
   access: {
     level: AccessLevel;
@@ -30,4 +33,5 @@ export const AccessLevelStrength: { [key: string]: number } = {
   editor: 2,
   owner: 3,
 };
-export type AccessLevel = 'owner' | 'editor' | 'viewer';
+
+export { AccessLevel } from '../../db/projects';
