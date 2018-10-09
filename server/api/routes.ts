@@ -1,229 +1,27 @@
 // Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import * as bodyParser from 'body-parser';
 import * as express from 'express';
 import * as winston from 'winston';
 
 import { userInfo } from '../auth';
-import * as licenseAPI from './licenses';
-import * as packageAPI from './packages';
-import * as projectAPI from './projects';
-import * as projectValidators from './projects/validators';
+import licensesRouter from './licenses';
+import packagesRouter from './packages';
+import projectsRouter from './projects';
+import { asyncApi } from '../util/middleware';
 
 export let router = express.Router();
 
-router.use(bodyParser.json());
-router.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-);
+// all of these formats are JSON
+router.use(express.json());
 
-/**
- * Send API call results, calling error middleware on failure.
- */
-function pack(
-  promise: Promise<any>,
-  res: any | undefined,
-  next: any | undefined
-) {
-  if (!res || !next) {
-    throw new Error('Missing response or next middleware parameters');
-  }
-  return promise
-    .then(x => {
-      if (x == undefined) {
-        res.status(404).send('Object not found');
-      } else {
-        res.send(x);
-      }
-    })
-    .catch(next);
-}
+// basic site/user info route
+router.get('/info', asyncApi(userInfo));
 
-/*** User/session/general info ***/
-router.get('/info', async (req, res, next) => {
-  await pack(userInfo(req), res, next);
-});
-
-/*** Projects ***/
-
-/**
- * List all projects filtered by access.
- */
-router.get('/projects', async (req, res, next) => {
-  await pack(projectAPI.searchProjects(req), res, next);
-});
-
-/**
- * Create a new project.
- */
-router.post(
-  '/projects/new',
-  projectValidators.createProject,
-  async (req, res, next) => {
-    await pack(projectAPI.createProject(req, req.body), res, next);
-  }
-);
-
-/**
- * Get a particular project.
- */
-router.get('/projects/:projectId', async (req, res, next) => {
-  await pack(projectAPI.getProject(req, req.params.projectId), res, next);
-});
-
-/**
- * Edit a project's basic details.
- */
-router.patch(
-  '/projects/:projectId',
-  projectValidators.patchProject,
-  async (req, res, next) => {
-    await pack(
-      projectAPI.patchProject(req, req.params.projectId, req.body),
-      res,
-      next
-    );
-  }
-);
-
-/**
- * Attach a package to a project, optionally creating or updating the package.
- */
-router.post(
-  '/projects/:projectId/attach',
-  projectValidators.attachPackage,
-  async (req, res, next) => {
-    await pack(
-      projectAPI.attachPackage(req, req.params.projectId, req.body),
-      res,
-      next
-    );
-  }
-);
-
-/**
- * Detach a package from a project.
- */
-router.post('/projects/:projectId/detach', async (req, res, next) => {
-  await pack(
-    projectAPI.detachPackage(req, req.params.projectId, req.body.packageId),
-    res,
-    next
-  );
-});
-
-/**
- * Replace a package instance with another, without changing the usage.
- */
-router.post(
-  '/projects/:projectId/replace',
-  projectValidators.replacePackage,
-  async (req, res, next) => {
-    await pack(
-      projectAPI.replacePackage(
-        req,
-        req.params.projectId,
-        req.body.oldId,
-        req.body.newId
-      ),
-      res,
-      next
-    );
-  }
-);
-
-/**
- * Build an attribution document. Return the document along
- * with any warnings.
- */
-router.get('/projects/:projectId/build', async (req, res, next) => {
-  await pack(
-    projectAPI.generateAttributionDocument(req, req.params.projectId),
-    res,
-    next
-  );
-});
-
-/**
- * Building a document using POST will trigger a store & download.
- */
-router.post('/projects/:projectId/build', async (req, res, next) => {
-  await pack(
-    projectAPI.generateAttributionDocument(req, req.params.projectId, true),
-    res,
-    next
-  );
-});
-
-/**
- * Clone a project.
- */
-router.post(
-  '/projects/:projectId/clone',
-  projectValidators.cloneProject,
-  async (req, res, next) => {
-    await pack(projectAPI.cloneProject(req, req.params.projectId), res, next);
-  }
-);
-
-/*** Packages ***/
-
-/**
- * Search all packages by name/version.
- */
-router.post('/packages/', async (req, res, next) => {
-  await pack(packageAPI.searchPackages(req, req.body.query), res, next);
-});
-
-/**
- * Admin action: fetch the package verification queue.
- */
-router.get('/packages/verification', async (req, res, next) => {
-  await pack(packageAPI.getVerificationQueue(req), res, next);
-});
-
-/**
- * Get a single package.
- */
-router.get('/packages/:packageId', async (req, res, next) => {
-  await pack(
-    packageAPI.getPackage(
-      req,
-      req.params.packageId,
-      req.query.extended != undefined
-    ),
-    res,
-    next
-  );
-});
-
-/**
- * Verify (accept/reject with comments) a single package.
- */
-router.post('/packages/:packageId/verify', async (req, res, next) => {
-  await pack(
-    packageAPI.verifyPackage(
-      req,
-      req.params.packageId,
-      req.body.verified,
-      req.body.comments
-    ),
-    res,
-    next
-  );
-});
-
-/*** Licenses ***/
-
-/**
- * Retrieve all license and tag data.
- */
-router.get('/licenses/', async (req, res, next) => {
-  await pack(licenseAPI.listLicenses(), res, next);
-});
+// sub-routers
+router.use('/projects', projectsRouter);
+router.use('/packages', packagesRouter);
+router.use('/licenses', licensesRouter);
 
 // error handling for all of the above
 router.use(function(err: any, req: any, res: any, next: any) {
@@ -237,10 +35,10 @@ router.use(function(err: any, req: any, res: any, next: any) {
   }
 
   winston.error(err.stack ? err.stack : err);
-  res.status(500).send({ error: 'Internal error.' });
+  res.status(500).send({ error: 'Internal error' });
 });
 
 // 404 handler (for API-specific routes)
 router.use((req, res, next) => {
-  res.status(404).send({ error: 'Not a valid route.' });
+  res.status(404).send({ error: 'Not a valid route' });
 });

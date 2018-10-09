@@ -1,28 +1,35 @@
 // Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
+import * as express from 'express';
+
 import { licenses, mapTag } from '../../licenses';
 import { WebLicense, WebTag } from './interfaces';
+import { asyncApi } from '../../util/middleware';
 
-interface LicenseResponse {
-  licenses: WebLicense[];
-  tags: { [key: string]: WebTag };
-}
+export const router = express.Router();
+export default router;
 
 let cachedLicenses: WebLicense[] = [];
 const cachedTags: { [key: string]: WebTag } = {};
 
-export async function listLicenses(): Promise<LicenseResponse> {
-  // this is _slightly_ expensive, so cache it
-  if (cachedLicenses.length === 0) {
-    cacheLicenseData();
-  }
+/**
+ * Retrieve all license and tag data.
+ */
+router.get(
+  '/',
+  asyncApi(async (req, res) => {
+    // this is _slightly_ expensive, so cache it
+    if (cachedLicenses.length === 0) {
+      cacheLicenseData();
+    }
 
-  return {
-    licenses: cachedLicenses,
-    tags: cachedTags,
-  };
-}
+    return {
+      licenses: cachedLicenses,
+      tags: cachedTags,
+    };
+  })
+);
 
 function cacheLicenseData() {
   // a little silly, but keep two license lists; one for those that ask to be
