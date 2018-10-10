@@ -33,7 +33,7 @@ export interface DbProjectRef {
 
 export type AccessLevel = 'owner' | 'editor' | 'viewer';
 
-export function getProject(projectId: string): Promise<DbProject> {
+export function getProject(projectId: string): Promise<DbProject | undefined> {
   return pg().oneOrNone(
     'select * from projects where project_id = $1',
     projectId

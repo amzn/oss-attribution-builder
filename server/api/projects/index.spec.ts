@@ -17,6 +17,9 @@ describe('projects', function() {
       },
       packagedb: {},
       assertProjectAccess: jasmine.createSpy('assertProjectAccess'),
+      requireProjectAccess: jasmine
+        .createSpy('requireProjectAccess')
+        .and.returnValue((req, res, next) => next()),
       effectivePermission: jasmine.createSpy('effectivePermission'),
     };
 
@@ -26,6 +29,7 @@ describe('projects', function() {
     mockery.registerMock('../../db/packages', mock.packagedb);
     mockery.registerMock('./auth', {
       assertProjectAccess: mock.assertProjectAccess,
+      requireProjectAccess: mock.requireProjectAccess,
       effectivePermission: mock.effectivePermission,
     });
 
@@ -45,23 +49,8 @@ describe('projects', function() {
     mockery.disable();
   });
 
-  describe('getProject', function() {
-    it('checks user access', async function(done) {
-      mock.db.getProject = jasmine
-        .createSpy('getProject')
-        .and.returnValue(makeFakeDBProject());
-      mock.auth.getDisplayName = jasmine.createSpy('getDisplayName');
-
-      await api.getProject({ user: { user: 'bob' } }, 'abcd');
-
-      expect(mock.assertProjectAccess).toHaveBeenCalled();
-
-      done();
-    });
-  });
-
   describe('createProject', function() {
-    it('should insert a valid project', async function(done) {
+    it('should insert a valid project', async function() {
       mock.db.createProject = jasmine
         .createSpy('createProject')
         .and.returnValue(1234);
@@ -77,13 +66,11 @@ describe('projects', function() {
 
       validators.createProject(req, res, next);
 
-      const p = await api.createProject(req, req.body);
+      const p = await api.createProject(req, res);
       expect(p.projectId).toEqual(1234);
-
-      done();
     });
 
-    it('should reject invalid form data', async function(done) {
+    it('should reject invalid form data', async function() {
       const req = makeDummyRequest();
       req.body.description = undefined;
       const res = jasmine.createSpy('res');
@@ -93,11 +80,9 @@ describe('projects', function() {
       expect(next.calls.first().args[0].message).toMatch(
         /Missing.*description/
       );
-
-      done();
     });
 
-    it('should validate user existence', async function(done) {
+    it('should validate user existence', async function() {
       mock.auth.getDisplayName = jasmine
         .createSpy('getDisplayName')
         .and.returnValue(Promise.resolve(undefined));
@@ -109,8 +94,6 @@ describe('projects', function() {
       await validators.createProject(req, res, next);
       expect(next.calls.first().args[0].name).toEqual('RequestError');
       expect(next.calls.first().args[0].message).toContain('Contact');
-
-      done();
     });
 
     function makeDummyRequest() {
@@ -135,7 +118,7 @@ describe('projects', function() {
   });
 
   describe('patchProject', function() {
-    it('should change the project', async function(done) {
+    it('should change the project', async function() {
       mock.db.getProject = jasmine
         .createSpy('getProject')
         .and.returnValue(makeFakeDBProject());
@@ -144,33 +127,28 @@ describe('projects', function() {
         .and.returnValue(Promise.resolve());
 
       const req = makeDummyRequest();
-      const res = jasmine.createSpy('res');
+      const res = makeDummyResponse({project_id: 'abcd'});
       const next = jasmine.createSpy('next');
       req.body.contacts.someone = 'legal';
 
       await validators.patchProject(req, res, next);
 
-      const p = await api.patchProject(req, 'abcd', req.body);
+      const p = await api.patchProject(req, res);
       expect(mock.db.patchProject).toHaveBeenCalled();
       const [projectId, changes] = mock.db.patchProject.calls.first().args;
       expect(p.projectId).toEqual('abcd');
       expect(projectId).toEqual('abcd');
       expect(changes.contacts.someone).toEqual('legal');
-      expect(mock.assertProjectAccess).toHaveBeenCalled();
-
-      done();
     });
 
-    it('should validate patched fields', async function(done) {
+    it('should validate patched fields', async function() {
       const req = makeDummyRequest();
-      const res = jasmine.createSpy('res');
+      const res = makeDummyResponse({project_id: 'abcd'});
       const next = jasmine.createSpy('next');
       req.body.notAField = 'wat';
 
       await validators.patchProject(req, res, next);
       expect(next.calls.first().args[0].message).toContain('not a valid field');
-
-      done();
     });
 
     function makeDummyRequest() {
@@ -191,43 +169,30 @@ describe('projects', function() {
   });
 
   describe('attachPackage', function() {
-    it('should attach an existing package', async function(done) {
-      mock.db.getProject = jasmine
-        .createSpy('getProject')
-        .and.callFake(
-          x => x === 'abcd' && Promise.resolve(makeFakeDBProject())
-        );
+    it('should attach an existing package', async function() {
       mock.packagedb.getPackage = jasmine
         .createSpy('getPackage')
         .and.callFake(x => x === 90 && Promise.resolve(makeFakeDBPackage()));
       mock.db.updatePackagesUsed = jasmine.createSpy('updatePackagesUsed');
 
       const req = makeDummyRequest();
-      const res = jasmine.createSpy('res');
+      const res = makeDummyResponse(makeFakeDBProject());
       const next = jasmine.createSpy('next');
 
       await validators.attachPackage(req, res, next);
 
-      const p = await api.attachPackage(req, 'abcd', req.body);
+      const p = await api.attachPackage(req, res);
       expect(p.packageId).toEqual(90);
       expect(mock.db.updatePackagesUsed).toHaveBeenCalled();
       const [projectId, usages] = mock.db.updatePackagesUsed.calls.first().args;
       expect(projectId).toEqual('abcd');
       expect(usages[usages.length - 1].package_id).toEqual(90);
-      expect(mock.assertProjectAccess).toHaveBeenCalled();
-
-      done();
     });
 
-    it('should create a new package if it did not exist', async function(done) {
+    it('should create a new package if it did not exist', async function() {
       // the only difference in this test is we're mocking a different method.
       // then we pretend it was a new package. ;D
       // anything that's not mocked will blow up in the actual code (cannot call undefined)
-      mock.db.getProject = jasmine
-        .createSpy('getProject')
-        .and.callFake(
-          x => x === 'abcd' && Promise.resolve(makeFakeDBProject())
-        );
       mock.packagedb.createPackageRevision = jasmine
         .createSpy('createPackageRevision')
         .and.returnValue(Promise.resolve(90));
@@ -235,30 +200,23 @@ describe('projects', function() {
 
       const req = makeDummyRequest();
       req.body.packageId = undefined;
-      const res = jasmine.createSpy('res');
+      const res = makeDummyResponse(makeFakeDBProject());
       const next = jasmine.createSpy('next');
 
       await validators.attachPackage(req, res, next);
 
-      const p = await api.attachPackage(req, 'abcd', req.body);
+      const p = await api.attachPackage(req, res);
       expect(p.packageId).toEqual(90);
       expect(mock.packagedb.createPackageRevision).toHaveBeenCalled();
       expect(mock.db.updatePackagesUsed).toHaveBeenCalled();
       const [projectId, usages] = mock.db.updatePackagesUsed.calls.first().args;
       expect(projectId).toEqual('abcd');
       expect(usages[usages.length - 1].package_id).toEqual(90);
-
-      done();
     });
 
-    it('should create a new package revision for field updates', async function(done) {
+    it('should create a new package revision for field updates', async function() {
       // similar to the above tests, but return a new package because a field changed.
       // in this case, the version was modified.
-      mock.db.getProject = jasmine
-        .createSpy('getProject')
-        .and.callFake(
-          x => x === 'abcd' && Promise.resolve(makeFakeDBProject())
-        );
       mock.packagedb.getPackage = jasmine
         .createSpy('getPackage')
         .and.callFake(x => x === 90 && Promise.resolve(makeFakeDBPackage()));
@@ -272,20 +230,18 @@ describe('projects', function() {
 
       const req = makeDummyRequest();
       req.body.version = '2.0.1';
-      const res = jasmine.createSpy('res');
+      const res = makeDummyResponse(makeFakeDBProject());
       const next = jasmine.createSpy('next');
 
       await validators.attachPackage(req, res, next);
 
-      const p = await api.attachPackage(req, 'abcd', req.body);
+      const p = await api.attachPackage(req, res);
       expect(p.packageId).toEqual(91);
       expect(mock.packagedb.createPackageRevision).toHaveBeenCalled();
       expect(mock.db.updatePackagesUsed).toHaveBeenCalled();
       const [projectId, usages] = mock.db.updatePackagesUsed.calls.first().args;
       expect(projectId).toEqual('abcd');
       expect(usages[usages.length - 1].package_id).toEqual(91);
-
-      done();
     });
 
     describe('input validation', function() {
@@ -308,78 +264,70 @@ describe('projects', function() {
         next = jasmine.createSpy('next');
       });
 
-      it('checks for undefined fields', async function(done) {
+      it('checks for undefined fields', async function() {
         req.body.version = undefined;
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toMatch(/Missing.*version/);
-        done();
       });
 
-      it('checks for empty-like licenses', async function(done) {
+      it('checks for empty-like licenses', async function() {
         req.body.licenseText = '       ';
         await validators.attachPackage(req, res, next);
         expect(req.body.licenseText).toBeUndefined();
-        done();
       });
 
-      it('checks URL format', async function(done) {
+      it('checks URL format', async function() {
         req.body.website = 'not-a-url';
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toContain('URL');
-        done();
       });
 
-      it('looks for license text or name', async function(done) {
+      it('looks for license text or name', async function() {
         req.body.license = undefined;
         req.body.licenseText = undefined;
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toContain(
           'license name or full text'
         );
-        done();
       });
 
-      it('requires usage info', async function(done) {
+      it('requires usage info', async function() {
         req = makeDummyRequest();
         req.body.usage = undefined;
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toContain(
           'usage information'
         );
-        done();
       });
 
-      it('checks for required questions', async function(done) {
+      it('checks for required questions', async function() {
         req.body.license = 'MyCustomLicense';
         req.body.usage.link = undefined; // "linkage" tag is on MyCustomLicense
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toContain(
           'question "Linkage"'
         );
-        done();
       });
 
-      it('validates question answers', async function(done) {
+      it('validates question answers', async function() {
         req.body.license = 'MyCustomLicense';
         req.body.usage.link = 'wat'; // "linkage" tag is on MyCustomLicense
         await validators.attachPackage(req, res, next);
         expect(next.calls.first().args[0].message).toContain(
           'question "Linkage" is not valid'
         );
-        done();
       });
 
-      it('packageId must be coerced', async function(done) {
+      it('packageId must be coerced', async function() {
         req.body.packageId = '90';
         await validators.attachPackage(req, res, next);
         expect(mock.packagedb.getPackage).toHaveBeenCalled();
         const [packageId] = mock.packagedb.getPackage.calls.first().args;
         expect(packageId).toBe(90);
-        done();
       });
     });
 
-    it('should ensure the project itself exists', async function(done) {
+    it('should ensure the project itself exists', async function() {
       mock.db.getProject = jasmine
         .createSpy('getProject')
         .and.callFake(x => x === 'abcd' && Promise.resolve(undefined));
@@ -393,11 +341,9 @@ describe('projects', function() {
 
       await validators.attachPackage(req, res, next);
       expect(next.calls.first().args[0].message).toMatch(/Project.*exist/);
-
-      done();
     });
 
-    it('should ensure the package being attached exists', async function(done) {
+    it('should ensure the package being attached exists', async function() {
       mock.db.getProject = jasmine
         .createSpy('getProject')
         .and.callFake(
@@ -413,8 +359,6 @@ describe('projects', function() {
 
       await validators.attachPackage(req, res, next);
       expect(next.calls.first().args[0].message).toMatch(/Package.*exist/);
-
-      done();
     });
 
     function makeDummyRequest() {
@@ -442,10 +386,12 @@ describe('projects', function() {
         },
       } as any;
     }
+
+
   });
 
   describe('replacePackage', function() {
-    it('replaces a package ID and nothing else', async function(done) {
+    it('replaces a package ID and nothing else', async function() {
       mock.db.getProject = jasmine
         .createSpy('getProject')
         .and.callFake(
@@ -454,21 +400,18 @@ describe('projects', function() {
       mock.db.updatePackagesUsed = jasmine.createSpy('updatePackagesUsed');
 
       const req = makeDummyRequest();
-      const res = jasmine.createSpy('res');
+      const res = makeDummyResponse(makeFakeDBProject());
       const next = jasmine.createSpy('next');
 
       await validators.replacePackage(req, res, next);
 
-      await api.replacePackage(req, 'abcd', req.body.oldId, req.body.newId);
+      await api.replacePackage(req, res);
       expect(mock.db.updatePackagesUsed).toHaveBeenCalled();
       const [projectId, usages] = mock.db.updatePackagesUsed.calls.first().args;
       expect(projectId).toEqual('abcd');
       expect(usages.length).toEqual(1);
       expect(usages[0].package_id).toEqual(91);
       expect(usages[0].notes).toEqual('blah blah');
-      expect(mock.assertProjectAccess).toHaveBeenCalled();
-
-      done();
     });
 
     function makeDummyRequest() {
@@ -487,6 +430,14 @@ describe('projects', function() {
       };
     }
   });
+
+  function makeDummyResponse(project) {
+    return {
+      locals: {
+        project,
+      },
+    };
+  }
 
   function makeFakeDBProject() {
     return {

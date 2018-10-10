@@ -11,7 +11,7 @@ const instance = new impl() as AuthBase;
 
 export default instance;
 
-export async function userInfo(req: any): Promise<any> {
+export async function userInfo(req: any, res: any): Promise<any> {
   const username = instance.extractRequestUser(req);
 
   const displayName = await instance.getDisplayName(username);

@@ -1,7 +1,7 @@
 // Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import { Request } from 'express';
+import * as express from 'express';
 import * as winston from 'winston';
 
 import auth from '../../auth';
@@ -13,46 +13,25 @@ import { DbPackageUsage } from '../../db/projects';
 import { AccessError } from '../../errors/index';
 import DocBuilder from '../../licenses/docbuilder';
 import { storePackage } from '../packages';
-import { assertProjectAccess, effectivePermission } from './auth';
+import {
+  assertProjectAccess,
+  effectivePermission,
+  requireProjectAccess,
+} from './auth';
 import { AccessLevel, AccessLevelStrength, WebProject } from './interfaces';
+import { asyncApi } from '../../util/middleware';
+import * as projectValidators from './validators';
+
+export const router = express.Router();
+export default router;
 
 type ProjectIdPromise = Promise<Pick<WebProject, 'projectId'>>;
 
-export async function getProject(
-  req: Request,
-  projectId: string
-): Promise<WebProject> {
-  const project = await db.getProject(projectId);
-  await assertProjectAccess(req, project, 'viewer');
-  const accessLevel = (await effectivePermission(req, project)) as AccessLevel;
-
-  // map DB types to a public API
-  return {
-    projectId,
-    title: project.title,
-    version: project.version,
-    description: project.description || '',
-    createdOn: project.created_on,
-    plannedRelease: project.planned_release,
-    contacts: project.contacts,
-    acl: project.acl,
-    packagesUsed: project.packages_used.map(usage => ({
-      ...usage,
-      package_id: undefined,
-      packageId: usage.package_id,
-    })),
-    refs: project.refs,
-    metadata: project.metadata || {},
-    access: {
-      level: accessLevel,
-      canEdit: AccessLevelStrength[accessLevel] >= AccessLevelStrength.editor,
-    },
-  };
-}
-
-export async function searchProjects(
-  req: Request
-): Promise<Array<Partial<WebProject>>> {
+/**
+ * List all projects filtered by access.
+ */
+router.get('/', asyncApi(searchProjects));
+export async function searchProjects(req, res): Promise<Partial<WebProject>[]> {
   const user = auth.extractRequestUser(req);
   const groups = await auth.getGroups(user);
 
@@ -79,10 +58,12 @@ function mapProjectShortInfo(dbData): Partial<WebProject> {
   };
 }
 
-export async function createProject(
-  req: Request,
-  body: WebProject
-): ProjectIdPromise {
+/**
+ * Create a new project.
+ */
+router.post('/new', projectValidators.createProject, asyncApi(createProject));
+export async function createProject(req, res): ProjectIdPromise {
+  const body: WebProject = req.body;
   const user = auth.extractRequestUser(req);
   const projectId = await db.createProject(
     {
@@ -105,14 +86,55 @@ export async function createProject(
   return { projectId };
 }
 
-export async function patchProject(
-  req: Request,
-  projectId,
-  changes
-): ProjectIdPromise {
+/**
+ * Get a particular project.
+ */
+router.get('/:projectId', requireProjectAccess('viewer'), asyncApi(getProject));
+export async function getProject(req, res): Promise<WebProject> {
+  const project: db.DbProject = res.locals.project;
+  const accessLevel = (await effectivePermission(req, project)) as AccessLevel;
+
+  // map DB types to a public API
+  return {
+    projectId: project.project_id,
+    title: project.title,
+    version: project.version,
+    description: project.description || '',
+    createdOn: project.created_on,
+    plannedRelease: project.planned_release,
+    contacts: project.contacts,
+    acl: project.acl,
+    packagesUsed: project.packages_used.map(usage => ({
+      ...usage,
+      package_id: undefined,
+      packageId: usage.package_id,
+    })),
+    refs: project.refs,
+    metadata: project.metadata || {},
+    access: {
+      level: accessLevel,
+      canEdit: AccessLevelStrength[accessLevel] >= AccessLevelStrength.editor,
+    },
+  };
+}
+
+/**
+ * Edit a project's basic details.
+ */
+router.patch(
+  '/:projectId',
+  requireProjectAccess('editor'),
+  projectValidators.patchProject,
+  asyncApi(patchProject)
+);
+
+export async function patchProject(req, res): ProjectIdPromise {
+  const {
+    params: { projectId },
+    body,
+  } = req;
   const user = auth.extractRequestUser(req);
-  const project = await db.getProject(projectId);
-  await assertProjectAccess(req, project, 'editor');
+  const project: db.DbProject = res.locals.project;
 
   // map API names to DB columns
   const internalMap = {
@@ -125,12 +147,12 @@ export async function patchProject(
     metadata: 'metadata',
   };
   const mappedChanges = {};
-  for (const k of Object.keys(changes)) {
+  for (const k of Object.keys(body)) {
     // validate that requester is an owner for ACL changes
     if (k === 'acl') {
       await assertProjectAccess(req, project, 'owner');
     }
-    mappedChanges[internalMap[k]] = changes[k];
+    mappedChanges[internalMap[k]] = body[k];
   }
 
   await db.patchProject(projectId, mappedChanges, user);
@@ -139,14 +161,33 @@ export async function patchProject(
   return { projectId };
 }
 
-export async function attachPackage(req: Request, projectId: string, info) {
-  const { packageId, name, version, website, copyright, usage } = info;
-  const { license, licenseText } = info;
-  const user = auth.extractRequestUser(req);
+/**
+ * Attach a package to a project, optionally creating or updating the package.
+ */
+router.post(
+  '/:projectId/attach',
+  requireProjectAccess('editor'),
+  projectValidators.attachPackage,
+  asyncApi(attachPackage)
+);
+export async function attachPackage(req, res): Promise<{ packageId: number }> {
+  const {
+    params: { projectId },
+    body: {
+      packageId,
+      name,
+      version,
+      website,
+      copyright,
+      usage,
+      license,
+      licenseText,
+    },
+  } = req;
 
   // access check
-  const project = await db.getProject(projectId);
-  await assertProjectAccess(req, project, 'editor');
+  const user = auth.extractRequestUser(req);
+  const project: db.DbProject = res.locals.project;
 
   // see if we need to edit the existing package
   const newId = await storePackage(req, packageId, {
@@ -181,14 +222,22 @@ export async function attachPackage(req: Request, projectId: string, info) {
   return { packageId: addedPackageId };
 }
 
-export async function detachPackage(
-  req: Request,
-  projectId,
-  packageId
-): ProjectIdPromise {
+/**
+ * Detach a package from a project.
+ */
+router.post(
+  '/:projectId/detach',
+  requireProjectAccess('editor'),
+  asyncApi(detachPackage)
+);
+
+export async function detachPackage(req, res): ProjectIdPromise {
+  const {
+    params: { projectId },
+    body: { packageId },
+  } = req;
   const user = auth.extractRequestUser(req);
-  const project = await db.getProject(projectId);
-  await assertProjectAccess(req, project, 'editor');
+  const project: db.DbProject = res.locals.project;
 
   const newUsage = project.packages_used.filter(item => {
     return item.package_id !== packageId;
@@ -199,15 +248,23 @@ export async function detachPackage(
   return { projectId };
 }
 
-export async function replacePackage(
-  req: Request,
-  projectId: string,
-  oldId: number,
-  newId: number
-): ProjectIdPromise {
+/**
+ * Replace a package instance with another, without changing the usage.
+ */
+router.post(
+  '/:projectId/replace',
+  requireProjectAccess('editor'),
+  projectValidators.replacePackage,
+  asyncApi(replacePackage)
+);
+export async function replacePackage(req, res): ProjectIdPromise {
+  const {
+    params: { projectId },
+    body: { oldId, newId },
+  } = req;
+
   const user = auth.extractRequestUser(req);
-  const project = await db.getProject(projectId);
-  await assertProjectAccess(req, project, 'editor');
+  const project: db.DbProject = res.locals.project;
 
   const usage = project.packages_used;
   for (const u of usage) {
@@ -226,14 +283,32 @@ export async function replacePackage(
   return { projectId };
 }
 
-export async function generateAttributionDocument(
-  req: Request,
-  projectId: string,
-  store: boolean = false
-) {
+/**
+ * Preview an attribution document. Return the document along
+ * with any warnings.
+ */
+router.get(
+  '/:projectId/build',
+  requireProjectAccess('viewer'),
+  asyncApi(async (req, res) => generateAttributionDocument(req, res, false))
+);
+
+/**
+ * Building a document using POST will trigger a store & download.
+ */
+router.post(
+  '/:projectId/build',
+  requireProjectAccess('viewer'),
+  asyncApi(async (req, res) => generateAttributionDocument(req, res, true))
+);
+
+export async function generateAttributionDocument(req, res, store = false) {
+  const {
+    params: { projectId },
+  } = req;
+
   const user = auth.extractRequestUser(req);
-  const project = await db.getProject(projectId);
-  await assertProjectAccess(req, project, 'viewer');
+  const project: db.DbProject = res.locals.project;
 
   const packageIds = project.packages_used.map(usage => usage.package_id);
   const packageList = await packagedb.getPackages(packageIds);
@@ -278,13 +353,20 @@ export async function generateAttributionDocument(
   return { text, annotations, warnings, summary };
 }
 
-export async function cloneProject(
-  req: Request,
-  originalProjectId: string
-): ProjectIdPromise {
+/**
+ * Clone a project.
+ */
+router.post(
+  '/:projectId/clone',
+  requireProjectAccess('viewer'),
+  projectValidators.cloneProject,
+  asyncApi(cloneProject)
+);
+export async function cloneProject(req, res): ProjectIdPromise {
+  const originalProjectId = req.params.projectId;
+
   const user = auth.extractRequestUser(req);
-  const originalProject = await db.getProject(originalProjectId);
-  await assertProjectAccess(req, originalProject, 'viewer');
+  const originalProject: db.DbProject = res.locals.project;
 
   const body = req.body;
   const projectId = await db.createProject(

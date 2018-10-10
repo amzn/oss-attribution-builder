@@ -4,14 +4,14 @@
 import auth from '../../auth';
 import { isAdmin, isUserInGroup } from '../../auth/util';
 import config from '../../config';
-import { DbProject } from '../../db/projects';
+import * as db from '../../db/projects';
 import { AccessError } from '../../errors';
 import { AccessLevel, AccessLevelStrength } from './interfaces';
 
 /**
  * Check if the request's user is the project's contact list.
  */
-export function isInContacts(req: any, project: Pick<DbProject, 'contacts'>) {
+export function isInContacts(req: any, project: Pick<db.DbProject, 'contacts'>) {
   const user = auth.extractRequestUser(req);
   for (const type of Object.keys(project.contacts)) {
     const contactList = project.contacts[type];
@@ -22,14 +22,36 @@ export function isInContacts(req: any, project: Pick<DbProject, 'contacts'>) {
   return false;
 }
 
-export type ProjectAccess = Pick<DbProject, 'contacts' | 'acl'>;
+export type ProjectAccess = Pick<db.DbProject, 'contacts' | 'acl'>;
+
+/**
+ * Create middleware that asserts an access level on a project, and
+ * attaches project data to res.locals.project.
+ */
+export function requireProjectAccess(level: AccessLevel) {
+  return async (req, res, next) => {
+    try {
+    const {
+      params: { projectId },
+    } = req;
+
+      const project = await db.getProject(projectId);
+      await assertProjectAccess(req, project, level);
+      res.locals.project = project;
+
+      next();
+    } catch (err) {
+      next(err);
+    }
+  };
+}
 
 /**
  * Throw an error if the request's user has no access.
  */
 export async function assertProjectAccess(
   req: any,
-  project: ProjectAccess,
+  project: ProjectAccess | undefined,
   level: AccessLevel
 ): Promise<void> {
   if (project != undefined) {
@@ -88,7 +110,7 @@ export async function effectivePermission(
  * Given an ACL and a user's groups, return their access level.
  */
 function getAclLevel(
-  acl: DbProject['acl'],
+  acl: db.DbProject['acl'],
   groups: string[]
 ): AccessLevel | undefined {
   let effective: AccessLevel | undefined;

@@ -17,7 +17,7 @@
   },
   "include": [
     "server/**/*.ts",
-    "selenium/**/*.ts"
+    "spec/**/*.ts"
   ],
   "exclude": [
     "node_modules"
