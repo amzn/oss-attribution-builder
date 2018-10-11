@@ -215,6 +215,18 @@ export async function cloneProject(req, res, next) {
   return next();
 }
 
+export async function createRef(req, res, next) {
+  try {
+    const refType: db.DbProjectRef['type'] = req.body.refType;
+    if (refType !== 'includes' && refType !== 'related') {
+      throw new RequestError('Invalid ref type.');
+    }
+  } catch (e) {
+    return next(e);
+  }
+  return next();
+}
+
 /**
  * Blow up with a nice error if any fields are missing from the request.
  */

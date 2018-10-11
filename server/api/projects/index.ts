@@ -31,7 +31,10 @@ type ProjectIdPromise = Promise<Pick<WebProject, 'projectId'>>;
  * List all projects filtered by access.
  */
 router.get('/', asyncApi(searchProjects));
-export async function searchProjects(req, res): Promise<Partial<WebProject>[]> {
+export async function searchProjects(
+  req: express.Request,
+  res: express.Response
+): Promise<Partial<WebProject>[]> {
   const user = auth.extractRequestUser(req);
   const groups = await auth.getGroups(user);
 
@@ -62,7 +65,10 @@ function mapProjectShortInfo(dbData): Partial<WebProject> {
  * Create a new project.
  */
 router.post('/new', projectValidators.createProject, asyncApi(createProject));
-export async function createProject(req, res): ProjectIdPromise {
+export async function createProject(
+  req: express.Request,
+  res: express.Response
+): ProjectIdPromise {
   const body: WebProject = req.body;
   const user = auth.extractRequestUser(req);
   const projectId = await db.createProject(
@@ -90,7 +96,10 @@ export async function createProject(req, res): ProjectIdPromise {
  * Get a particular project.
  */
 router.get('/:projectId', requireProjectAccess('viewer'), asyncApi(getProject));
-export async function getProject(req, res): Promise<WebProject> {
+export async function getProject(
+  req: express.Request,
+  res: express.Response
+): Promise<WebProject> {
   const project: db.DbProject = res.locals.project;
   const accessLevel = (await effectivePermission(req, project)) as AccessLevel;
 
@@ -128,7 +137,10 @@ router.patch(
   asyncApi(patchProject)
 );
 
-export async function patchProject(req, res): ProjectIdPromise {
+export async function patchProject(
+  req: express.Request,
+  res: express.Response
+): ProjectIdPromise {
   const {
     params: { projectId },
     body,
@@ -170,7 +182,10 @@ router.post(
   projectValidators.attachPackage,
   asyncApi(attachPackage)
 );
-export async function attachPackage(req, res): Promise<{ packageId: number }> {
+export async function attachPackage(
+  req: express.Request,
+  res: express.Response
+): Promise<{ packageId: number }> {
   const {
     params: { projectId },
     body: {
@@ -231,7 +246,10 @@ router.post(
   asyncApi(detachPackage)
 );
 
-export async function detachPackage(req, res): ProjectIdPromise {
+export async function detachPackage(
+  req: express.Request,
+  res: express.Response
+): ProjectIdPromise {
   const {
     params: { projectId },
     body: { packageId },
@@ -257,7 +275,10 @@ router.post(
   projectValidators.replacePackage,
   asyncApi(replacePackage)
 );
-export async function replacePackage(req, res): ProjectIdPromise {
+export async function replacePackage(
+  req: express.Request,
+  res: express.Response
+): ProjectIdPromise {
   const {
     params: { projectId },
     body: { oldId, newId },
@@ -302,7 +323,11 @@ router.post(
   asyncApi(async (req, res) => generateAttributionDocument(req, res, true))
 );
 
-export async function generateAttributionDocument(req, res, store = false) {
+export async function generateAttributionDocument(
+  req: express.Request,
+  res: express.Response,
+  store = false
+) {
   const {
     params: { projectId },
   } = req;
@@ -362,7 +387,10 @@ router.post(
   projectValidators.cloneProject,
   asyncApi(cloneProject)
 );
-export async function cloneProject(req, res): ProjectIdPromise {
+export async function cloneProject(
+  req: express.Request,
+  res: express.Response
+): ProjectIdPromise {
   const originalProjectId = req.params.projectId;
 
   const user = auth.extractRequestUser(req);
@@ -391,5 +419,65 @@ export async function cloneProject(req, res): ProjectIdPromise {
     originalProjectId,
     user
   );
+  return { projectId };
+}
+
+router.post(
+  '/:projectId/refs',
+  requireProjectAccess('viewer'),
+  projectValidators.createRef,
+  asyncApi(createRef)
+);
+export async function createRef(
+  req: express.Request,
+  res: express.Response
+): ProjectIdPromise {
+  const {
+    params: { projectId },
+    body: { targetProjectId, type, comment },
+  } = req;
+  const project: db.DbProject = res.locals.project;
+  const user = auth.extractRequestUser(req);
+
+  // ensure the user has permission to see the target project as well
+  const targetProject = await db.getProject(targetProjectId);
+  assertProjectAccess(req, targetProject, 'viewer');
+
+  const refs = {
+    ...project.refs,
+    [targetProjectId]: {
+      type, // validated in projectValidators
+      comment,
+    },
+  };
+  db.patchProject(projectId, { refs }, user);
+
+  return { projectId };
+}
+
+router.delete(
+  '/:projectId/refs/:targetProjectId',
+  requireProjectAccess('viewer'),
+  projectValidators.createRef,
+  asyncApi(createRef)
+);
+export async function deleteRef(
+  req: express.Request,
+  res: express.Response
+): ProjectIdPromise {
+  const {
+    params: { projectId, targetProjectId },
+  } = req;
+  const project: db.DbProject = res.locals.project;
+  const user = auth.extractRequestUser(req);
+
+  // no permission on a target project needed to *remove* a ref; that's fine.
+
+  const refs = {
+    ...project.refs,
+  };
+  delete refs[targetProjectId];
+  db.patchProject(projectId, { refs }, user);
+
   return { projectId };
 }
