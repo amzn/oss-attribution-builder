@@ -111,86 +111,96 @@ class ProjectView extends Component<Props, State> {
         : '';
 
     return (
-      <div className="pb-5">
-        <div className="float-right">
-          <div id="acl-owner-info" className="text-muted small">
-            owned by {this.getOwners()}
+      <>
+        <div className="row">
+          <div className="col-sm-9">
+            <h2 id="project-heading">
+              <EditableText
+                value={project.title}
+                enabled={project.access.canEdit}
+                onChange={this.makeChangeEvent('title')}
+              >
+                {project.title}
+              </EditableText>{' '}
+              <small id="project-version">
+                <EditableText
+                  value={project.version}
+                  enabled={project.access.canEdit}
+                  onChange={this.makeChangeEvent('version')}
+                >
+                  version {project.version}
+                </EditableText>
+              </small>
+            </h2>
+
+            <p>
+              <small>
+                Created{' '}
+                <strong title={project.createdOn.format()}>
+                  {project.createdOn.fromNow()}
+                </strong>
+              </small>
+              .
+            </p>
           </div>
 
-          <div className="dropdown text-right mt-2">
-            <button
-              className="btn btn-outline-dark btn-sm dropdown-toggle"
-              data-toggle="dropdown"
-              id="tools-dropdown-toggle"
-            >
-              Tools
-            </button>
-            <div className="dropdown-menu dropdown-menu-right">
-              {project.access.level === 'owner' ? (
-                <Link
-                  to={`/projects/${project.projectId}/acl`}
-                  className="dropdown-item"
+          <div className="col-sm-3">
+            <div className="float-right">
+              <div id="acl-owner-info" className="text-muted small">
+                owned by {this.getOwners()}
+              </div>
+
+              <div className="dropdown text-right mt-2">
+                <button
+                  className="btn btn-outline-dark btn-sm dropdown-toggle"
+                  data-toggle="dropdown"
+                  id="tools-dropdown-toggle"
                 >
-                  Edit Permissions
-                </Link>
-              ) : (
-                <a
-                  href="#"
-                  title="You must be a project owner to edit permissions."
-                  className="dropdown-item disabled"
-                >
-                  Edit Permissions
-                </a>
-              )}
-              <Link
-                to={`/projects/${project.projectId}/clone`}
-                className="dropdown-item"
-              >
-                Clone this Project
-              </Link>
+                  Tools
+                </button>
+                <div className="dropdown-menu dropdown-menu-right">
+                  {project.access.level === 'owner' ? (
+                    <Link
+                      to={`/projects/${project.projectId}/acl`}
+                      className="dropdown-item"
+                    >
+                      Edit Permissions
+                    </Link>
+                  ) : (
+                    <a
+                      href="#"
+                      title="You must be a project owner to edit permissions."
+                      className="dropdown-item disabled"
+                    >
+                      Edit Permissions
+                    </a>
+                  )}
+                  <Link
+                    to={`/projects/${project.projectId}/clone`}
+                    className="dropdown-item"
+                  >
+                    Clone this Project
+                  </Link>
+                </div>
+              </div>
             </div>
           </div>
         </div>
 
-        <h2 id="project-heading">
-          <EditableText
-            value={project.title}
-            enabled={project.access.canEdit}
-            onChange={this.makeChangeEvent('title')}
-          >
-            {project.title}
-          </EditableText>{' '}
-          <small id="project-version">
-            <EditableText
-              value={project.version}
-              enabled={project.access.canEdit}
-              onChange={this.makeChangeEvent('version')}
-            >
-              version {project.version}
-            </EditableText>
-          </small>
-        </h2>
-
-        <p>
-          <small>
-            Created{' '}
-            <strong title={project.createdOn.format()}>
-              {project.createdOn.fromNow()}
-            </strong>
-          </small>
-          .
-        </p>
-
-        <p className="lead" id="project-description">
-          <EditableText
-            value={project.description}
-            enabled={project.access.canEdit}
-            onChange={this.makeChangeEvent('description')}
-            editor={<textarea />}
-          >
-            {project.description}
-          </EditableText>
-        </p>
+        <div className="row">
+          <div className="col-12">
+            <p className="lead" id="project-description">
+              <EditableText
+                value={project.description}
+                enabled={project.access.canEdit}
+                onChange={this.makeChangeEvent('description')}
+                editor={<textarea />}
+              >
+                {project.description}
+              </EditableText>
+            </p>
+          </div>
+        </div>
 
         <dl className="row">
           <dt className="col-md-3">Planned release date</dt>
@@ -252,7 +262,7 @@ class ProjectView extends Component<Props, State> {
             </Link>
           </div>
         )}
-      </div>
+      </>
     );
   }
 
