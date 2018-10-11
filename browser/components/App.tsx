@@ -18,7 +18,7 @@ import PackageVerificationQueue from './projects/admin/PackageVerificationQueue'
 import Projects from './projects/browse/Projects';
 import ProjectOnboardingForm from './projects/editor/ProjectOnboardingForm';
 import ProjectRouter from './projects/ProjectRouter';
-import ErrorModal from './util/ErrorModal';
+import Modal from './util/Modal';
 import ToggleLink from './util/ToggleLink';
 
 interface Props {
@@ -34,30 +34,51 @@ class App extends React.Component<Props, {}> {
     dispatch(fetchSiteInfo());
   }
 
-  dismissError = () => {
+  dismissError = actionName => {
     const { dispatch } = this.props;
     dispatch(setGeneralError(undefined));
   };
 
   mapError(err) {
-    if (err.code === 403) {
-      return (
-        <ErrorModal
-          message={err.message}
-          onDismiss={this.dismissError}
-          title="You might not have access to this resource"
-          explain="If you think you need access to this item, contact the site administrator."
-        />
-      );
+    let title = '';
+    let explain = '';
+
+    switch (err.code) {
+      case 403:
+        title = 'You might not have access to this resource';
+        explain =
+          'If you think you need access to this item, contact the site administrator.';
+        break;
+
+      default:
+        title = 'Something went wrong';
+        explain = 'Please try that again.';
+        break;
     }
 
     return (
-      <ErrorModal
-        message={err.message}
-        onDismiss={this.dismissError}
-        title="Something went wrong"
-        explain="Please try that again."
-      />
+      <Modal title={title} onDismiss={this.dismissError}>
+        {buttonAction => (
+          <>
+            <div className="modal-body">
+              <p>
+                There was a problem:
+                <br />
+                <strong>{err.message}</strong>
+              </p>
+              <p>{explain}</p>
+            </div>
+            <div className="modal-footer">
+              <button
+                className="btn btn-primary"
+                onClick={buttonAction('close')}
+              >
+                Close
+              </button>
+            </div>
+          </>
+        )}
+      </Modal>
     );
   }
 

@@ -4,14 +4,22 @@
 import * as React from 'react';
 import { Component } from 'react';
 
+type EventCreator = (
+  actionName: string
+) => (event: React.MouseEvent<HTMLElement>) => void;
+
 interface Props {
   title: string;
-  message: string;
-  explain: string;
-  onDismiss?: (event: any) => any;
+  dialogClass?: string;
+  onDismiss: (actionName: string) => any;
+  children: (buttonAction: EventCreator) => JSX.Element;
 }
 
-export default class ErrorModal extends Component<Props, {}> {
+interface State {
+  invokedAction: string;
+}
+
+export default class Modal extends Component<Props, State> {
   private self?: HTMLElement;
 
   componentDidMount() {
@@ -24,11 +32,24 @@ export default class ErrorModal extends Component<Props, {}> {
   hideModal = () => {
     $(this.self)
       .modal('hide')
-      .on('hidden.bs.modal' as any, this.props.onDismiss);
+      .on('hidden.bs.modal' as any, this.onDismiss);
+  };
+
+  onDismiss = () => {
+    this.props.onDismiss(this.state.invokedAction);
+  };
+
+  buttonActionCreator = (actionName: string) => {
+    return event => {
+      this.setState({
+        invokedAction: actionName,
+      });
+      this.hideModal();
+    };
   };
 
   render() {
-    const { title, message, explain } = this.props;
+    const { title, children, dialogClass } = this.props;
 
     return (
       <div
@@ -41,24 +62,12 @@ export default class ErrorModal extends Component<Props, {}> {
           }
         }}
       >
-        <div className="modal-dialog">
+        <div className={`modal-dialog ${dialogClass}`}>
           <div className="modal-content">
             <div className="modal-header">
               <h4 className="modal-title">{title}</h4>
             </div>
-            <div className="modal-body">
-              <p>
-                There was a problem:
-                <br />
-                <strong>{message}</strong>
-              </p>
-              <p>{explain}</p>
-            </div>
-            <div className="modal-footer">
-              <button className="btn btn-primary" onClick={this.hideModal}>
-                Close
-              </button>
-            </div>
+            {children(this.buttonActionCreator)}
           </div>
         </div>
       </div>
