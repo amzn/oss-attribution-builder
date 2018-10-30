@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as React from 'react';
-import { Component } from 'react';
+import * as ReactDOM from 'react-dom';
 
 type EventCreator = (
   actionName: string
@@ -19,8 +19,9 @@ interface State {
   invokedAction: string;
 }
 
-export default class Modal extends Component<Props, State> {
+export default class Modal extends React.Component<Props, State> {
   private self?: HTMLElement;
+  private anchor = document.getElementById('modal-container');
 
   componentDidMount() {
     // for some reason (bug in BS4.b2?) clicking the backdrop instead of close
@@ -51,7 +52,7 @@ export default class Modal extends Component<Props, State> {
   render() {
     const { title, children, dialogClass } = this.props;
 
-    return (
+    return ReactDOM.createPortal(
       <div
         className="modal fade show"
         role="dialog"
@@ -62,7 +63,7 @@ export default class Modal extends Component<Props, State> {
           }
         }}
       >
-        <div className={`modal-dialog ${dialogClass}`}>
+        <div className={`modal-dialog ${dialogClass || ''}`}>
           <div className="modal-content">
             <div className="modal-header">
               <h4 className="modal-title">{title}</h4>
@@ -70,7 +71,8 @@ export default class Modal extends Component<Props, State> {
             {children(this.buttonActionCreator)}
           </div>
         </div>
-      </div>
+      </div>,
+      this.anchor!
     );
   }
 }

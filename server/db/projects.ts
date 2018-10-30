@@ -134,3 +134,23 @@ export async function updatePackagesUsed(
     packages_used: packagesUsed,
   });
 }
+
+export async function getProjectRefs(
+  projectIds: string[]
+): Promise<
+  Array<Pick<DbProject, 'project_id' | 'title' | 'version' | 'packages_used'>>
+> {
+  return await pg().query(
+    'select project_id, title, version, packages_used from projects where project_id = any($1)',
+    [projectIds]
+  );
+}
+
+export async function getProjectsRefReverse(
+  projectId: string
+): Promise<Array<Pick<DbProject, 'project_id' | 'title' | 'version'>>> {
+  return await pg().query(
+    'select project_id, title, version from projects where refs ? $1',
+    [projectId]
+  );
+}

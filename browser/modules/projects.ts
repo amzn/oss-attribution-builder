@@ -11,6 +11,7 @@ import { downloadText } from '../util/download';
 export const RECEIVE_PROJECTS = 'app/projects/receive-projects';
 export const RECEIVE_PROJECT_DETAIL = 'app/projects/receive-project-detail';
 export const RECEIVE_ATTRIBUTION_DOC = 'app/projects/receive-attribution-doc';
+export const RECEIVE_PROJECT_REF_INFO = 'app/projects/receive-project-ref-info';
 
 const initial = {
   /**
@@ -35,6 +36,9 @@ const initial = {
    */
   active: {},
 
+  /**
+   * An attribution document structure.
+   */
   attributionDoc: {
     text: '',
     lines: [],
@@ -53,7 +57,6 @@ export default function reducer(state = initial, action: any = {}) {
     case RECEIVE_PROJECT_DETAIL:
       return Object.assign({}, state, {
         active: {
-          ...state.active,
           ...action.project,
         },
       });
@@ -63,6 +66,17 @@ export default function reducer(state = initial, action: any = {}) {
         attributionDoc: {
           ...state.attributionDoc,
           ...action.doc,
+        },
+      });
+
+    case RECEIVE_PROJECT_REF_INFO:
+      return Object.assign({}, state, {
+        active: {
+          ...state.active,
+          refInfo: {
+            refs: action.refs,
+            reverseRefs: action.reverseRefs,
+          },
         },
       });
 
@@ -97,16 +111,39 @@ export function receiveAttributionDoc(data) {
   };
 }
 
+export function receiveRefInfo(info) {
+  // turn these arrays into objects
+  const refs = info.refs.reduce(
+    (acc, curr) => {
+      acc[curr.projectId] = curr;
+      return acc;
+    },
+    {} as any
+  );
+  const reverseRefs = info.reverseRefs.reduce(
+    (acc, curr) => {
+      acc[curr.projectId] = curr;
+      return acc;
+    },
+    {} as any
+  );
+  return {
+    type: RECEIVE_PROJECT_REF_INFO,
+    refs,
+    reverseRefs,
+  };
+}
+
 /*** Bound action creators ***/
 
 /**
  * Fetch projects. Updates state & dispatches when complete.
  */
 export function fetchProjects(queryString) {
-  return dispatch => {
-    return fetchAuth(`/api/projects/${queryString}`)
-      .then(response => response.json())
-      .then(json => dispatch(receiveProjects(json)));
+  return async dispatch => {
+    const response = await fetchAuth(`/api/projects/${queryString}`);
+    const json = await response.json();
+    return dispatch(receiveProjects(json));
   };
 }
 
@@ -114,10 +151,10 @@ export function fetchProjects(queryString) {
  * Fetch a single project by ID.
  */
 export function fetchProjectDetail(projectId) {
-  return dispatch => {
-    return fetchAuth(`/api/projects/${projectId}`)
-      .then(response => response.json())
-      .then(json => dispatch(receiveProjectDetail(json)));
+  return async dispatch => {
+    const response = await fetchAuth(`/api/projects/${projectId}`);
+    const json = await response.json();
+    return dispatch(receiveProjectDetail(json));
   };
 }
 
@@ -125,10 +162,9 @@ export function fetchProjectDetail(projectId) {
  * Submit a new project with some initial details.
  */
 export function createProject(details: Partial<WebProject>) {
-  return dispatch => {
-    return reqJSON('/api/projects/new', details).then(json =>
-      history.push(`/projects/${json.projectId}`)
-    );
+  return async dispatch => {
+    const json = await reqJSON('/api/projects/new', details);
+    return history.push(`/projects/${json.projectId}`);
   };
 }
 
@@ -136,10 +172,9 @@ export function createProject(details: Partial<WebProject>) {
  * Patch a project with a set of updates.
  */
 export function patchProject(projectId, changes: Partial<WebProject>) {
-  return dispatch => {
-    return reqJSON(`/api/projects/${projectId}`, changes, 'PATCH').then(json =>
-      dispatch(fetchProjectDetail(projectId))
-    );
+  return async dispatch => {
+    await reqJSON(`/api/projects/${projectId}`, changes, 'PATCH');
+    return dispatch(fetchProjectDetail(projectId));
   };
 }
 
@@ -147,10 +182,9 @@ export function patchProject(projectId, changes: Partial<WebProject>) {
  * Attach a (new or existing) package to a project. Reloads the project on completion.
  */
 export function attachPackageToProject(projectId, packageInfo) {
-  return dispatch => {
-    return reqJSON(`/api/projects/${projectId}/attach`, packageInfo).then(() =>
-      dispatch(fetchProjectDetail(projectId))
-    );
+  return async dispatch => {
+    await reqJSON(`/api/projects/${projectId}/attach`, packageInfo);
+    return dispatch(fetchProjectDetail(projectId));
   };
 }
 
@@ -158,10 +192,9 @@ export function attachPackageToProject(projectId, packageInfo) {
  * Remove a package from a project. Does not delete the package.
  */
 export function detachPackageFromProject(projectId: string, packageId: number) {
-  return dispatch => {
-    return reqJSON(`/api/projects/${projectId}/detach`, { packageId }).then(
-      () => dispatch(fetchProjectDetail(projectId))
-    );
+  return async dispatch => {
+    await reqJSON(`/api/projects/${projectId}/detach`, { packageId });
+    return dispatch(fetchProjectDetail(projectId));
   };
 }
 
@@ -170,10 +203,9 @@ export function replacePackageForProject(
   oldId: number,
   newId: number
 ) {
-  return dispatch => {
-    return reqJSON(`/api/projects/${projectId}/replace`, { oldId, newId }).then(
-      () => dispatch(fetchProjectDetail(projectId))
-    );
+  return async dispatch => {
+    await reqJSON(`/api/projects/${projectId}/replace`, { oldId, newId });
+    return dispatch(fetchProjectDetail(projectId));
   };
 }
 
@@ -181,10 +213,10 @@ export function replacePackageForProject(
  * Request an attribution document and any warnings it generates.
  */
 export function buildAttributionDoc(projectId) {
-  return dispatch => {
-    return fetchAuth(`/api/projects/${projectId}/build`)
-      .then(response => response.json())
-      .then(json => dispatch(receiveAttributionDoc(json)));
+  return async dispatch => {
+    const response = await fetchAuth(`/api/projects/${projectId}/build`);
+    const json = await response.json();
+    return dispatch(receiveAttributionDoc(json));
   };
 }
 
@@ -192,19 +224,50 @@ export function buildAttributionDoc(projectId) {
  * Permanently store an attribution document.
  */
 export function storeAttributionDoc(projectId) {
-  return dispatch => {
-    return reqJSON(`/api/projects/${projectId}/build`).then(json =>
-      downloadText(`THIRD-PARTY-LICENSES_${projectId}.txt`, json.text)
-    );
+  return async dispatch => {
+    const json = await reqJSON(`/api/projects/${projectId}/build`);
+    return downloadText(`THIRD-PARTY-LICENSES_${projectId}.txt`, json.text);
   };
 }
 
 /**
  * Clone a project.
  */
-export function cloneProject(projectId: string, newDetails: Pick<WebProject, 'title' | 'version' | 'acl'>) {
+export function cloneProject(
+  projectId: string,
+  newDetails: Pick<WebProject, 'title' | 'version' | 'acl'>
+) {
   return async dispatch => {
     const json = await reqJSON(`/api/projects/${projectId}/clone`, newDetails);
     history.push(`/projects/${json.projectId}`);
+  };
+}
+
+/**
+ * Create a project reference
+ */
+export function createRef(
+  projectId: string,
+  targetProjectId: string,
+  type: 'includes' | 'related',
+  comment: string
+) {
+  return async dispatch => {
+    await reqJSON(`/api/projects/${projectId}/refs`, {
+      targetProjectId,
+      type,
+      comment,
+    });
+  };
+}
+
+export function getRefInfo(projectId: string) {
+  return async dispatch => {
+    const refInfo = await reqJSON(
+      `/api/projects/${projectId}/refs`,
+      undefined,
+      'GET'
+    );
+    dispatch(receiveRefInfo(refInfo));
   };
 }

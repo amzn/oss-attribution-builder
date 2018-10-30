@@ -10,7 +10,7 @@ import * as documentdb from '../../db/attribution_documents';
 import * as packagedb from '../../db/packages';
 import * as db from '../../db/projects';
 import { DbPackageUsage } from '../../db/projects';
-import { AccessError } from '../../errors/index';
+import { AccessError, RequestError } from '../../errors/index';
 import DocBuilder from '../../licenses/docbuilder';
 import { storePackage } from '../packages';
 import {
@@ -18,7 +18,12 @@ import {
   effectivePermission,
   requireProjectAccess,
 } from './auth';
-import { AccessLevel, AccessLevelStrength, WebProject } from './interfaces';
+import {
+  AccessLevel,
+  AccessLevelStrength,
+  WebProject,
+  RefInfo,
+} from './interfaces';
 import { asyncApi } from '../../util/middleware';
 import * as projectValidators from './validators';
 
@@ -441,9 +446,19 @@ export async function createRef(
 
   // ensure the user has permission to see the target project as well
   const targetProject = await db.getProject(targetProjectId);
-  assertProjectAccess(req, targetProject, 'viewer');
+  try {
+    await assertProjectAccess(req, targetProject, 'viewer');
+  } catch (err) {
+    // give a nicer error for this one
+    if (err instanceof AccessError) {
+      throw new AccessError(
+        "You don't have viewer access on the project you're linking to, or it doesn't exist."
+      );
+    }
+    throw err;
+  }
 
-  const refs = {
+  const refs: { [id: string]: db.DbProjectRef } = {
     ...project.refs,
     [targetProjectId]: {
       type, // validated in projectValidators
@@ -455,11 +470,47 @@ export async function createRef(
   return { projectId };
 }
 
+router.get(
+  '/:projectId/refs',
+  requireProjectAccess('viewer'),
+  asyncApi(getRefInfo)
+);
+export async function getRefInfo(
+  req: express.Request,
+  res: express.Response
+): Promise<{ refs: RefInfo[]; reverseRefs: any }> {
+  const {
+    params: { projectId },
+  } = req;
+
+  // first, fetch all projects from our refs
+  const project: db.DbProject = res.locals.project;
+  const refs = (await db.getProjectRefs(Object.keys(project.refs))).map(p => ({
+    projectId: p.project_id,
+    title: p.title,
+    version: p.version,
+    packageIds: p.packages_used.map(usage => usage.package_id),
+  }));
+
+  // then, figure out which projects reference us
+  const reverseRefs = (await db.getProjectsRefReverse(projectId)).map(p => ({
+    projectId: p.project_id,
+    title: p.title,
+    version: p.version,
+  }));
+
+  return {
+    refs,
+    reverseRefs,
+  };
+}
+
+/*
 router.delete(
   '/:projectId/refs/:targetProjectId',
   requireProjectAccess('viewer'),
-  projectValidators.createRef,
-  asyncApi(createRef)
+  projectValidators.deleteRef,
+  asyncApi(deleteRef)
 );
 export async function deleteRef(
   req: express.Request,
@@ -481,3 +532,4 @@ export async function deleteRef(
 
   return { projectId };
 }
+*/

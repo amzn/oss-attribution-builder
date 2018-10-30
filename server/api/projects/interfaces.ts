@@ -35,3 +35,9 @@ export const AccessLevelStrength: { [key: string]: number } = {
 };
 
 export { AccessLevel } from '../../db/projects';
+
+export interface RefInfo {
+  title: string;
+  version: string;
+  packageIds: number[];
+}

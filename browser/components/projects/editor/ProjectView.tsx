@@ -7,29 +7,37 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { WebLicense } from '../../../../server/api/licenses/interfaces';
-import { WebProject } from '../../../../server/api/projects/interfaces';
+import {
+  WebProject,
+  RefInfo,
+} from '../../../../server/api/projects/interfaces';
 import * as PackageActions from '../../../modules/packages';
 import * as ProjectActions from '../../../modules/projects';
 import EditableText from '../../util/EditableText';
 import PackageEditor from './PackageEditor';
 import ProjectPackage from './ProjectPackage';
+import AddRelatedProjectModal from './refs/AddRelatedProjectModal';
+import ProjectRefInfo from './refs/ProjectRefInfo';
 
 interface Props {
   dispatch: (action: any) => any;
   project: WebProject;
   packages: PackageActions.PackageSet;
   licenses: WebLicense[];
+  projectRefs: { [id: string]: RefInfo | Symbol };
 }
 
 interface State {
   editPackageId?: number;
   showPackageEditor: boolean;
+  showAddRelatedProjectModal: boolean;
 }
 
 class ProjectView extends Component<Props, State> {
   state = {
     editPackageId: undefined,
     showPackageEditor: false,
+    showAddRelatedProjectModal: false,
   };
 
   getOwners() {
@@ -94,21 +102,19 @@ class ProjectView extends Component<Props, State> {
     };
   };
 
+  addRelatedProject = (e: React.MouseEvent<any>) => {
+    e.preventDefault();
+
+    this.setState({ showAddRelatedProjectModal: true });
+  };
+
+  hideRelatedProjectModal = () => {
+    this.setState({ showAddRelatedProjectModal: false });
+  };
+
   render() {
     const { project } = this.props;
     const { showPackageEditor } = this.state;
-
-    const selectYesNo = (
-      <select>
-        <option value="true">Yes</option>
-        <option value="false">No</option>
-      </select>
-    );
-
-    const legalContact =
-      project.contacts.legal && project.contacts.legal.length > 0
-        ? project.contacts.legal[0]
-        : '';
 
     return (
       <>
@@ -144,47 +150,7 @@ class ProjectView extends Component<Props, State> {
             </p>
           </div>
 
-          <div className="col-sm-3">
-            <div className="float-right">
-              <div id="acl-owner-info" className="text-muted small">
-                owned by {this.getOwners()}
-              </div>
-
-              <div className="dropdown text-right mt-2">
-                <button
-                  className="btn btn-outline-dark btn-sm dropdown-toggle"
-                  data-toggle="dropdown"
-                  id="tools-dropdown-toggle"
-                >
-                  Tools
-                </button>
-                <div className="dropdown-menu dropdown-menu-right">
-                  {project.access.level === 'owner' ? (
-                    <Link
-                      to={`/projects/${project.projectId}/acl`}
-                      className="dropdown-item"
-                    >
-                      Edit Permissions
-                    </Link>
-                  ) : (
-                    <a
-                      href="#"
-                      title="You must be a project owner to edit permissions."
-                      className="dropdown-item disabled"
-                    >
-                      Edit Permissions
-                    </a>
-                  )}
-                  <Link
-                    to={`/projects/${project.projectId}/clone`}
-                    className="dropdown-item"
-                  >
-                    Clone this Project
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
+          <div className="col-sm-3">{this.renderTools()}</div>
         </div>
 
         <div className="row">
@@ -202,49 +168,7 @@ class ProjectView extends Component<Props, State> {
           </div>
         </div>
 
-        <dl className="row">
-          <dt className="col-md-3">Planned release date</dt>
-          <dd className="col-md-9" id="project-release-date">
-            <EditableText
-              value={project.plannedRelease.format('YYYY-MM-DD')}
-              enabled={project.access.canEdit}
-              onChange={this.makeChangeEvent('plannedRelease')}
-              editor={<input type="date" pattern="\d{4}\-\d{2}-\d{2}" />}
-            >
-              {project.plannedRelease.format('ddd, MMMM Do YYYY')}
-            </EditableText>
-          </dd>
-
-          <dt className="col-md-3">Legal contact</dt>
-          <dd className="col-md-9" id="project-lawyer">
-            <EditableText
-              value={legalContact}
-              enabled={project.access.canEdit}
-              onChange={this.makeChangeEvent('contacts', false, 'legal')}
-            >
-              {legalContact}
-            </EditableText>
-          </dd>
-
-          <dt className="col-md-3">Open sourcing</dt>
-          <dd className="col-md-9" id="project-open-sourcing">
-            <EditableText
-              value={
-                project.metadata.open_sourcing
-                  ? project.metadata.open_sourcing.toString()
-                  : 'false'
-              }
-              enabled={project.access.canEdit}
-              onChange={this.makeChangeEvent('meta', true, 'open_sourcing')}
-              editor={selectYesNo}
-            >
-              {project.metadata.open_sourcing ? 'Yes' : 'No'}
-            </EditableText>
-          </dd>
-
-          <dt className="col-md-3">Related Projects</dt>
-          <dd className="col-md-9">{Object.keys(project.refs)}</dd>
-        </dl>
+        {this.renderDetails()}
 
         <h3 className="mt-4">Open Source Packages Used</h3>
         {this.renderUsedPackages()}
@@ -263,6 +187,131 @@ class ProjectView extends Component<Props, State> {
           </div>
         )}
       </>
+    );
+  }
+
+  renderTools() {
+    const { project } = this.props;
+    const { showAddRelatedProjectModal } = this.state;
+
+    return (
+      <div className="float-right">
+        <div id="acl-owner-info" className="text-muted small">
+          owned by {this.getOwners()}
+        </div>
+
+        <div className="dropdown text-right mt-2">
+          <button
+            className="btn btn-outline-dark btn-sm dropdown-toggle"
+            data-toggle="dropdown"
+            id="tools-dropdown-toggle"
+          >
+            Tools
+          </button>
+          <div className="dropdown-menu dropdown-menu-right">
+            {project.access.level === 'owner' ? (
+              <Link
+                to={`/projects/${project.projectId}/acl`}
+                className="dropdown-item"
+              >
+                Edit Permissions
+              </Link>
+            ) : (
+              <a
+                href="#"
+                title="You must be a project owner to edit permissions."
+                className="dropdown-item disabled"
+              >
+                Edit Permissions
+              </a>
+            )}
+            <a
+              href="#"
+              className="dropdown-item"
+              onClick={this.addRelatedProject}
+            >
+              Add Related Project
+            </a>
+            <div className="dropdown-divider" />
+            <Link
+              to={`/projects/${project.projectId}/clone`}
+              className="dropdown-item"
+            >
+              Clone this Project
+            </Link>
+          </div>
+        </div>
+
+        {showAddRelatedProjectModal && (
+          <AddRelatedProjectModal
+            projectId={project.projectId}
+            onDismiss={this.hideRelatedProjectModal}
+          />
+        )}
+      </div>
+    );
+  }
+
+  renderDetails() {
+    const { project } = this.props;
+
+    const selectYesNo = (
+      <select>
+        <option value="true">Yes</option>
+        <option value="false">No</option>
+      </select>
+    );
+    const legalContact =
+      project.contacts.legal && project.contacts.legal.length > 0
+        ? project.contacts.legal[0]
+        : '';
+
+    return (
+      <dl className="row">
+        <dt className="col-md-3">Planned release date</dt>
+        <dd className="col-md-9" id="project-release-date">
+          <EditableText
+            value={project.plannedRelease.format('YYYY-MM-DD')}
+            enabled={project.access.canEdit}
+            onChange={this.makeChangeEvent('plannedRelease')}
+            editor={<input type="date" pattern="\d{4}\-\d{2}-\d{2}" />}
+          >
+            {project.plannedRelease.format('ddd, MMMM Do YYYY')}
+          </EditableText>
+        </dd>
+
+        <dt className="col-md-3">Legal contact</dt>
+        <dd className="col-md-9" id="project-lawyer">
+          <EditableText
+            value={legalContact}
+            enabled={project.access.canEdit}
+            onChange={this.makeChangeEvent('contacts', false, 'legal')}
+          >
+            {legalContact}
+          </EditableText>
+        </dd>
+
+        <dt className="col-md-3">Open sourcing</dt>
+        <dd className="col-md-9" id="project-open-sourcing">
+          <EditableText
+            value={
+              project.metadata.open_sourcing
+                ? project.metadata.open_sourcing.toString()
+                : 'false'
+            }
+            enabled={project.access.canEdit}
+            onChange={this.makeChangeEvent('meta', true, 'open_sourcing')}
+            editor={selectYesNo}
+          >
+            {project.metadata.open_sourcing ? 'Yes' : 'No'}
+          </EditableText>
+        </dd>
+
+        <dt className="col-md-3">Related Projects</dt>
+        <dd className="col-md-9">
+          <ProjectRefInfo />
+        </dd>
+      </dl>
     );
   }
 
