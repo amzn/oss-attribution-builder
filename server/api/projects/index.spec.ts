@@ -127,7 +127,7 @@ describe('projects', function() {
         .and.returnValue(Promise.resolve());
 
       const req = makeDummyRequest();
-      const res = makeDummyResponse({project_id: 'abcd'});
+      const res = makeDummyResponse({ project_id: 'abcd' });
       const next = jasmine.createSpy('next');
       req.body.contacts.someone = 'legal';
 
@@ -143,7 +143,7 @@ describe('projects', function() {
 
     it('should validate patched fields', async function() {
       const req = makeDummyRequest();
-      const res = makeDummyResponse({project_id: 'abcd'});
+      const res = makeDummyResponse({ project_id: 'abcd' });
       const next = jasmine.createSpy('next');
       req.body.notAField = 'wat';
 
@@ -386,8 +386,6 @@ describe('projects', function() {
         },
       } as any;
     }
-
-
   });
 
   describe('replacePackage', function() {

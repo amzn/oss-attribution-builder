@@ -8,8 +8,8 @@ import { Link } from 'react-router-dom';
 
 import { WebLicense } from '../../../../server/api/licenses/interfaces';
 import {
-  WebProject,
   RefInfo,
+  WebProject,
 } from '../../../../server/api/projects/interfaces';
 import * as PackageActions from '../../../modules/packages';
 import * as ProjectActions from '../../../modules/projects';

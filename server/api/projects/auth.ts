@@ -11,7 +11,10 @@ import { AccessLevel, AccessLevelStrength } from './interfaces';
 /**
  * Check if the request's user is the project's contact list.
  */
-export function isInContacts(req: any, project: Pick<db.DbProject, 'contacts'>) {
+export function isInContacts(
+  req: any,
+  project: Pick<db.DbProject, 'contacts'>
+) {
   const user = auth.extractRequestUser(req);
   for (const type of Object.keys(project.contacts)) {
     const contactList = project.contacts[type];
@@ -31,9 +34,9 @@ export type ProjectAccess = Pick<db.DbProject, 'contacts' | 'acl'>;
 export function requireProjectAccess(level: AccessLevel) {
   return async (req, res, next) => {
     try {
-    const {
-      params: { projectId },
-    } = req;
+      const {
+        params: { projectId },
+      } = req;
 
       const project = await db.getProject(projectId);
       await assertProjectAccess(req, project, level);

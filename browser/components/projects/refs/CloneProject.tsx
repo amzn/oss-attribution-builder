@@ -6,11 +6,11 @@ import { connect } from 'react-redux';
 
 import { Link } from 'react-router-dom';
 import {
-  WebProject,
   AccessLevel,
+  WebProject,
 } from '../../../../server/api/projects/interfaces';
-import GroupSelect from '../acl/GroupSelect';
 import { cloneProject } from '../../../modules/projects';
+import GroupSelect from '../acl/GroupSelect';
 // import history from '../../../history';
 // import * as ProjectActions from '../../../modules/projects';
 
@@ -75,7 +75,9 @@ class CloneProject extends React.Component<Props, State> {
 
   formIsComplete = (): boolean => {
     const { newTitle, newVersion, newOwner } = this.state;
-    return newTitle.length > 0 && newVersion.length > 0 && newOwner != null;
+    return (
+      newTitle.length > 0 && newVersion.length > 0 && newOwner != undefined
+    );
   };
 
   render() {

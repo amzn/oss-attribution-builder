@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as React from 'react';
-import Modal from '../../../util/Modal';
 import { connect } from 'react-redux';
 import { createRef } from '../../../../modules/projects';
+import Modal from '../../../util/Modal';
 
 interface OwnProps {
   projectId: string;
@@ -31,25 +31,19 @@ class AddRelatedProjectModal extends React.Component<Props, {}> {
     const { dispatch, projectId } = this.props;
     e.preventDefault();
 
-    console.log(e.target);
-
     const url: string = e.target['relate-project-url'].value.trim();
     const include: boolean = e.target['relate-project-include'].checked;
     const comment: string = e.target['relate-project-comments'].value.trim();
     const targetProjectId = url.replace(this.prefix, '').split('/')[0];
 
-    try {
-      await dispatch(
-        createRef(
-          projectId,
-          targetProjectId,
-          include ? 'includes' : 'related',
-          comment
-        )
-      );
-    } catch (err) {
-      console.log('some errrorrrrr');
-    }
+    await dispatch(
+      createRef(
+        projectId,
+        targetProjectId,
+        include ? 'includes' : 'related',
+        comment
+      )
+    );
     buttonAction('add');
   };
 
@@ -114,6 +108,7 @@ class AddRelatedProjectModal extends React.Component<Props, {}> {
             <div className="modal-footer">
               <button
                 className="btn btn-secondary"
+                type="button"
                 onClick={buttonAction('cancel')}
               >
                 Cancel

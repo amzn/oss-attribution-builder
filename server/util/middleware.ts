@@ -10,7 +10,7 @@ export function asyncApi(handler: Handler) {
     handler(req, res)
       .then(obj => {
         if (obj == undefined) {
-          res.status(404).send({error: 'Object not found'});
+          res.status(404).send({ error: 'Object not found' });
         } else {
           res.send(obj);
         }

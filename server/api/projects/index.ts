@@ -10,8 +10,9 @@ import * as documentdb from '../../db/attribution_documents';
 import * as packagedb from '../../db/packages';
 import * as db from '../../db/projects';
 import { DbPackageUsage } from '../../db/projects';
-import { AccessError, RequestError } from '../../errors/index';
+import { AccessError } from '../../errors/index';
 import DocBuilder from '../../licenses/docbuilder';
+import { asyncApi } from '../../util/middleware';
 import { storePackage } from '../packages';
 import {
   assertProjectAccess,
@@ -21,10 +22,9 @@ import {
 import {
   AccessLevel,
   AccessLevelStrength,
-  WebProject,
   RefInfo,
+  WebProject,
 } from './interfaces';
-import { asyncApi } from '../../util/middleware';
 import * as projectValidators from './validators';
 
 export const router = express.Router();
@@ -39,7 +39,7 @@ router.get('/', asyncApi(searchProjects));
 export async function searchProjects(
   req: express.Request,
   res: express.Response
-): Promise<Partial<WebProject>[]> {
+): Promise<Array<Partial<WebProject>>> {
   const user = auth.extractRequestUser(req);
   const groups = await auth.getGroups(user);
 
@@ -465,7 +465,7 @@ export async function createRef(
       comment,
     },
   };
-  db.patchProject(projectId, { refs }, user);
+  await db.patchProject(projectId, { refs }, user);
 
   return { projectId };
 }
