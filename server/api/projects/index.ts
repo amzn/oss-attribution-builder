@@ -13,6 +13,7 @@ import { AccessError } from '../../errors/index';
 import DocBuilder from '../../licenses/docbuilder';
 import { asyncApi } from '../../util/middleware';
 import { storePackage } from '../packages';
+import { addProjectPackages } from './attribution';
 import {
   assertProjectAccess,
   effectivePermission,
@@ -25,7 +26,6 @@ import {
   WebProject,
 } from './interfaces';
 import * as projectValidators from './validators';
-import { addProjectPackages } from './attribution';
 
 export const router = express.Router();
 export default router;

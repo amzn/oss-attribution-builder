@@ -8,9 +8,7 @@ import { Link } from 'react-router-dom';
 import { WebProject } from '../../../../../server/api/projects/interfaces';
 import * as ProjectActions from '../../../../modules/projects';
 
-interface OwnProps {}
-
-interface Props extends OwnProps {
+interface Props {
   project: WebProject & { refInfo: any };
   dispatch: (action: any) => any;
 }
@@ -66,6 +64,6 @@ class ProjectRefInfo extends React.Component<Props, {}> {
   }
 }
 
-export default connect((state: any, props: OwnProps) => ({
+export default connect((state: any) => ({
   project: state.projects.active,
 }))(ProjectRefInfo);

@@ -24,7 +24,7 @@ interface Props {
   project: WebProject & { refInfo: any };
   packages: PackageActions.PackageSet;
   licenses: WebLicense[];
-  projectRefs: { [id: string]: RefInfo | Symbol };
+  projectRefs: { [id: string]: RefInfo };
 }
 
 interface State {
@@ -115,8 +115,8 @@ class ProjectView extends Component<Props, State> {
   getPackageCount = () => {
     const { project } = this.props;
     const refLength = Object.entries(project.refs)
-      .filter(([_id, ref]) => ref.type === 'includes')
-      .reduce((acc, [id, _ref]) => {
+      .filter(([id, ref]) => ref.type === 'includes')
+      .reduce((acc, [id, ref]) => {
         if (project.refInfo == undefined) {
           return 0;
         }
@@ -334,14 +334,13 @@ class ProjectView extends Component<Props, State> {
     const {
       project: { refs, refInfo },
     } = this.props;
-    console.log(refInfo);
     if (!refInfo) {
       return;
     }
 
     return Object.entries(refs)
-      .filter(([_id, ref]) => ref.type === 'includes')
-      .map(([id, _ref]) => {
+      .filter(([id, ref]) => ref.type === 'includes')
+      .map(([id, ref]) => {
         const info = refInfo.refs[id];
         const packagesText =
           info.packageIds.length === 1 ? 'package' : 'packages';

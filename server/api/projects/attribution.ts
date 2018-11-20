@@ -1,11 +1,14 @@
 // Copyright 2018 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import * as db from '../../db/projects';
 import * as packagedb from '../../db/packages';
+import * as db from '../../db/projects';
 import DocBuilder from '../../licenses/docbuilder';
 
-export async function addProjectPackages(project: db.DbProject, builder: DocBuilder) {
+export async function addProjectPackages(
+  project: db.DbProject,
+  builder: DocBuilder
+) {
   // optimization: fetch all package ids at once, then organize into a map
   const packageIds = project.packages_used.map(usage => usage.package_id);
   const packageList = await packagedb.getPackages(packageIds);
