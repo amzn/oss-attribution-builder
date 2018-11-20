@@ -7,7 +7,6 @@ import * as winston from 'winston';
 import auth from '../../auth';
 import { isAdmin } from '../../auth/util';
 import * as documentdb from '../../db/attribution_documents';
-import * as packagedb from '../../db/packages';
 import * as db from '../../db/projects';
 import { DbPackageUsage } from '../../db/projects';
 import { AccessError } from '../../errors/index';
@@ -26,6 +25,7 @@ import {
   WebProject,
 } from './interfaces';
 import * as projectValidators from './validators';
+import { addProjectPackages } from './attribution';
 
 export const router = express.Router();
 export default router;
@@ -339,27 +339,21 @@ export async function generateAttributionDocument(
 
   const user = auth.extractRequestUser(req);
   const project: db.DbProject = res.locals.project;
-
-  const packageIds = project.packages_used.map(usage => usage.package_id);
-  const packageList = await packagedb.getPackages(packageIds);
-
-  // reorganize the package list from db into a map
-  const packages: Map<number, packagedb.Package> = packageList.reduce(
-    (map, pkg) => {
-      map.set(pkg.package_id, pkg);
-      return map;
-    },
-    new Map()
-  );
-
-  // create attributions and add to generator
   const builder = new DocBuilder();
-  for (const usage of project.packages_used) {
-    const pkg = packages.get(usage.package_id);
-    if (pkg == undefined) {
-      throw new Error(`Reference to package ${usage.package_id} was not found`);
+
+  // add our own packages
+  await addProjectPackages(project, builder);
+
+  // and then referenced projects of type "include", if any
+  for (const [targetProjectId, meta] of Object.entries(project.refs)) {
+    if (meta.type !== 'includes') {
+      continue;
     }
-    builder.addPackage(pkg, usage);
+
+    const targetProject = (await db.getProject(
+      targetProjectId
+    )) as db.DbProject;
+    await addProjectPackages(targetProject, builder);
   }
 
   // do it!

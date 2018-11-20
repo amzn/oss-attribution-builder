@@ -21,7 +21,7 @@ import ProjectRefInfo from './refs/ProjectRefInfo';
 
 interface Props {
   dispatch: (action: any) => any;
-  project: WebProject;
+  project: WebProject & { refInfo: any };
   packages: PackageActions.PackageSet;
   licenses: WebLicense[];
   projectRefs: { [id: string]: RefInfo | Symbol };
@@ -112,6 +112,21 @@ class ProjectView extends Component<Props, State> {
     this.setState({ showAddRelatedProjectModal: false });
   };
 
+  getPackageCount = () => {
+    const { project } = this.props;
+    const refLength = Object.entries(project.refs)
+      .filter(([_id, ref]) => ref.type === 'includes')
+      .reduce((acc, [id, _ref]) => {
+        if (project.refInfo == undefined) {
+          return 0;
+        }
+        const info = project.refInfo.refs[id];
+        const add = info == undefined ? 0 : info.packageIds.length;
+        return acc + add;
+      }, 0);
+    return project.packagesUsed.length + refLength;
+  };
+
   render() {
     const { project } = this.props;
     const { showPackageEditor } = this.state;
@@ -171,21 +186,21 @@ class ProjectView extends Component<Props, State> {
         {this.renderDetails()}
 
         <h3 className="mt-4">Open Source Packages Used</h3>
+        {this.renderRefPackages()}
         {this.renderUsedPackages()}
         {this.renderPackageEditor()}
 
-        {showPackageEditor || project.packagesUsed.length === 0 ? (
-          ''
-        ) : (
-          <div className="pull-right" id="build-buttons">
-            <Link
-              to={`/projects/${project.projectId}/build`}
-              className="btn btn-success btn-lg"
-            >
-              Build Attribution Document
-            </Link>
-          </div>
-        )}
+        {!showPackageEditor &&
+          this.getPackageCount() > 0 && (
+            <div className="pull-right" id="build-buttons">
+              <Link
+                to={`/projects/${project.projectId}/build`}
+                className="btn btn-success btn-lg"
+              >
+                Build Attribution Document
+              </Link>
+            </div>
+          )}
       </>
     );
   }
@@ -313,6 +328,30 @@ class ProjectView extends Component<Props, State> {
         </dd>
       </dl>
     );
+  }
+
+  renderRefPackages() {
+    const {
+      project: { refs, refInfo },
+    } = this.props;
+    console.log(refInfo);
+    if (!refInfo) {
+      return;
+    }
+
+    return Object.entries(refs)
+      .filter(([_id, ref]) => ref.type === 'includes')
+      .map(([id, _ref]) => {
+        const info = refInfo.refs[id];
+        const packagesText =
+          info.packageIds.length === 1 ? 'package' : 'packages';
+        return (
+          <div key={id} className="alert alert-secondary">
+            Includes {info.packageIds.length} {packagesText} from {info.title}{' '}
+            version {info.version}
+          </div>
+        );
+      });
   }
 
   renderUsedPackages() {
