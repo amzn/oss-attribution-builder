@@ -4,8 +4,8 @@
 import * as express from 'express';
 
 import { licenses, mapTag } from '../../licenses';
-import { WebLicense, WebTag } from './interfaces';
 import { asyncApi } from '../../util/middleware';
+import { WebLicense, WebTag } from './interfaces';
 
 export const router = express.Router();
 export default router;

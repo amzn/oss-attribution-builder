@@ -5,10 +5,10 @@ import * as express from 'express';
 import * as winston from 'winston';
 
 import { userInfo } from '../auth';
+import { asyncApi } from '../util/middleware';
 import licensesRouter from './licenses';
 import packagesRouter from './packages';
 import projectsRouter from './projects';
-import { asyncApi } from '../util/middleware';
 
 export let router = express.Router();
 

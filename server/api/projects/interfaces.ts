@@ -13,7 +13,7 @@ export interface WebProject {
   contacts: { [key: string]: string[] };
   acl: { [key: string]: AccessLevel };
   packagesUsed: PackageUsage[];
-  refs: { [projectId: string]: DbProjectRef }
+  refs: { [projectId: string]: DbProjectRef };
   metadata: { [key: string]: any };
   access: {
     level: AccessLevel;
@@ -35,3 +35,9 @@ export const AccessLevelStrength: { [key: string]: number } = {
 };
 
 export { AccessLevel } from '../../db/projects';
+
+export interface RefInfo {
+  title: string;
+  version: string;
+  packageIds: number[];
+}

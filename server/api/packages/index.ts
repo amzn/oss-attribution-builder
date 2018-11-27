@@ -7,9 +7,9 @@ import * as winston from 'winston';
 
 import auth from '../../auth';
 import * as db from '../../db/packages';
+import { asyncApi } from '../../util/middleware';
 import { assertCanValidate } from './auth';
 import { WebPackage } from './interfaces';
-import { asyncApi } from '../../util/middleware';
 
 export const router = express.Router();
 export default router;

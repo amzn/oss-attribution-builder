@@ -215,6 +215,24 @@ export async function cloneProject(req, res, next) {
   return next();
 }
 
+export async function createRef(req, res, next) {
+  try {
+    // ensure type is correct
+    const type: db.DbProjectRef['type'] = req.body.type;
+    if (type !== 'includes' && type !== 'related') {
+      throw new RequestError('Invalid ref type.');
+    }
+
+    // no linking to ourselves
+    if (req.params.projectId === req.body.targetProjectId) {
+      throw new RequestError("You can't link a project to itself.");
+    }
+  } catch (e) {
+    return next(e);
+  }
+  return next();
+}
+
 /**
  * Blow up with a nice error if any fields are missing from the request.
  */
