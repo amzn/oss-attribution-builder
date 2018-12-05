@@ -258,6 +258,8 @@ export function createRef(
       type,
       comment,
     });
+    await dispatch(fetchProjectDetail(projectId));
+    await dispatch(getRefInfo(projectId));
   };
 }
 

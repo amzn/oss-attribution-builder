@@ -27,7 +27,7 @@ class AddRelatedProjectModal extends React.Component<Props, {}> {
     this.props.onDismiss(action);
   };
 
-  submitForm = buttonAction => async (e: React.FormEvent<HTMLFormElement>) => {
+  submitForm = addAction => async (e: React.FormEvent<HTMLFormElement>) => {
     const { dispatch, projectId } = this.props;
     e.preventDefault();
 
@@ -44,14 +44,14 @@ class AddRelatedProjectModal extends React.Component<Props, {}> {
         comment
       )
     );
-    buttonAction('add');
+    addAction();
   };
 
   render() {
     return (
       <Modal title="Add Related Project" onDismiss={this.handleAction}>
         {buttonAction => (
-          <form onSubmit={this.submitForm(buttonAction)}>
+          <form onSubmit={this.submitForm(buttonAction('add'))}>
             <div className="modal-body">
               <div className="form-group">
                 <label htmlFor="relate-project-url">Other Project Link</label>

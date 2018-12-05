@@ -14,10 +14,6 @@ interface Props {
 }
 
 class ProjectRefInfo extends React.Component<Props, {}> {
-  constructor(props) {
-    super(props);
-  }
-
   async componentDidMount() {
     const { dispatch, project } = this.props;
 
