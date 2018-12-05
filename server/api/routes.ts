@@ -9,11 +9,12 @@ import { asyncApi } from '../util/middleware';
 import licensesRouter from './licenses';
 import packagesRouter from './packages';
 import projectsRouter from './projects';
+import config from '../config';
 
 export let router = express.Router();
 
 // all of these formats are JSON
-router.use(express.json());
+router.use(express.json({limit: config.server.maxRequestSize}));
 
 // basic site/user info route
 router.get('/info', asyncApi(userInfo));

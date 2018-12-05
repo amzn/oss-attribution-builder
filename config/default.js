@@ -4,6 +4,7 @@ const config = {};
 config.server = {
   hostname: '0.0.0.0',
   port: 8000,
+  maxRequestSize: '100kb',
 };
 
 config.database = {
