@@ -7,6 +7,8 @@ import { Link } from 'react-router-dom';
 
 import { WebProject } from '../../../../../server/api/projects/interfaces';
 import * as ProjectActions from '../../../../modules/projects';
+import DetatchButton from '../DetatchButton';
+import { deleteRef } from '../../../../modules/projects';
 
 interface Props {
   project: WebProject & { refInfo: any };
@@ -19,6 +21,14 @@ class ProjectRefInfo extends React.Component<Props, {}> {
 
     await dispatch(ProjectActions.getRefInfo(project.projectId));
   }
+
+  detatchProjectRef = (targetProjectId: string) => {
+    const {
+      dispatch,
+      project: { projectId },
+    } = this.props;
+    dispatch(deleteRef(projectId, targetProjectId));
+  };
 
   render() {
     const { project } = this.props;
@@ -55,6 +65,21 @@ class ProjectRefInfo extends React.Component<Props, {}> {
           "{targetProject.title}" version {targetProject.version}
         </Link>{' '}
         ({ref.type})
+        {project.access.canEdit && (
+          <>
+            {' '}
+            <DetatchButton
+              className="btn-sm btn-link"
+              onClick={() => this.detatchProjectRef(targetProjectId)}
+            />
+          </>
+        )}
+        {ref.comment && (
+          <>
+            <br />
+            <small className="text-muted">{ref.comment}</small>
+          </>
+        )}
       </div>
     );
   }

@@ -263,6 +263,9 @@ export function createRef(
   };
 }
 
+/**
+ * Fetch information about refs on the given project
+ */
 export function getRefInfo(projectId: string) {
   return async dispatch => {
     const refInfo = await reqJSON(
@@ -271,5 +274,20 @@ export function getRefInfo(projectId: string) {
       'GET'
     );
     dispatch(receiveRefInfo(refInfo));
+  };
+}
+
+/**
+ * Delete/disassociate a project reference
+ */
+export function deleteRef(projectId: string, targetProjectId: string) {
+  return async dispatch => {
+    await reqJSON(
+      `/api/projects/${projectId}/refs/${targetProjectId}`,
+      undefined,
+      'DELETE'
+    );
+    await dispatch(fetchProjectDetail(projectId));
+    await dispatch(getRefInfo(projectId));
   };
 }

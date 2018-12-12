@@ -423,7 +423,7 @@ export async function cloneProject(
 
 router.post(
   '/:projectId/refs',
-  requireProjectAccess('viewer'),
+  requireProjectAccess('editor'),
   projectValidators.createRef,
   asyncApi(createRef)
 );
@@ -499,11 +499,9 @@ export async function getRefInfo(
   };
 }
 
-/*
 router.delete(
   '/:projectId/refs/:targetProjectId',
-  requireProjectAccess('viewer'),
-  projectValidators.deleteRef,
+  requireProjectAccess('editor'),
   asyncApi(deleteRef)
 );
 export async function deleteRef(
@@ -526,4 +524,3 @@ export async function deleteRef(
 
   return { projectId };
 }
-*/

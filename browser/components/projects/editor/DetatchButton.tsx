@@ -4,6 +4,7 @@
 import React = require('react');
 
 interface Props {
+  className?: string;
   onClick: (event?: any) => any;
 }
 
@@ -45,10 +46,12 @@ export default class DetatchButton extends React.Component<Props, State> {
   };
 
   render() {
+    const { className } = this.props;
     const { mode } = this.state;
+
     return (
       <button
-        className={`btn btn-secondary package-remove-button ${mode ===
+        className={`btn ${className || ''} ${mode ===
           ConfirmState.Confirm && 'btn-danger'}`}
         onClick={this.clicked}
         disabled={mode === ConfirmState.Lockout}
@@ -56,7 +59,7 @@ export default class DetatchButton extends React.Component<Props, State> {
         {mode === ConfirmState.Confirm ? (
           'Delete?'
         ) : (
-          <i className="fa fa-ban" />
+          <i className="fa fa-trash" />
         )}
       </button>
     );

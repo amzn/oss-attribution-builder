@@ -88,7 +88,11 @@ class ProjectPackage extends React.Component<Props, State> {
       >
         <i className="fa fa-pencil" />
       </button>,
-      <DetatchButton key={'detach'} onClick={this.detachPackage} />,
+      <DetatchButton
+        key={'detach'}
+        onClick={this.detachPackage}
+        className="btn-secondary package-remove-button"
+      />,
     ];
 
     // this "update" functionality isn't in PackageCard because it relates to usage
