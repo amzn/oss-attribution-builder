@@ -120,6 +120,26 @@ A [React functional component].
     * `props` - React props. Empty.
 * Return: a rendered React component.
 
+### `project-acl-editor-top`
+
+Add content above the ACL editor table. May be useful for help text with respect to the format that your organization uses for groups.
+
+A [React functional component].
+
+* Input:
+    * `props` - React props. Empty.
+* Return: a rendered React component.
+
+### `project-acl-editor-implicit-description`
+
+Change the text above the implicit permissions table, if enabled.
+
+A [React functional component].
+
+* Input:
+    * `props` - React props. Empty.
+* Return: a rendered React component.
+
 [React functional component]: https://reactjs.org/docs/components-and-props.html#functional-and-class-components
 [WebProject]: ../../server/api/projects/interfaces.ts
 [WebPackage]: ../../server/api/packages/interfaces.ts

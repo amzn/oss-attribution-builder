@@ -11,6 +11,7 @@ import {
 } from '../../../../server/api/projects/interfaces';
 import history from '../../../history';
 import * as ProjectActions from '../../../modules/projects';
+import ExtensionPoint from '../../../util/ExtensionPoint';
 
 interface Props {
   dispatch: (action: any) => any;
@@ -98,6 +99,9 @@ class ProjectAclEditor extends React.Component<Props, State> {
     return (
       <form onSubmit={this.save}>
         <h2>Manage project access</h2>
+
+        <ExtensionPoint ext="project-acl-editor-top" />
+
         <table className="table table-bordered" id="project-acl-editor">
           <thead>
             <tr>
@@ -132,9 +136,13 @@ class ProjectAclEditor extends React.Component<Props, State> {
           </tbody>
         </table>
 
+        <ExtensionPoint ext="project-acl-editor-mid" />
+
         {hasGlobalACL && (
           <div>
-            <p>The following also have acces to projects on this site:</p>
+            <ExtensionPoint ext="project-acl-editor-implicit-description">
+              <p>The following also have acces to projects on this site:</p>
+            </ExtensionPoint>
             <table className="table table-bordered">
               <thead>
                 <tr>

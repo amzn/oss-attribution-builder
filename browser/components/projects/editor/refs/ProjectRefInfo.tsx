@@ -9,6 +9,7 @@ import { WebProject } from '../../../../../server/api/projects/interfaces';
 import * as ProjectActions from '../../../../modules/projects';
 import DetatchButton from '../DetatchButton';
 import { deleteRef } from '../../../../modules/projects';
+import { DbProjectRef } from '../../../../../server/db/projects';
 
 interface Props {
   project: WebProject & { refInfo: any };
@@ -29,6 +30,19 @@ class ProjectRefInfo extends React.Component<Props, {}> {
     } = this.props;
     dispatch(deleteRef(projectId, targetProjectId));
   };
+
+  prettyRefType(type: DbProjectRef['type']) {
+    switch (type) {
+      case 'cloned_from':
+        return 'cloned from';
+      case 'related':
+        return 'related to';
+      case 'includes':
+        return 'including packages from';
+      default:
+        break;
+    }
+  }
 
   render() {
     const { project } = this.props;
@@ -52,19 +66,17 @@ class ProjectRefInfo extends React.Component<Props, {}> {
     if (targetProject == undefined) {
       return (
         <div key={targetProjectId}>
-          Project <Link to={`./${targetProjectId}`}>#{targetProjectId}</Link> (
-          {ref.type})
+          {ref.type} <Link to={`./${targetProjectId}`}>#{targetProjectId}</Link>
         </div>
       );
     }
 
     return (
       <div key={targetProjectId}>
-        Project{' '}
+        {this.prettyRefType(ref.type)}{' '}
         <Link to={`./${targetProjectId}`}>
-          "{targetProject.title}" version {targetProject.version}
-        </Link>{' '}
-        ({ref.type})
+          '{targetProject.title}' version {targetProject.version}
+        </Link>
         {project.access.canEdit && (
           <>
             {' '}

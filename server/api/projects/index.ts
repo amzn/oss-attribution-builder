@@ -412,6 +412,9 @@ export async function cloneProject(
     user
   );
 
+  // copy over packages_used too!
+  await db.updatePackagesUsed(projectId, originalProject.packages_used, user);
+
   winston.info(
     'Project %s cloned from %s by %s',
     projectId,
