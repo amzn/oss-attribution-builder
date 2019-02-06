@@ -5,37 +5,24 @@
 
 const path = require('path');
 const webpack = require('webpack');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const prod = process.env.NODE_ENV === 'production';
 
 let plugins = [
-  new webpack.DefinePlugin({
-    'process.env': {
-      NODE_ENV: JSON.stringify(process.env.NODE_ENV),
-    },
-  }),
   new webpack.ProvidePlugin({
     $: 'jquery',
     jQuery: 'jquery',
     Popper: ['popper.js', 'default'],
   }),
-  new webpack.optimize.CommonsChunkPlugin({
-    name: 'vendor',
-    filename: 'vendor.bundle.js',
+  new MiniCssExtractPlugin({
+    filename: '[name].css',
   }),
-  new ExtractTextPlugin('[name].css'),
 ];
 
-if (prod) {
-  plugins = plugins.concat([
-    new webpack.optimize.UglifyJsPlugin({
-      comments: /^\**!|@preserve|copyright|license/i,
-    }),
-  ]);
-}
-
 module.exports = {
+  mode: prod ? 'production' : 'development',
+
   resolve: {
     extensions: ['.ts', '.tsx', '.js', '.scss'],
   },
@@ -51,9 +38,7 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        use: ExtractTextPlugin.extract({
-          use: ['css-loader', 'sass-loader'],
-        }),
+        use: [MiniCssExtractPlugin.loader, 'css-loader', 'sass-loader'],
       },
       {
         test: /\.(woff2?|svg)(\?v=[\d\.]+)?$/,
@@ -67,23 +52,8 @@ module.exports = {
   },
 
   entry: {
-    app: ['./browser/app.tsx'],
-    vendor: [
-      'core-js/shim',
-      'bootstrap',
-      'history',
-      'jquery',
-      'moment',
-      'popper.js',
-      'react',
-      'react-dom',
-      'react-redux',
-      'react-router-dom',
-      'react-select',
-      'redux',
-      'whatwg-fetch',
-    ],
-    style: ['./styles/style.scss'],
+    app: './browser/app.tsx',
+    style: './styles/style.scss',
   },
 
   output: {
@@ -94,7 +64,7 @@ module.exports = {
 
   devtool: prod ? 'source-map' : 'cheap-module-source-map',
 
-  plugins: plugins,
+  plugins,
 
   devServer: {
     port: 8010,

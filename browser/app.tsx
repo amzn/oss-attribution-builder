@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import 'core-js/shim';
+import 'bootstrap';
 
 import * as React from 'react';
 import { render } from 'react-dom';
