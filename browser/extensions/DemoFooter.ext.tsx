@@ -7,10 +7,17 @@ import { register } from '../ext';
 
 register('footer', props => {
   return (
-    <div>
-      <a href="https://github.com/amzn/oss-attribution-builder">
-        oss-attribution-builder demo
-      </a>
+    <div className="mt-5 pt-3 border-top">
+      <div className="alert alert-light">
+        <a href="https://github.com/amzn/oss-attribution-builder">
+          oss-attribution-builder
+        </a>{' '}
+        is running in demo/development mode. Be sure to{' '}
+        <a href="https://github.com/amzn/oss-attribution-builder/blob/master/README.md">
+          configure the website
+        </a>{' '}
+        before deploying to production.
+      </div>
     </div>
   );
 });
