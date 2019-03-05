@@ -2,12 +2,12 @@
 // SPDX-License-Identifier: Apache-2.0
 
 export interface TagModule {
-  validateSelf: (
+  validateSelf?: (
     name: string | undefined,
     text: string,
     tags: string[]
-  ) => ValidationResult[];
-  validateUsage: (pkg: any, usage: any) => ValidationResult[];
+  ) => ValidationResult[] | undefined;
+  validateUsage?: (pkg: any, usage: any) => ValidationResult[] | undefined;
   transformCopyright?: (original: string) => string;
   transformLicense?: (original: string, packages) => string;
   presentation?: TagPresentation;

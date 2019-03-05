@@ -4,7 +4,7 @@
 // Meta-tag: this is applied to any license that doesn't match a "known"
 // license (see the 'known' directory right next to this one)
 
-// tslint:disable:no-empty no-var-requires
+// tslint:disable:no-var-requires
 
 export function validateSelf(name, text, tags) {
   // less "confused" message for SPDX licenses
@@ -30,8 +30,6 @@ export function validateSelf(name, text, tags) {
     },
   ];
 }
-
-export function validateUsage(pkg, usage) {}
 
 export const questions = {
   ...require('./linkage').questions,

@@ -3,12 +3,6 @@
 
 // NOTE: this tag is referenced from the UI
 
-// tslint:disable:no-empty
-
-export function validateSelf(name, text, tags) {}
-
-export function validateUsage(pkg, usage) {}
-
 export const questions = {
   link: {
     label: 'Linkage',

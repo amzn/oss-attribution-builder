@@ -34,7 +34,7 @@ function loadLicenses(): LicenseMap {
       id,
       Immutable.fromJS({
         tags: ['all', 'spdx', 'unknown'],
-        text: spdxData[id].licenseText,
+        text: cleanup(spdxData[id].licenseText),
       })
     );
   }
@@ -76,8 +76,21 @@ function processKnownLicense(id: string, spdxData: any) {
     );
   }
 
-  // trim excess newlines from start and end
-  text = text.replace(/^\n+|\n+$/g, '');
+  text = cleanup(text);
 
   return Immutable.fromJS({ tags, text });
+}
+
+function cleanup(text: string): string {
+  // get that crlf outta here
+  text = text.replace(/\r?\n/g, '\n');
+  // trim empty lines
+  text = text.replace(/^\s*$/gm, '');
+  // trim trailing whitespace
+  text = text.replace(/^\S\s+$/gm, '');
+  // trim excess newlines from start and end
+  text = text.replace(/^\n+|\n+$/g, '');
+  // trim excess interior newlines
+  text = text.replace(/\n{3,}/g, '\n\n');
+  return text;
 }

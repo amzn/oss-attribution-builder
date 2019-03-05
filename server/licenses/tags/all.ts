@@ -1,15 +1,13 @@
-import { ValidationResult } from '../interfaces';
-
 // Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
+
+import { ValidationResult } from '../interfaces';
 
 /**
  * The 'all' tag is applied to all packages.
  *
  * Validation that checks for the presence/abscence of other tags can be set up here.
  */
-
-// tslint:disable:no-empty
 
 export function validateSelf(name, text, tags) {
   const warnings: ValidationResult[] = [];
@@ -54,5 +52,3 @@ export function validateSelf(name, text, tags) {
 
   return warnings;
 }
-
-export function validateUsage(pkg, usage) {}

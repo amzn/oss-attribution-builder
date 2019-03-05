@@ -27,13 +27,6 @@ describe('license tags', function() {
     });
   });
 
-  it('should export validation functions', function() {
-    for (const mod of modules) {
-      expect(typeof mod.validateSelf).toEqual('function');
-      expect(typeof mod.validateUsage).toEqual('function');
-    }
-  });
-
   it('may export a questions object', function() {
     for (const mod of modules) {
       if (mod.questions == undefined) {

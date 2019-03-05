@@ -1,8 +1,10 @@
-// Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as express from 'express';
 import * as winston from 'winston';
+import DocBuilder from 'tiny-attribution-generator';
+import TextRenderer from 'tiny-attribution-generator/lib/outputs/text';
 
 import auth from '../../auth';
 import { isAdmin } from '../../auth/util';
@@ -10,10 +12,15 @@ import * as documentdb from '../../db/attribution_documents';
 import * as db from '../../db/projects';
 import { DbPackageUsage } from '../../db/projects';
 import { AccessError } from '../../errors/index';
-import DocBuilder from '../../licenses/docbuilder';
 import { asyncApi } from '../../util/middleware';
 import { storePackage } from '../packages';
-import { addProjectPackages } from './attribution';
+import {
+  addProjectPackages,
+  getWarnings,
+  OverlayLicenseDictionary,
+  applyTextTransforms,
+  applyCopyrightTransforms,
+} from './attribution';
 import {
   assertProjectAccess,
   effectivePermission,
@@ -339,7 +346,12 @@ export async function generateAttributionDocument(
 
   const user = auth.extractRequestUser(req);
   const project: db.DbProject = res.locals.project;
-  const builder = new DocBuilder();
+
+  const renderer = new TextRenderer({wrap: 79});
+  const overlayLicenses = new OverlayLicenseDictionary();
+  const builder = new DocBuilder(renderer, overlayLicenses);
+  builder.addTextTransform(applyTextTransforms);
+  builder.addTextTransform(applyCopyrightTransforms);
 
   // add our own packages
   await addProjectPackages(project, builder);
@@ -358,8 +370,8 @@ export async function generateAttributionDocument(
 
   // do it!
   const text = builder.build();
-  const warnings = builder.warnings;
-  const annotations = builder.annotations;
+  const warnings = getWarnings(builder);
+  const annotations = renderer.annotations;
   const summary = builder.summary;
 
   // save a copy if requested

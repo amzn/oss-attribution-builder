@@ -1,4 +1,4 @@
-export const tags = ['popular', 'linkage'];
+export const tags = ['popular', 'linkage', 'validation-demo'];
 
 export const text = `
 This is a sample custom license.

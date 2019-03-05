@@ -19,7 +19,7 @@ export default class AttributionDocWarning extends Component<Props, {}> {
     if (warning.license != undefined) {
       thing = 'used license';
     } else if (warning.package != undefined) {
-      thing = `package ${warning.package}`;
+      thing = `package ${warning.label}`;
     } else {
       thing = 'project';
     }

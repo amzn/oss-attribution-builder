@@ -7,9 +7,9 @@ Validation levels:
 
 ## Exports
 
-A tag module has the following exports:
+A tag module may have the following exports (all optional):
 
-* `validateSelf(name, text, tags)` _**(required)**_
+* `validateSelf(name, text, tags)`
 
   Validate the existence of a license on a given project. The license name, text, and any other tags will be provided. This function should return a list of messages in the format:
 
@@ -23,22 +23,26 @@ A tag module has the following exports:
 
   `tags` includes all tags applied to the current license. This may be useful in the `all` tag if you want to check for the existence or absence of any other tags.
 
-* `validateUsage(pkg, usage)` _**(required)**_
+* `validateUsage(pkg, usage)`
 
   Validate the package against how it was used in this project.
   Usage information, in the same format as stored in the database, will be supplied.
 
+  `pkg` is a `Package` object from `tiny-attribution-generator`.
+
   This function should return a list of messages in the same format as `validateSelf`.
 
-* `transformCopyright(original)` _(optional)_
+* `transformCopyright(original)`
 
   A tag may implement this to change how a copyright statement is rendered in the output document. For example, the `notice` tag clears this out in favor of showing statements in a different section of the document.
 
-* `transformLicense(original, packages)` _(optional)_
+* `transformLicense(original, packages)`
 
   A tag may implement this to change how a license itself is rendered in the output document. It receives the original license text and a list of packages. For example, the `notice` tag uses this to re-locate copyright statements to a "NOTICE" section following the license. The `spdx` tag uses this to word-wrap SPDX-provided licenses to 80 characters.
 
-* `presentation = {}` _(optional)_
+  `packages` is a list of `Package` objects from `tiny-attribution-generator`.
+
+* `presentation = {}`
 
   For website/UI purposes, a tag may suggest presentation options. These options are keys of an object named `presentation` (not a function). All are optional.
 

@@ -11,7 +11,3 @@ export const presentation = {
   sortFirst: true,
   shortText: '⭐️',
 };
-
-export function validateSelf(name, text, tags) {}
-
-export function validateUsage(pkg, usage) {}

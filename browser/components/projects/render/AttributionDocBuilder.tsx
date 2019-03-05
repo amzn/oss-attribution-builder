@@ -67,8 +67,8 @@ class AttributionDocBuilder extends Component<Props, State> {
   static annotationMatch(annotation, warning) {
     if (annotation.license != undefined) {
       return annotation.license === warning.license;
-    } else if (annotation.package != undefined) {
-      return annotation.package === warning.package;
+    } else if (annotation.uuid != undefined) {
+      return annotation.uuid === warning.package;
     }
 
     return false;
