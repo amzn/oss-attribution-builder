@@ -41,7 +41,7 @@
     "@types/selenium-webdriver": "^3.0.3",
     "@types/webpack": "^3.8.12",
     "@types/winston": "2.3.4",
-    "bootstrap": "^4.2.1",
+    "bootstrap": "^4.3.1",
     "concurrently": "^3.5.0",
     "css-loader": "^2.1.0",
     "file-loader": "^3.0.1",
