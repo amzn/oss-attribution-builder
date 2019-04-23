@@ -9,10 +9,10 @@ import DocBuilder, {
 } from 'tiny-attribution-generator';
 import uuidv5 = require('uuid/v5');
 
-import * as packagedb from '../../db/packages';
-import * as db from '../../db/projects';
-import { licenses, mapTag } from '../../licenses';
-import { ValidationResult } from '../../licenses/interfaces';
+import * as packagedb from '../../../db/packages';
+import * as db from '../../../db/projects';
+import { licenses, mapTag } from '../../../licenses';
+import { ValidationResult } from '../../../licenses/interfaces';
 
 type ProjectPackage = TagPackage<{
   projectId: string;

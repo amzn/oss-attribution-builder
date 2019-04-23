@@ -4,7 +4,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 
-import { WebPackage } from '../../../../server/api/packages/interfaces';
+import { WebPackage } from '../../../../server/api/v1/packages/interfaces';
 
 interface Props {
   pkg: WebPackage;

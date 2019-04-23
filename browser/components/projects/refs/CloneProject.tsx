@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import {
   AccessLevel,
   WebProject,
-} from '../../../../server/api/projects/interfaces';
+} from '../../../../server/api/v1/projects/interfaces';
 import { cloneProject } from '../../../modules/projects';
 import GroupSelect from '../acl/GroupSelect';
 // import history from '../../../history';

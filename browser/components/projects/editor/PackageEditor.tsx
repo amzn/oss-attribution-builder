@@ -5,11 +5,11 @@ import * as React from 'react';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { WebTag } from '../../../../server/api/licenses/interfaces';
+import { WebTag } from '../../../../server/api/v1/licenses/interfaces';
 import {
   PackageUsage,
   WebProject,
-} from '../../../../server/api/projects/interfaces';
+} from '../../../../server/api/v1/projects/interfaces';
 import * as ProjectActions from '../../../modules/projects';
 import ExtensionPoint from '../../../util/ExtensionPoint';
 import PackageFields, { PkgOutput } from './PackageFields';

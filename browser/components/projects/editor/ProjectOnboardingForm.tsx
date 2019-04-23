@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Component } from 'react';
 
 import { connect } from 'react-redux';
-import { AccessLevel } from '../../../../server/api/projects/interfaces';
+import { AccessLevel } from '../../../../server/api/v1/projects/interfaces';
 import * as ProjectActions from '../../../modules/projects';
 import GroupSelect from '../acl/GroupSelect';
 

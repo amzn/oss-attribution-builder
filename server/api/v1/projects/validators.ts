@@ -1,12 +1,12 @@
 // Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import auth from '../../auth';
-import * as packagedb from '../../db/packages';
-import * as db from '../../db/projects';
-import { RequestError } from '../../errors';
-import { licenses, mapTag } from '../../licenses/index';
-import { TagQuestions } from '../../licenses/interfaces';
+import auth from '../../../auth';
+import * as packagedb from '../../../db/packages';
+import * as db from '../../../db/projects';
+import { RequestError } from '../../../errors';
+import { licenses, mapTag } from '../../../licenses/index';
+import { TagQuestions } from '../../../licenses/interfaces';
 import { effectivePermission, ProjectAccess } from './auth';
 
 export async function createProject(req, res, next) {

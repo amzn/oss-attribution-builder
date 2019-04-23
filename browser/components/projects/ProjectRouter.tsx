@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { Route, Switch } from 'react-router';
 import { Link } from 'react-router-dom';
 
-import { WebProject } from '../../../server/api/projects/interfaces';
+import { WebProject } from '../../../server/api/v1/projects/interfaces';
 import * as ProjectActions from '../../modules/projects';
 import ProjectAclEditor from './acl/ProjectAclEditor';
 import ProjectView from './editor/ProjectView';

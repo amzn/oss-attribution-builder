@@ -63,7 +63,7 @@ export function receiveSiteInfo(info: any) {
 
 export function fetchSiteInfo(query?: any) {
   return async (dispatch: any) => {
-    const info = await fetchAuth('/api/info');
+    const info = await fetchAuth('/api/v1/info');
     const data = await info.json();
     dispatch(receiveSiteInfo(data));
   };

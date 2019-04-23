@@ -4,7 +4,7 @@
 import * as express from 'express';
 import * as winston from 'winston';
 
-import v1Router from './v1';
+import v1Router from './routes-v1';
 import config from '../config';
 
 export let router = express.Router();

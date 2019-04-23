@@ -5,9 +5,9 @@ import * as express from 'express';
 import * as Immutable from 'immutable';
 import * as winston from 'winston';
 
-import auth from '../../auth';
-import * as db from '../../db/packages';
-import { asyncApi } from '../../util/middleware';
+import auth from '../../../auth';
+import * as db from '../../../db/packages';
+import { asyncApi } from '../../../util/middleware';
 import { assertCanValidate } from './auth';
 import { WebPackage } from './interfaces';
 

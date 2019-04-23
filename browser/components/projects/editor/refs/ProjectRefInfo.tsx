@@ -5,7 +5,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { WebProject } from '../../../../../server/api/projects/interfaces';
+import { WebProject } from '../../../../../server/api/v1/projects/interfaces';
 import * as ProjectActions from '../../../../modules/projects';
 import DetatchButton from '../DetatchButton';
 import { deleteRef } from '../../../../modules/projects';

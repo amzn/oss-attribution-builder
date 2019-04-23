@@ -4,9 +4,9 @@
 import React = require('react');
 import { connect } from 'react-redux';
 
-import { WebTag } from '../../../../server/api/licenses/interfaces';
-import { WebPackage } from '../../../../server/api/packages/interfaces';
-import { PackageUsage } from '../../../../server/api/projects/interfaces';
+import { WebTag } from '../../../../server/api/v1/licenses/interfaces';
+import { WebPackage } from '../../../../server/api/v1/packages/interfaces';
+import { PackageUsage } from '../../../../server/api/v1/projects/interfaces';
 import * as PackageActions from '../../../modules/packages';
 import * as ProjectActions from '../../../modules/projects';
 import PackageCard from '../packages/PackageCard';

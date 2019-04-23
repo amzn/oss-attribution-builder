@@ -6,13 +6,13 @@ import * as winston from 'winston';
 import DocBuilder from 'tiny-attribution-generator';
 import TextRenderer from 'tiny-attribution-generator/lib/outputs/text';
 
-import auth from '../../auth';
-import { isAdmin } from '../../auth/util';
-import * as documentdb from '../../db/attribution_documents';
-import * as db from '../../db/projects';
-import { DbPackageUsage } from '../../db/projects';
-import { AccessError } from '../../errors/index';
-import { asyncApi } from '../../util/middleware';
+import auth from '../../../auth';
+import { isAdmin } from '../../../auth/util';
+import * as documentdb from '../../../db/attribution_documents';
+import * as db from '../../../db/projects';
+import { DbPackageUsage } from '../../../db/projects';
+import { AccessError } from '../../../errors/index';
+import { asyncApi } from '../../../util/middleware';
 import { storePackage } from '../packages';
 import {
   addProjectPackages,

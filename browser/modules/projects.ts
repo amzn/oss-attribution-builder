@@ -3,7 +3,7 @@
 
 import * as moment from 'moment';
 
-import { WebProject } from '../../server/api/projects/interfaces';
+import { WebProject } from '../../server/api/v1/projects/interfaces';
 import history from '../history';
 import { fetchAuth, reqJSON } from '../util';
 import { downloadText } from '../util/download';
@@ -141,7 +141,7 @@ export function receiveRefInfo(info) {
  */
 export function fetchProjects(queryString) {
   return async dispatch => {
-    const response = await fetchAuth(`/api/projects/${queryString}`);
+    const response = await fetchAuth(`/api/v1/projects/${queryString}`);
     const json = await response.json();
     return dispatch(receiveProjects(json));
   };
@@ -152,7 +152,7 @@ export function fetchProjects(queryString) {
  */
 export function fetchProjectDetail(projectId) {
   return async dispatch => {
-    const response = await fetchAuth(`/api/projects/${projectId}`);
+    const response = await fetchAuth(`/api/v1/projects/${projectId}`);
     const json = await response.json();
     return dispatch(receiveProjectDetail(json));
   };
@@ -163,7 +163,7 @@ export function fetchProjectDetail(projectId) {
  */
 export function createProject(details: Partial<WebProject>) {
   return async dispatch => {
-    const json = await reqJSON('/api/projects/new', details);
+    const json = await reqJSON('/api/v1/projects/new', details);
     return history.push(`/projects/${json.projectId}`);
   };
 }
@@ -173,7 +173,7 @@ export function createProject(details: Partial<WebProject>) {
  */
 export function patchProject(projectId, changes: Partial<WebProject>) {
   return async dispatch => {
-    await reqJSON(`/api/projects/${projectId}`, changes, 'PATCH');
+    await reqJSON(`/api/v1/projects/${projectId}`, changes, 'PATCH');
     return dispatch(fetchProjectDetail(projectId));
   };
 }
@@ -183,7 +183,7 @@ export function patchProject(projectId, changes: Partial<WebProject>) {
  */
 export function attachPackageToProject(projectId, packageInfo) {
   return async dispatch => {
-    await reqJSON(`/api/projects/${projectId}/attach`, packageInfo);
+    await reqJSON(`/api/v1/projects/${projectId}/attach`, packageInfo);
     return dispatch(fetchProjectDetail(projectId));
   };
 }
@@ -193,7 +193,7 @@ export function attachPackageToProject(projectId, packageInfo) {
  */
 export function detachPackageFromProject(projectId: string, packageId: number) {
   return async dispatch => {
-    await reqJSON(`/api/projects/${projectId}/detach`, { packageId });
+    await reqJSON(`/api/v1/projects/${projectId}/detach`, { packageId });
     return dispatch(fetchProjectDetail(projectId));
   };
 }
@@ -204,7 +204,7 @@ export function replacePackageForProject(
   newId: number
 ) {
   return async dispatch => {
-    await reqJSON(`/api/projects/${projectId}/replace`, { oldId, newId });
+    await reqJSON(`/api/v1/projects/${projectId}/replace`, { oldId, newId });
     return dispatch(fetchProjectDetail(projectId));
   };
 }
@@ -214,7 +214,7 @@ export function replacePackageForProject(
  */
 export function buildAttributionDoc(projectId) {
   return async dispatch => {
-    const response = await fetchAuth(`/api/projects/${projectId}/build`);
+    const response = await fetchAuth(`/api/v1/projects/${projectId}/build`);
     const json = await response.json();
     return dispatch(receiveAttributionDoc(json));
   };
@@ -225,7 +225,7 @@ export function buildAttributionDoc(projectId) {
  */
 export function storeAttributionDoc(projectId) {
   return async dispatch => {
-    const json = await reqJSON(`/api/projects/${projectId}/build`);
+    const json = await reqJSON(`/api/v1/projects/${projectId}/build`);
     return downloadText(`THIRD-PARTY-LICENSES_${projectId}.txt`, json.text);
   };
 }
@@ -238,7 +238,7 @@ export function cloneProject(
   newDetails: Pick<WebProject, 'title' | 'version' | 'acl'>
 ) {
   return async dispatch => {
-    const json = await reqJSON(`/api/projects/${projectId}/clone`, newDetails);
+    const json = await reqJSON(`/api/v1/projects/${projectId}/clone`, newDetails);
     history.push(`/projects/${json.projectId}`);
   };
 }
@@ -253,7 +253,7 @@ export function createRef(
   comment: string
 ) {
   return async dispatch => {
-    await reqJSON(`/api/projects/${projectId}/refs`, {
+    await reqJSON(`/api/v1/projects/${projectId}/refs`, {
       targetProjectId,
       type,
       comment,
@@ -269,7 +269,7 @@ export function createRef(
 export function getRefInfo(projectId: string) {
   return async dispatch => {
     const refInfo = await reqJSON(
-      `/api/projects/${projectId}/refs`,
+      `/api/v1/projects/${projectId}/refs`,
       undefined,
       'GET'
     );
@@ -283,7 +283,7 @@ export function getRefInfo(projectId: string) {
 export function deleteRef(projectId: string, targetProjectId: string) {
   return async dispatch => {
     await reqJSON(
-      `/api/projects/${projectId}/refs/${targetProjectId}`,
+      `/api/v1/projects/${projectId}/refs/${targetProjectId}`,
       undefined,
       'DELETE'
     );

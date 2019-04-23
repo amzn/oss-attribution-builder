@@ -3,7 +3,7 @@
 
 import 'whatwg-fetch';
 
-import { WebPackage } from '../../server/api/packages/interfaces';
+import { WebPackage } from '../../server/api/v1/packages/interfaces';
 import { fetchAuth, reqJSON } from '../util';
 
 export const RECEIVE_PACKAGE = 'app/packages/receive-package';
@@ -95,7 +95,7 @@ export function receiveVerificationQueue(results) {
  */
 export function searchPackages(query) {
   return dispatch => {
-    return reqJSON('/api/packages/', { query }).then(json =>
+    return reqJSON('/api/v1/packages/', { query }).then(json =>
       dispatch(receivePackageSearchResults(json))
     );
   };
@@ -107,7 +107,7 @@ export function searchPackages(query) {
 export function fetchPackage(packageId: number, extended = false) {
   const q = extended ? '?extended=1' : '';
   return dispatch => {
-    return fetchAuth(`/api/packages/${packageId}${q}`)
+    return fetchAuth(`/api/v1/packages/${packageId}${q}`)
       .then(response => response.json())
       .then(json => dispatch(receivePackage(json)));
   };
@@ -122,7 +122,7 @@ export function verifyPackage(
   comments: string
 ) {
   return dispatch => {
-    return reqJSON(`/api/packages/${packageId}/verify`, {
+    return reqJSON(`/api/v1/packages/${packageId}/verify`, {
       verified,
       comments,
     }).then(json => dispatch(fetchPackage(packageId)));
@@ -134,7 +134,7 @@ export function verifyPackage(
  */
 export function fetchVerificationQueue() {
   return dispatch => {
-    return reqJSON('/api/packages/verification', undefined, 'GET').then(json =>
+    return reqJSON('/api/v1/packages/verification', undefined, 'GET').then(json =>
       dispatch(receiveVerificationQueue(json))
     );
   };

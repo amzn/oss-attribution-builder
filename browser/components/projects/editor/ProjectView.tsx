@@ -6,11 +6,11 @@ import { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-import { WebLicense } from '../../../../server/api/licenses/interfaces';
+import { WebLicense } from '../../../../server/api/v1/licenses/interfaces';
 import {
   RefInfo,
   WebProject,
-} from '../../../../server/api/projects/interfaces';
+} from '../../../../server/api/v1/projects/interfaces';
 import * as PackageActions from '../../../modules/packages';
 import * as ProjectActions from '../../../modules/projects';
 import EditableText from '../../util/EditableText';

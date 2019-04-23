@@ -3,10 +3,10 @@
 
 import * as winston from 'winston';
 
-import auth from '../../auth';
-import { isAdmin, isUserInAnyGroup } from '../../auth/util';
-import { config } from '../../config';
-import { AccessError } from '../../errors';
+import auth from '../../../auth';
+import { isAdmin, isUserInAnyGroup } from '../../../auth/util';
+import { config } from '../../../config';
+import { AccessError } from '../../../errors';
 
 export async function canValidate(req) {
   const user = auth.extractRequestUser(req);

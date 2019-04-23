@@ -5,9 +5,9 @@ import * as express from 'express';
 
 import { userInfo } from '../auth';
 import { asyncApi } from '../util/middleware';
-import licensesRouter from './licenses';
-import packagesRouter from './packages';
-import projectsRouter from './projects';
+import licensesRouter from './v1/licenses';
+import packagesRouter from './v1/packages';
+import projectsRouter from './v1/projects';
 
 export let router = express.Router();
 export default router;

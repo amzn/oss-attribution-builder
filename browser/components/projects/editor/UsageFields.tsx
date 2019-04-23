@@ -3,7 +3,7 @@
 
 import React = require('react');
 
-import { PackageUsage } from '../../../../server/api/projects/interfaces';
+import { PackageUsage } from '../../../../server/api/v1/projects/interfaces';
 import { TagQuestions } from '../../../../server/licenses/interfaces';
 import QuestionWidget from './questions/QuestionWidget';
 

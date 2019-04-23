@@ -8,7 +8,7 @@ import {
   AccessLevel,
   AccessLevelStrength,
   WebProject,
-} from '../../../../server/api/projects/interfaces';
+} from '../../../../server/api/v1/projects/interfaces';
 import history from '../../../history';
 import * as ProjectActions from '../../../modules/projects';
 import ExtensionPoint from '../../../util/ExtensionPoint';

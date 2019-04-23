@@ -3,8 +3,8 @@
 
 import * as express from 'express';
 
-import { licenses, mapTag } from '../../licenses';
-import { asyncApi } from '../../util/middleware';
+import { licenses, mapTag } from '../../../licenses';
+import { asyncApi } from '../../../util/middleware';
 import { WebLicense, WebTag } from './interfaces';
 
 export const router = express.Router();

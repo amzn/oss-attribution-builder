@@ -5,7 +5,7 @@ import * as React from 'react';
 import { Component } from 'react';
 import { connect } from 'react-redux';
 
-import { WebPackage } from '../../../../server/api/packages/interfaces';
+import { WebPackage } from '../../../../server/api/v1/packages/interfaces';
 import { fetchPackage, PackageSet } from '../../../modules/packages';
 import { triggerOnVisible } from '../../../util/viewport';
 import PackageCardUsage, { Props as UsageProps } from './PackageCardUsage';

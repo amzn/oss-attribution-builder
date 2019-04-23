@@ -1,11 +1,11 @@
 // Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
-import auth from '../../auth';
-import { isAdmin, isUserInGroup } from '../../auth/util';
-import config from '../../config';
-import * as db from '../../db/projects';
-import { AccessError } from '../../errors';
+import auth from '../../../auth';
+import { isAdmin, isUserInGroup } from '../../../auth/util';
+import config from '../../../config';
+import * as db from '../../../db/projects';
+import { AccessError } from '../../../errors';
 import { AccessLevel, AccessLevelStrength } from './interfaces';
 
 /**
