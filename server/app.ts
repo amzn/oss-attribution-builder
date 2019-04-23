@@ -7,6 +7,7 @@ import 'source-map-support/register';
 import * as path from 'path';
 
 import * as compression from 'compression';
+import * as cors from 'cors';
 import * as express from 'express';
 import * as passport from 'passport';
 import * as winston from 'winston';
@@ -26,23 +27,26 @@ process.on('uncaughtException', err => {
 // let's get this runnin
 const app = express();
 
-// allow disabling CSP for local/dev server
-let cspEnabled = true;
-export function disableCSP() {
-  winston.warn('Disabling Content-Security-Policy');
-  cspEnabled = false;
-}
-
-if (cspEnabled) {
-  // apply a security policy for general scripts.
-  // webpack uses eval() for cheap source maps, so don't enable during development.
-  // don't use it with selenium, either, since it needs eval() to do a bunch of things.
+// apply a security policy for general scripts.
+// webpack uses eval() for cheap source maps, so don't enable during development.
+// don't use it with selenium, either, since it needs eval() to do a bunch of things.
+if (config.server.contentSecurityPolicy) {
   app.use((req, res, next) => {
-    if (cspEnabled) {
-      res.set('Content-Security-Policy', "script-src 'self'");
-    }
+    res.set('Content-Security-Policy', config.server.contentSecurityPolicy);
     return next();
   });
+} else {
+  winston.warn('Content-Security-Policy disabled');
+}
+
+// CORS
+if (config.server.cors) {
+  if (config.server.cors === true) {
+    winston.warn('Allowing CORS for any origin');
+    app.use(cors());
+  } else if (typeof config.server.cors === 'string') {
+    app.use(cors({ origin: config.server.cors }));
+  }
 }
 
 // auth

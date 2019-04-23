@@ -51,7 +51,8 @@ export default class NullAuth implements AuthBase {
     // and cookie auth for the rest
     app.use(cookieParser());
     app.use(
-      passport.authenticate('cookie', {
+      // also allow basic auth for tinkering with swagger ui
+      passport.authenticate(['basic', 'cookie'], {
         session: false,
         failureRedirect: '/dummy-login',
       })

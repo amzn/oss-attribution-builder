@@ -14,10 +14,6 @@ if (process.env.NODE_ENV === 'development') {
 const config = require('./config').default;
 const app = require('./app');
 
-if (process.env.NODE_ENV === 'development') {
-  app.disableCSP();
-}
-
 app
   .start(config.server.port, config.server.hostname)
   .then(() => {

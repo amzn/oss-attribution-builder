@@ -8,8 +8,6 @@ import v1Router from './routes-v1';
 import config from '../config';
 
 export let router = express.Router();
-
-// all of these formats are JSON
 router.use(express.json({ limit: config.server.maxRequestSize }));
 
 // actual APIs are versioned

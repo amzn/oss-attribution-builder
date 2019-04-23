@@ -79,6 +79,7 @@
   "dependencies": {
     "compression": "^1.7.2",
     "core-js": "^2.5.6",
+    "cors": "^2.8.5",
     "express": "^4.16.3",
     "immutable": "^3.7.6",
     "moment": "^2.22.1",

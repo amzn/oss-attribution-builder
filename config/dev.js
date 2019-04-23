@@ -5,6 +5,8 @@ const config = base.config;
 config.server = {
   hostname: '0.0.0.0',
   port: 8000,
+  contentSecurityPolicy: false,
+  cors: true,
 };
 
 config.database = {
