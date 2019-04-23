@@ -1,0 +1,140 @@
+# WIP API description
+
+openapi: '3.0.2'
+info:
+  title: 'oss-attribution-builder API'
+  version: '1.0.0'
+servers:
+  - url: 'http://localhost:8000/api/'
+security:
+  - nullauth: []
+
+components:
+  securitySchemes:
+    nullauth:
+      type: http
+      scheme: basic
+
+  parameters:
+    projectId:
+      in: path
+      name: projectId
+      required: true
+      schema:
+        type: string
+
+  schemas:
+    project:
+      type: object
+      properties:
+        projectId:
+          type: string
+        title:
+          type: string
+        version:
+          type: string
+        description:
+          type: string
+        createdOn:
+          type: string
+        plannedRelease:
+          type: string
+        contacts:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: string
+        acl:
+          type: object
+          additionalProperties:
+            type: string
+        packagesUsed:
+          type: array
+          items:
+            type: object
+        refs:
+          type: object
+        metadata:
+          type: object
+        access:
+          type: object
+          properties:
+            level:
+              type: string
+            canEdit:
+              type: boolean
+
+paths:
+  /v1/info:
+    get:
+      summary: get session info
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  displayName:
+                    type: string
+                  groups:
+                    type: array
+                    items:
+                      type: string
+                  permissions:
+                    type: object
+                    properties:
+                      admin:
+                        type: boolean
+
+  /v1/projects:
+    get:
+      summary: get all accessible projects
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    projectId:
+                      type: string
+                    title:
+                      type: string
+                    version:
+                      type: string
+                    createdOn:
+                      type: string
+
+  /v1/projects/{projectId}:
+    get:
+      summary: get project by id
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      responses:
+        200:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/project'
+
+    patch:
+      summary: edit project details
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                version:
+                description:
+                plannedRelease:
+                contacts:
+                acl:
+                metadata:
