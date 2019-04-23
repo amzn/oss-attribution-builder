@@ -1,31 +1,29 @@
-// Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import * as express from 'express';
 import * as winston from 'winston';
 
-import { userInfo } from '../auth';
-import { asyncApi } from '../util/middleware';
-import licensesRouter from './licenses';
-import packagesRouter from './packages';
-import projectsRouter from './projects';
+import v1Router from './v1';
 import config from '../config';
 
 export let router = express.Router();
 
 // all of these formats are JSON
-router.use(express.json({limit: config.server.maxRequestSize}));
+router.use(express.json({ limit: config.server.maxRequestSize }));
 
-// basic site/user info route
-router.get('/info', asyncApi(userInfo));
+// actual APIs are versioned
+router.use('/v1', v1Router);
 
-// sub-routers
-router.use('/projects', projectsRouter);
-router.use('/packages', packagesRouter);
-router.use('/licenses', licensesRouter);
+// unprefixed v1 routes
+router.use((req, res, next) => {
+  winston.warn(`Deprecated API URL used: ${req.path} -- prefix with /v1/`);
+  next();
+});
+router.use(v1Router);
 
 // error handling for all of the above
-router.use(function(err: any, req: any, res: any, next: any) {
+router.use((err: any, req: any, res: any, next: any) => {
   if (
     err.name === 'UnauthorizedError' ||
     err.name === 'AccessError' ||
