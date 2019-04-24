@@ -24,9 +24,9 @@ describe('projects', function() {
     };
 
     // project module mocks
-    mockery.registerMock('../../auth', { default: mock.auth });
-    mockery.registerMock('../../db/projects', mock.db);
-    mockery.registerMock('../../db/packages', mock.packagedb);
+    mockery.registerMock('../../../auth', { default: mock.auth });
+    mockery.registerMock('../../../db/projects', mock.db);
+    mockery.registerMock('../../../db/packages', mock.packagedb);
     mockery.registerMock('./auth', {
       assertProjectAccess: mock.assertProjectAccess,
       requireProjectAccess: mock.requireProjectAccess,

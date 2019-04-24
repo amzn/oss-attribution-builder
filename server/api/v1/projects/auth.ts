@@ -3,7 +3,7 @@
 
 import auth from '../../../auth';
 import { isAdmin, isUserInGroup } from '../../../auth/util';
-import config from '../../../config';
+import { config } from '../../../config';
 import * as db from '../../../db/projects';
 import { AccessError } from '../../../errors';
 import { AccessLevel, AccessLevelStrength } from './interfaces';

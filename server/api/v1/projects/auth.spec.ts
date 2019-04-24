@@ -45,10 +45,12 @@ describe('projects auth', function() {
         admin: {
           groups: new Set(['admin-users']),
         },
+        globalACL: {},
       },
     };
 
-    mockery.registerMock('../../auth', { default: mock.auth });
+    mockery.registerMock('../../../auth', { default: mock.auth });
+    mockery.registerMock('../../../config', { config: mock.config });
     mockery.registerMock('../config', { config: mock.config });
 
     mockery.registerAllowable('./auth');

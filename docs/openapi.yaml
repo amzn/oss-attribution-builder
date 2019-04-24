@@ -71,6 +71,7 @@ paths:
       summary: get session info
       responses:
         200:
+          description: current user's session info
           content:
             application/json:
               schema:
@@ -93,6 +94,7 @@ paths:
       summary: get all accessible projects
       responses:
         200:
+          description: list of projects
           content:
             application/json:
               schema:
@@ -116,6 +118,7 @@ paths:
         - $ref: '#/components/parameters/projectId'
       responses:
         200:
+          description: project details
           content:
             application/json:
               schema:
@@ -132,9 +135,19 @@ paths:
               type: object
               properties:
                 title:
+                  type: string
                 version:
+                  type: string
                 description:
+                  type: string
                 plannedRelease:
+                  type: string
                 contacts:
+                  type: object
                 acl:
+                  type: object
                 metadata:
+                  type: object
+      responses:
+        200:
+          description: successfully edited project
