@@ -416,18 +416,33 @@ export async function listRenderedDocuments(
  * Retrieve a rendered document for a project.
  */
 router.get(
+  '/:projectId/docs/:documentId.text',
+  requireProjectAccess('viewer'),
+  asyncApi(async (req, res) => getRenderedDocument(req, res, true))
+);
+router.get(
   '/:projectId/docs/:documentId',
   requireProjectAccess('viewer'),
-  asyncApi(getRenderedDocument)
+  asyncApi(async (req, res) => getRenderedDocument(req, res, false))
 );
 export async function getRenderedDocument(
   req: express.Request,
-  res: express.Response
+  res: express.Response,
+  textOnly: boolean
 ) {
   const {
     params: { projectId, documentId },
   } = req;
   const doc = await documentdb.getAttributionDocument(projectId, documentId);
+  if (doc == undefined) {
+    return;
+  }
+
+  if (textOnly) {
+    res.type('text/plain');
+    return doc.content;
+  }
+
   return {
     id: doc.doc_id,
     projectId: doc.project_id,
