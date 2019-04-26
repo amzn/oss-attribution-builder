@@ -15,6 +15,10 @@ require manual edits to pluggable interfaces.
 - A global ACL is now available and can be set in your configuration as `globalACL`. Entries added
   to this list will implicitly apply to all projects. This will eventually replace the current
   admin functionality.
+- An API is available to fetch rendered/stored documents for projects.
+
+### Changed
+- Now uses tiny-attribution-generator to build documents.
 
 ## 0.9.0 - 2017-12-11
 

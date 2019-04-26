@@ -77,7 +77,7 @@ function dbPackageToTagPackage(dbPackage: packagedb.Package): ProjectPackage {
  *
  * These can be surfaced in the UI.
  */
-export function getWarnings(builder: DocBuilder): any {
+export function getWarnings(builder: DocBuilder): ValidationResult[] {
   const { usedLicenses } = builder.summary;
   const warnings: ValidationResult[] = [];
 

@@ -347,7 +347,7 @@ export async function generateAttributionDocument(
   const user = auth.extractRequestUser(req);
   const project: db.DbProject = res.locals.project;
 
-  const renderer = new TextRenderer({wrap: 79});
+  const renderer = new TextRenderer({ wrap: 79 });
   const overlayLicenses = new OverlayLicenseDictionary();
   const builder = new DocBuilder(renderer, overlayLicenses);
   builder.addTextTransform(applyTextTransforms);
@@ -369,24 +369,73 @@ export async function generateAttributionDocument(
   }
 
   // do it!
-  const text = builder.build();
+  const text: string = builder.build();
   const warnings = getWarnings(builder);
   const annotations = renderer.annotations;
   const summary = builder.summary;
 
   // save a copy if requested
   if (store) {
-    await documentdb.storeAttributionDocument(
+    const documentId = await documentdb.storeAttributionDocument(
       projectId,
       project.version,
       text,
       user
     );
     winston.info(`Document for project ${projectId} was stored by ${user}`);
-    return { text };
+    return { text, documentId };
   }
 
   return { text, annotations, warnings, summary };
+}
+
+/**
+ * List stored attribution documents for a project.
+ */
+router.get(
+  '/:projectId/docs',
+  requireProjectAccess('viewer'),
+  asyncApi(listRenderedDocuments)
+);
+export async function listRenderedDocuments(
+  req: express.Request,
+  res: express.Response
+) {
+  const docs = await documentdb.findDocumentsForProject(req.params.projectId);
+  return {
+    documents: docs.map(d => ({
+      id: d.doc_id,
+      projectVersion: d.project_version,
+      createdOn: d.created_on,
+      createdBy: d.created_by,
+    })),
+  };
+}
+
+/**
+ * Retrieve a rendered document for a project.
+ */
+router.get(
+  '/:projectId/docs/:documentId',
+  requireProjectAccess('viewer'),
+  asyncApi(getRenderedDocument)
+);
+export async function getRenderedDocument(
+  req: express.Request,
+  res: express.Response
+) {
+  const {
+    params: { projectId, documentId },
+  } = req;
+  const doc = await documentdb.getAttributionDocument(projectId, documentId);
+  return {
+    id: doc.doc_id,
+    projectId: doc.project_id,
+    projectVersion: doc.project_version,
+    createdOn: doc.created_on,
+    createdBy: doc.created_by,
+    content: doc.content,
+  };
 }
 
 /**
