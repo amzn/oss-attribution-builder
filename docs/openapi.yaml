@@ -22,6 +22,12 @@ components:
       required: true
       schema:
         type: string
+    documentId:
+      in: path
+      name: documentId
+      required: true
+      schema:
+        type: number
 
   schemas:
     project:
@@ -64,6 +70,43 @@ components:
               type: string
             canEdit:
               type: boolean
+
+    package:
+      type: object
+      properties:
+        packageId:
+          type: string
+        name:
+          type: string
+        version:
+          type: string
+        website:
+          type: string
+        copyright:
+          type: string
+        license:
+          type: string
+        licenseText:
+          type: string
+
+    packageWithUsage:
+      type: object
+
+    attributionDocument:
+      type: object
+      properties:
+        id:
+          type: number
+        projectId:
+          type: string
+        projectVersion:
+          type: string
+        createdOn:
+          type: string
+        createdBy:
+          type: string
+        content:
+          type: string
 
 paths:
   /v1/info:
@@ -126,28 +169,178 @@ paths:
 
     patch:
       summary: edit project details
+      description: Selectively edit primary details of a project. Any fields not included will not be modified.
       parameters:
         - $ref: '#/components/parameters/projectId'
       requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: []
+              properties:
+                title:
+                  type: string
+                  required: false
+                version:
+                  type: string
+                  required: false
+                description:
+                  type: string
+                  required: false
+                plannedRelease:
+                  type: string
+                  required: false
+                contacts:
+                  type: object
+                  required: false
+                acl:
+                  type: object
+                  required: false
+                metadata:
+                  type: object
+                  required: false
+            example:
+              title: 'My new project title'
+      responses:
+        200:
+          description: successfully edited project
+
+  /v1/projects/{projectId}/attach:
+    post:
+      summary: attach a package to the project
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+      requestBody:
+        required: true
         content:
           application/json:
             schema:
               type: object
               properties:
-                title:
+                packageId:
+                  type: string
+                name:
                   type: string
                 version:
                   type: string
-                description:
+                website:
                   type: string
-                plannedRelease:
+                copyright:
                   type: string
-                contacts:
+                license:
+                  type: string
+                licenseText:
+                  type: string
+                usage:
                   type: object
-                acl:
-                  type: object
-                metadata:
-                  type: object
+            examples:
+              add-single-package:
+                summary: add a package by ID only
+                value:
+                  packageId: 12345
+
       responses:
         200:
-          description: successfully edited project
+          description: package was attached
+
+  /v1/projects/{projectId}/build:
+    get:
+      summary: preview attribution document and annotations
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+
+      responses:
+        200:
+          description: attribution document preview and annotations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  text:
+                    type: string
+                  annotations:
+                    type: array
+                    items:
+                      type: object # TODO
+                      properties:
+                        lines:
+                          type: array
+                          minItems: 2
+                          maxItems: 2
+                        type:
+                          type: string
+                  summary:
+                    type: object
+
+    post:
+      summary: generate and store attribution document
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+
+      responses:
+        200:
+          description: attribution document preview and annotations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  text:
+                    type: string
+                  documentId:
+                    type: number
+
+  /v1/projects/{projectId}/docs:
+    get:
+      summary: list project's stored attribution documents
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+
+      responses:
+        200:
+          description: a list of all attribution documents attached to this project
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  documents:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: number
+                        projectVersion:
+                          type: string
+                        createdOn:
+                          type: string
+                        createdBy:
+                          type: string
+
+  /v1/projects/{projectId}/docs/{documentId}:
+    get:
+      summary: fetch a rendered attribution document
+      description: Fetches an attribution document attached to a project. Includes information about when the document was created; a plain-text-only version can be fetched by appending `.text` to the end of the URL.
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+        - $ref: '#/components/parameters/documentId'
+
+      responses:
+        200:
+          description: a rendered attribution document with details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/attributionDocument'
+
+  /v1/packages/:
+    post:
+      summary: search packages
+
+      responses:
+        200:
+          description: search results
