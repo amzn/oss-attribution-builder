@@ -1,4 +1,6 @@
-CREATE TABLE projects
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+CREATE TABLE IF NOT EXISTS projects
 (
   project_id TEXT PRIMARY KEY NOT NULL,
   title TEXT NOT NULL,
@@ -12,10 +14,10 @@ CREATE TABLE projects
   refs JSONB NOT NULL DEFAULT '{}',
   metadata JSONB
 );
-CREATE INDEX projects_packages_used_gin ON projects USING GIN (packages_used jsonb_path_ops);
-CREATE INDEX projects_refs_gin ON projects USING GIN (refs);
+CREATE INDEX IF NOT EXISTS projects_packages_used_gin ON projects USING GIN (packages_used jsonb_path_ops);
+CREATE INDEX IF NOT EXISTS projects_refs_gin ON projects USING GIN (refs);
 
-CREATE TABLE attribution_documents
+CREATE TABLE IF NOT EXISTS attribution_documents
 (
   doc_id SERIAL PRIMARY KEY NOT NULL,
   project_id TEXT NOT NULL,
@@ -26,7 +28,7 @@ CREATE TABLE attribution_documents
   CONSTRAINT attribution_documents_projects_project_id_fk FOREIGN KEY (project_id) REFERENCES projects (project_id)
 );
 
-CREATE TABLE packages
+CREATE TABLE IF NOT EXISTS packages
 (
   package_id SERIAL PRIMARY KEY NOT NULL,
   name TEXT NOT NULL,
@@ -38,9 +40,9 @@ CREATE TABLE packages
   created_by TEXT,
   verified BOOLEAN -- null: unverified, true: verified good, false: verified bad
 );
-CREATE INDEX packages_name_version_package_id_index ON packages USING BTREE (name, version, package_id);
+CREATE INDEX IF NOT EXISTS packages_name_version_package_id_index ON packages USING BTREE (name, version, package_id);
 
-CREATE TABLE packages_verify
+CREATE TABLE IF NOT EXISTS packages_verify
 (
   id SERIAL PRIMARY KEY NOT NULL,
   package_id INTEGER NOT NULL,
@@ -49,9 +51,9 @@ CREATE TABLE packages_verify
   comments TEXT,
   CONSTRAINT packages_verify_packages_package_id_fk FOREIGN KEY (package_id) REFERENCES packages (package_id)
 );
-CREATE INDEX packages_verify_package_id_index ON packages_verify (package_id);
+CREATE INDEX IF NOT EXISTS packages_verify_package_id_index ON packages_verify (package_id);
 
-CREATE TABLE projects_audit
+CREATE TABLE IF NOT EXISTS projects_audit
 (
   id SERIAL PRIMARY KEY NOT NULL,
   project_id TEXT NOT NULL,
