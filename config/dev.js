@@ -4,7 +4,7 @@ const config = base.config;
 
 config.server = {
   hostname: '0.0.0.0',
-  port: 8000,
+  port: 2424,
   contentSecurityPolicy: false,
   cors: true,
 };

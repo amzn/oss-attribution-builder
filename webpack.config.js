@@ -67,10 +67,10 @@ module.exports = {
   plugins,
 
   devServer: {
-    port: 8010,
+    port: 2425,
     publicPath: '/res/',
     proxy: {
-      '*': 'http://localhost:8000',
+      '*': 'http://localhost:2424',
     },
     stats: 'minimal',
   },
