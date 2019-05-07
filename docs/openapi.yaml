@@ -5,10 +5,19 @@ info:
   title: 'oss-attribution-builder API'
   version: '1.0.0'
 servers:
+  - url: '/api/'
   - url: 'http://localhost:2424/api/'
 security:
   - nullauth: []
   - cookie: []
+
+tags:
+  - name: projects
+    description: Project management actions
+  - name: attribution documents
+    description: Attribution documents (contained within projects)
+  - name: packages
+    description: Package information
 
 components:
   securitySchemes:
@@ -159,6 +168,8 @@ paths:
   /v1/projects:
     get:
       summary: get all accessible projects
+      tags:
+        - projects
       responses:
         200:
           description: list of projects
@@ -181,6 +192,8 @@ paths:
   /v1/projects/new:
     post:
       summary: create a new project
+      tags:
+        - projects
 
       requestBody:
         required: true
@@ -228,6 +241,8 @@ paths:
   /v1/projects/{projectId}:
     get:
       summary: get project by id
+      tags:
+        - projects
       parameters:
         - $ref: '#/components/parameters/projectId'
       responses:
@@ -241,6 +256,8 @@ paths:
     patch:
       summary: edit project details
       description: Selectively edit primary details of a project. Any fields not included will not be modified.
+      tags:
+        - projects
       parameters:
         - $ref: '#/components/parameters/projectId'
       requestBody:
@@ -281,6 +298,9 @@ paths:
   /v1/projects/{projectId}/attach:
     post:
       summary: attach a package to the project
+      tags:
+        - projects
+        - packages
       parameters:
         - $ref: '#/components/parameters/projectId'
       requestBody:
@@ -319,6 +339,8 @@ paths:
   /v1/projects/{projectId}/build:
     get:
       summary: preview attribution document and annotations
+      tags:
+        - projects
       parameters:
         - $ref: '#/components/parameters/projectId'
 
@@ -348,6 +370,9 @@ paths:
 
     post:
       summary: generate and store attribution document
+      tags:
+        - projects
+        - attribution documents
       parameters:
         - $ref: '#/components/parameters/projectId'
 
@@ -367,6 +392,9 @@ paths:
   /v1/projects/{projectId}/docs:
     get:
       summary: list project's stored attribution documents
+      tags:
+        - projects
+        - attribution documents
       parameters:
         - $ref: '#/components/parameters/projectId'
 
@@ -396,6 +424,9 @@ paths:
     get:
       summary: fetch a rendered attribution document
       description: Fetches an attribution document attached to a project. Includes information about when the document was created; a plain-text-only version can be fetched by appending `.text` to the end of the URL.
+      tags:
+        - projects
+        - attribution documents
       parameters:
         - $ref: '#/components/parameters/projectId'
         - $ref: '#/components/parameters/documentId'
@@ -412,6 +443,8 @@ paths:
     post:
       summary: clone a project
       description: Clone a project. Can clone any project you can view. The title, version, and ACL can all be changed with this call. Your ACL must specify an owning group that you are a member of.
+      tags:
+        - projects
       parameters:
         - $ref: '#/components/parameters/projectId'
 
@@ -448,6 +481,8 @@ paths:
   /v1/packages/:
     post:
       summary: search packages
+      tags:
+        - packages
 
       requestBody:
         required: true
@@ -475,6 +510,8 @@ paths:
   /v1/packages/{packageId}:
     get:
       summary: get a single package
+      tags:
+        - packages
 
       parameters:
         - $ref: '#/components/parameters/packageId'

@@ -3,6 +3,7 @@
 
 import * as express from 'express';
 import * as winston from 'winston';
+import * as swaggerUi from 'swagger-ui-express';
 
 import v1Router from './routes-v1';
 import config from '../config';
@@ -12,6 +13,11 @@ router.use(express.json({ limit: config.server.maxRequestSize }));
 
 // actual APIs are versioned
 router.use('/v1', v1Router);
+
+// api docs
+router.use('/docs', swaggerUi.serve, swaggerUi.setup(require('./openapi.json'), {
+  customCss: '.swagger-ui .topbar { display: none }'
+});
 
 // unprefixed v1 routes
 router.use((req, res, next) => {
