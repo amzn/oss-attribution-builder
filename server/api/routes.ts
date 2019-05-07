@@ -17,7 +17,7 @@ router.use('/v1', v1Router);
 // api docs
 router.use('/docs', swaggerUi.serve, swaggerUi.setup(require('./openapi.json'), {
   customCss: '.swagger-ui .topbar { display: none }'
-});
+}));
 
 // unprefixed v1 routes
 router.use((req, res, next) => {
