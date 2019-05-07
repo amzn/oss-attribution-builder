@@ -65,6 +65,9 @@ export async function patchProject(req, res, next) {
 }
 
 async function validateContacts(contacts) {
+  if (contacts.legal == undefined) {
+    throw new RequestError('Missing legal contact');
+  }
   for (const contactType of Object.keys(contacts)) {
     for (const contact of contacts[contactType]) {
       const n = await auth.getDisplayName(contact);

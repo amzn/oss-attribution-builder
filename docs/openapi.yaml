@@ -5,15 +5,21 @@ info:
   title: 'oss-attribution-builder API'
   version: '1.0.0'
 servers:
-  - url: 'http://localhost:8000/api/'
+  - url: 'http://localhost:2424/api/'
 security:
   - nullauth: []
+  - cookie: []
 
 components:
   securitySchemes:
     nullauth:
       type: http
       scheme: basic
+      description: Dummy authentication for the demo site. Use any username and password.
+
+    cookie:
+      type: apiKey
+      in: cookie
 
   parameters:
     projectId:
@@ -28,9 +34,15 @@ components:
       required: true
       schema:
         type: number
+    packageId:
+      in: path
+      name: packageId
+      required: true
+      schema:
+        type: number
 
   schemas:
-    project:
+    Project:
       type: object
       properties:
         projectId:
@@ -45,24 +57,18 @@ components:
           type: string
         plannedRelease:
           type: string
+          format: date
         contacts:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              type: string
+          $ref: '#/components/schemas/ProjectContacts'
         acl:
-          type: object
-          additionalProperties:
-            type: string
+          $ref: '#/components/schemas/ProjectAcl'
         packagesUsed:
           type: array
           items:
             type: object
         refs:
           type: object
-        metadata:
-          type: object
+        metadata: {}
         access:
           type: object
           properties:
@@ -71,7 +77,25 @@ components:
             canEdit:
               type: boolean
 
-    package:
+    ProjectAcl:
+      type: object
+      additionalProperties:
+        type: string
+        enum:
+          - owner
+          - editor
+          - viewer
+
+    ProjectContacts:
+      type: object
+      additionalProperties:
+        type: array
+        items:
+          type: array
+          items:
+            type: string
+
+    Package:
       type: object
       properties:
         packageId:
@@ -89,10 +113,10 @@ components:
         licenseText:
           type: string
 
-    packageWithUsage:
+    PackageWithUsage:
       type: object
 
-    attributionDocument:
+    AttributionDocument:
       type: object
       properties:
         id:
@@ -154,6 +178,53 @@ paths:
                     createdOn:
                       type: string
 
+  /v1/projects/new:
+    post:
+      summary: create a new project
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                version:
+                  type: string
+                description:
+                  type: string
+                plannedRelease:
+                  type: string
+                contacts:
+                  $ref: '#/components/schemas/ProjectContacts'
+                acl:
+                  $ref: '#/components/schemas/ProjectAcl'
+                metadata:
+                  type: object
+            example:
+              title: "My First Project"
+              version: "1.0.0"
+              description: "My project created via the API"
+              plannedRelease: "2099-01-01"
+              contacts:
+                legal: ["me"]
+              acl:
+                everyone: "owner"
+              metadata: {}
+
+      responses:
+        200:
+          description: project created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projectId:
+                    type: string
+
   /v1/projects/{projectId}:
     get:
       summary: get project by id
@@ -165,7 +236,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/project'
+                $ref: '#/components/schemas/Project'
 
     patch:
       summary: edit project details
@@ -335,12 +406,83 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/attributionDocument'
+                $ref: '#/components/schemas/AttributionDocument'
+
+  /v1/projects/{projectId}/clone:
+    post:
+      summary: clone a project
+      description: Clone a project. Can clone any project you can view. The title, version, and ACL can all be changed with this call. Your ACL must specify an owning group that you are a member of.
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                version:
+                  type: string
+                acl:
+                  $ref: '#/components/schemas/ProjectAcl'
+            example:
+              title: "My Cloned Project"
+              version: "1.0.0-cloned"
+              acl:
+                everyone: "owner"
+
+      responses:
+        200:
+          description: project cloned
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  projectId:
+                    type: string
 
   /v1/packages/:
     post:
       summary: search packages
 
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+
       responses:
         200:
           description: search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Package'
+
+  /v1/packages/{packageId}:
+    get:
+      summary: get a single package
+
+      parameters:
+        - $ref: '#/components/parameters/packageId'
+
+      responses:
+        200:
+          description: content of package
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Package'
