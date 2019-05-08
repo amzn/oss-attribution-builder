@@ -17,7 +17,7 @@ export default async function(): Promise<CustomDriver> {
     .forBrowser('chrome')
     .build();
   driver.getRelative = function(path: string) {
-    return driver.get(`http://web:2424${path}`);
+    return driver.get(`http://web:8000${path}`);
   };
   driver.setUser = async function(user: string = 'selenium') {
     driver.getRelative('/dummy-no-auth');

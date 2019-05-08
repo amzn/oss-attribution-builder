@@ -4,7 +4,7 @@ services:
   web:
     build: .
     ports:
-    - 2424:2424
+    - 8000:8000
     links:
     - database
     environment:
@@ -15,7 +15,7 @@ services:
     - ./sql:/docker-entrypoint-initdb.d
   selenium:
     # use standalone-chrome-debug if you want to VNC in and watch
-    image: selenium/standalone-chrome
+    image: selenium/standalone-chrome-debug
     ports:
     - 4444:4444
     - 5900:5900

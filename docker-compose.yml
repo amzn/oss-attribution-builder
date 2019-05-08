@@ -4,7 +4,7 @@ services:
   web:
     build: .
     ports:
-    - 2424:2424
+    - 8000:8000
     links:
     - database
     environment:

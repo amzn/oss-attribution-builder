@@ -42,7 +42,7 @@ export function searchPackages(
   // only fetch the latest revision of each package
   return pg().query(
     `select distinct on (name, version) * from (` +
-      `select name, version, package_id from packages ` +
+      `select * from packages ` +
       `where to_tsvector(name || ' ' || version) @@ to_tsquery($1)` +
       `) as search order by name, version, package_id desc limit $2`,
     [tsquery, limit]
