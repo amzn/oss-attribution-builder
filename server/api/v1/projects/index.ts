@@ -11,6 +11,7 @@ import { isAdmin } from '../../../auth/util';
 import * as documentdb from '../../../db/attribution_documents';
 import * as db from '../../../db/projects';
 import { DbPackageUsage } from '../../../db/projects';
+import { getProjectAuditLog } from '../../../db/projects_audit';
 import { AccessError } from '../../../errors/index';
 import { asyncApi } from '../../../util/middleware';
 import { storePackage } from '../packages';
@@ -602,4 +603,28 @@ export async function deleteRef(
   db.patchProject(projectId, { refs }, user);
 
   return { projectId };
+}
+
+/**
+ * Fetch the project's audit log.
+ */
+router.get(
+  '/:projectId/changes',
+  requireProjectAccess('viewer'),
+  asyncApi(listProjectChanges)
+);
+export async function listProjectChanges(
+  req: express.Request,
+  res: express.Response
+) {
+  const changes = await getProjectAuditLog(req.params.projectId);
+  return {
+    changes: changes.map(c => ({
+      id: c.id,
+      projectId: c.project_id,
+      who: c.who,
+      changedOn: c.changed_on,
+      changedTo: c.changed_to,
+    })),
+  };
 }

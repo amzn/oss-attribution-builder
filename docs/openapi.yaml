@@ -141,6 +141,21 @@ components:
         content:
           type: string
 
+    ProjectChangeItem:
+      type: object
+      properties:
+        id:
+          type: number
+        projectId:
+          type: string
+        who:
+          type: string
+        changedOn:
+          type: string
+          format: date-time
+        changedTo:
+          type: object
+
 paths:
   /v1/info:
     get:
@@ -217,14 +232,14 @@ paths:
                 metadata:
                   type: object
             example:
-              title: "My First Project"
-              version: "1.0.0"
-              description: "My project created via the API"
-              plannedRelease: "2099-01-01"
+              title: 'My First Project'
+              version: '1.0.0'
+              description: 'My project created via the API'
+              plannedRelease: '2099-01-01'
               contacts:
-                legal: ["me"]
+                legal: ['me']
               acl:
-                everyone: "owner"
+                everyone: 'owner'
               metadata: {}
 
       responses:
@@ -462,10 +477,10 @@ paths:
                 acl:
                   $ref: '#/components/schemas/ProjectAcl'
             example:
-              title: "My Cloned Project"
-              version: "1.0.0-cloned"
+              title: 'My Cloned Project'
+              version: '1.0.0-cloned'
               acl:
-                everyone: "owner"
+                everyone: 'owner'
 
       responses:
         200:
@@ -477,6 +492,27 @@ paths:
                 properties:
                   projectId:
                     type: string
+
+  /v1/projects/{projectId}/changes:
+    get:
+      summary: list project's change log
+      tags:
+        - projects
+      parameters:
+        - $ref: '#/components/parameters/projectId'
+
+      responses:
+        200:
+          description: A list of all changes made to this project, most recent first. Note that the changedTo field uses database table names, which don't necessarily map 1:1 to the API.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  changes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProjectChangeItem'
 
   /v1/packages/:
     post:
