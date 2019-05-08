@@ -41,7 +41,7 @@ CREATE TABLE IF NOT EXISTS packages
   verified BOOLEAN -- null: unverified, true: verified good, false: verified bad
 );
 CREATE INDEX IF NOT EXISTS packages_name_version_package_id_index ON packages USING BTREE (name, version, package_id);
-CREATE INDEX IF NOT EXISTS packages_name_version_tsv_index ON PACKAGES USING GIN (to_tsvector);
+CREATE INDEX IF NOT EXISTS packages_name_version_tsv_index ON packages USING GIN (to_tsvector('english', name || ' ' || version));
 
 CREATE TABLE IF NOT EXISTS packages_verify
 (

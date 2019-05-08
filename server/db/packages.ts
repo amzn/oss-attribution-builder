@@ -43,7 +43,7 @@ export function searchPackages(
   return pg().query(
     `select distinct on (name, version) * from (` +
       `select * from packages ` +
-      `where to_tsvector(name || ' ' || version) @@ to_tsquery($1)` +
+      `where to_tsvector('english', name || ' ' || version) @@ to_tsquery($1)` +
       `) as search order by name, version, package_id desc limit $2`,
     [tsquery, limit]
   );
