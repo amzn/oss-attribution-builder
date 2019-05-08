@@ -134,8 +134,8 @@ export function verifyPackage(
  */
 export function fetchVerificationQueue() {
   return dispatch => {
-    return reqJSON('/api/v1/packages/verification', undefined, 'GET').then(json =>
-      dispatch(receiveVerificationQueue(json))
+    return reqJSON('/api/v1/packages/verification', undefined, 'GET').then(
+      json => dispatch(receiveVerificationQueue(json))
     );
   };
 }

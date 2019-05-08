@@ -2,11 +2,11 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as express from 'express';
-import * as winston from 'winston';
 import * as swaggerUi from 'swagger-ui-express';
+import * as winston from 'winston';
 
-import v1Router from './routes-v1';
 import config from '../config';
+import v1Router from './routes-v1';
 
 export let router = express.Router();
 router.use(express.json({ limit: config.server.maxRequestSize }));
@@ -15,9 +15,14 @@ router.use(express.json({ limit: config.server.maxRequestSize }));
 router.use('/v1', v1Router);
 
 // api docs
-router.use('/docs', swaggerUi.serve, swaggerUi.setup(require('./openapi.json'), {
-  customCss: '.swagger-ui .topbar { display: none }'
-}));
+router.use(
+  '/docs',
+  swaggerUi.serve,
+  // tslint:disable-next-line:no-var-requires
+  swaggerUi.setup(require('./openapi.json'), {
+    customCss: '.swagger-ui .topbar { display: none }',
+  })
+);
 
 // unprefixed v1 routes
 router.use((req, res, next) => {

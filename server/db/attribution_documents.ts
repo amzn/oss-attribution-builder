@@ -24,7 +24,14 @@ export function getAttributionDocument(
 
 export function findDocumentsForProject(
   projectId: string
-): Promise<Pick<AttributionDocument, 'doc_id' | 'project_version' | 'created_on' | 'created_by'>[]> {
+): Promise<
+  Array<
+    Pick<
+      AttributionDocument,
+      'doc_id' | 'project_version' | 'created_on' | 'created_by'
+    >
+  >
+> {
   return pg().query(
     'select doc_id, project_version, created_on, created_by from attribution_documents where project_id = $1 order by created_on desc',
     [projectId]

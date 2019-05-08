@@ -2,9 +2,9 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import * as express from 'express';
-import * as winston from 'winston';
 import DocBuilder from 'tiny-attribution-generator';
 import TextRenderer from 'tiny-attribution-generator/lib/outputs/text';
+import * as winston from 'winston';
 
 import auth from '../../../auth';
 import { isAdmin } from '../../../auth/util';
@@ -17,10 +17,10 @@ import { asyncApi } from '../../../util/middleware';
 import { storePackage } from '../packages';
 import {
   addProjectPackages,
+  applyCopyrightTransforms,
+  applyTextTransforms,
   getWarnings,
   OverlayLicenseDictionary,
-  applyTextTransforms,
-  applyCopyrightTransforms,
 } from './attribution';
 import {
   assertProjectAccess,
@@ -600,7 +600,7 @@ export async function deleteRef(
     ...project.refs,
   };
   delete refs[targetProjectId];
-  db.patchProject(projectId, { refs }, user);
+  await db.patchProject(projectId, { refs }, user);
 
   return { projectId };
 }
