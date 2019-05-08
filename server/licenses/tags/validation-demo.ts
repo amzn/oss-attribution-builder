@@ -16,8 +16,9 @@ export function validateUsage(pkg, usage) {
     return [
       {
         level: 1,
-        message:
-          `This is a demo validation warning because you selected "Yes" to causing warnings on a package ("${pkg.name}") with MyCustomLicense (or another license with the "validation-demo" tag. Click it to highlight the package below!`,
+        message: `This is a demo validation warning because you selected "Yes" to causing warnings on a package ("${
+          pkg.name
+        }") with MyCustomLicense (or another license with the "validation-demo" tag. Click it to highlight the package below!`,
       },
     ];
   }

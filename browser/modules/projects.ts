@@ -238,7 +238,10 @@ export function cloneProject(
   newDetails: Pick<WebProject, 'title' | 'version' | 'acl'>
 ) {
   return async dispatch => {
-    const json = await reqJSON(`/api/v1/projects/${projectId}/clone`, newDetails);
+    const json = await reqJSON(
+      `/api/v1/projects/${projectId}/clone`,
+      newDetails
+    );
     history.push(`/projects/${json.projectId}`);
   };
 }

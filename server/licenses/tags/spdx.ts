@@ -3,7 +3,7 @@
 
 // This tag notes that the license was pulled from SPDX sources.
 
-export function transformLicense(original, _packages) {
+export function transformLicense(original, packages) {
   let text = original;
 
   // SPDX BSD texts include a stub copyright line for some reason. remove those.

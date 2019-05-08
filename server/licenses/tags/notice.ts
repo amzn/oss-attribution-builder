@@ -6,7 +6,7 @@
 // largely Apache-2.0 specific.
 
 // we strip out the original copyright text up top
-export function transformCopyright(_original) {
+export function transformCopyright(original) {
   return '';
 }
 

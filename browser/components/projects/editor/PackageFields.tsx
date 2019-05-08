@@ -5,7 +5,10 @@ import React = require('react');
 import { connect } from 'react-redux';
 import Select, { Option } from 'react-select';
 
-import { WebLicense, WebTag } from '../../../../server/api/v1/licenses/interfaces';
+import {
+  WebLicense,
+  WebTag,
+} from '../../../../server/api/v1/licenses/interfaces';
 import { WebPackage } from '../../../../server/api/v1/packages/interfaces';
 import * as LicenseActions from '../../../modules/licenses';
 import * as PackageActions from '../../../modules/packages';

@@ -12,7 +12,7 @@ services:
   database:
     image: postgres
     volumes:
-    - ./sql:/docker-entrypoint-initdb.d
+    - ./docs/schema.sql:/docker-entrypoint-initdb.d/init.sql
   selenium:
     # use standalone-chrome-debug if you want to VNC in and watch
     image: selenium/standalone-chrome
@@ -24,3 +24,4 @@ services:
     environment:
       SCREEN_WIDTH: 1500
       SCREEN_HEIGHT: 2000
+    shm_size: 2G

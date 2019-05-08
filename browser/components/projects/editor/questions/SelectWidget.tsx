@@ -12,7 +12,11 @@ export default class SelectWidget extends BaseWidget<BaseProps> {
 
   private renderOption = (opt: [string | number | boolean, string]) => {
     const [optVal, optLabel] = opt;
-    return<option key={optVal.toString()} value={optVal.toString()}>{optLabel}</option>;
+    return (
+      <option key={optVal.toString()} value={optVal.toString()}>
+        {optLabel}
+      </option>
+    );
   };
 
   render() {

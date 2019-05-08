@@ -9,7 +9,7 @@ OSS Attribution Builder is a website that helps teams create attribution documen
 1. Install [Docker](https://www.docker.com/)
 2. Clone this repository
 3. Run `docker-compose up`
-4. Visit http://localhost:8000/
+4. Visit http://localhost:2424/
    * The demo uses HTTP basic auth. Enter any username and password. Use `admin` to test out admin functionality.
 
 ## Using the Website
@@ -86,7 +86,7 @@ See [CONTRIBUTING](CONTRIBUTING.md) for information.
 
 `npm install` and then `npm run dev` will get you off the ground for local development. This will start a Docker container for PostgreSQL, but will use a local copy of tsc, webpack, node, etc so you can iterate quickly.
 
-Once things have started up, you can open http://0.0.0.0:8010/webpack-dev-server/. This will automatically reload on browser changes, and the backend will also automatically restart on server-side changes.
+Once things have started up, you can open http://0.0.0.0:2425/webpack-dev-server/. This will automatically reload on browser changes, and the backend will also automatically restart on server-side changes.
 
 Handy environment variables:
 

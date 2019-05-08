@@ -2,10 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 import DocBuilder, {
-  Package as TagPackage,
-  NamedLicense,
   LicenseBucket,
   LicenseDictionary,
+  NamedLicense,
+  Package as TagPackage,
 } from 'tiny-attribution-generator';
 import uuidv5 = require('uuid/v5');
 

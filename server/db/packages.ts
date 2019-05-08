@@ -1,4 +1,4 @@
-// Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import pg from './index';
@@ -27,10 +27,25 @@ export function searchPackages(
   search: string,
   limit: number
 ): Promise<Package[]> {
+  // build up a sanitized postgresql fulltext tsquery
+  // remove junk, split on space, add quotes + wildcard, then join with &
+  const tsquery = search
+    .trim()
+    .replace(/[^\w\s]+/u, '')
+    .split(/\s+/u)
+    .map(t => `'${t}':*`)
+    .join(' & ');
+
+  // two queries here:
+  // the inner query is actually running the full-text search (to take
+  // advantage of an index), and the outer performs a distinct query to
+  // only fetch the latest revision of each package
   return pg().query(
-    'select distinct on (name, version) * from packages ' +
-      'where name ilike $1 order by name, version, package_id desc limit $2',
-    [`%${search}%`, limit]
+    `select distinct on (name, version) * from (` +
+      `select * from packages ` +
+      `where to_tsvector('english', name || ' ' || version) @@ to_tsquery($1)` +
+      `) as search order by name, version, package_id desc limit $2`,
+    [tsquery, limit]
   );
 }
 

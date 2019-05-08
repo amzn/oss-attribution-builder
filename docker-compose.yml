@@ -12,4 +12,4 @@ services:
   database:
     image: postgres
     volumes:
-    - ./sql:/docker-entrypoint-initdb.d
+    - ./docs/schema.sql:/docker-entrypoint-initdb.d/init.sql

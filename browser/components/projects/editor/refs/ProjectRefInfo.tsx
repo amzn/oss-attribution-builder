@@ -6,10 +6,10 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 
 import { WebProject } from '../../../../../server/api/v1/projects/interfaces';
-import * as ProjectActions from '../../../../modules/projects';
-import DetatchButton from '../DetatchButton';
-import { deleteRef } from '../../../../modules/projects';
 import { DbProjectRef } from '../../../../../server/db/projects';
+import * as ProjectActions from '../../../../modules/projects';
+import { deleteRef } from '../../../../modules/projects';
+import DetatchButton from '../DetatchButton';
 
 interface Props {
   project: WebProject & { refInfo: any };
