@@ -6,7 +6,11 @@
     "type": "git",
     "url": "https://github.com/amzn/oss-attribution-builder"
   },
-  "main": "server/app.js",
+  "author": "Jacob Peddicord <peddicor@amazon.com>",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": "^8.0.0"
+  },
   "scripts": {
     "build": "tsc && webpack && npm run static",
     "static": "mkdir -p build/server && cp -r config build && cp -r assets build/server && yaml2json docs/openapi.yaml > build/server/api/openapi.json",
@@ -16,10 +20,11 @@
     "test-ui": "trap 'docker-compose -f docker-compose.selenium.yml stop' INT HUP EXIT; docker-compose -f docker-compose.selenium.yml up -d --build && tsc && jasmine 'build/spec/selenium/*.spec.js'",
     "lint": "prettier --write '**/*.{ts,tsx,js,css,scss}' '!build/**/*' && tslint -c tslint.json -p . --fix && tslint -c tslint.json -p browser --fix"
   },
-  "author": "Jacob Peddicord <peddicor@amazon.com>",
-  "license": "Apache-2.0",
-  "engines": {
-    "node": "^8.0.0"
+  "files": [
+    "build/**/*"
+  ],
+  "bin": {
+    "oss-attribution-builder": "build/server/localserver.js"
   },
   "devDependencies": {
     "@types/body-parser": "1.16.4",
