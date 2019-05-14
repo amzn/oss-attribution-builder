@@ -136,11 +136,14 @@ export function applyTextTransforms(
   text: string,
   bucket: LicenseBucket
 ): string {
+  console.log(bucket);
   let out = text;
+  // re-map the `usage` key back to top-level for compatibility
+  const packages = bucketPackagesCompat(bucket.packages);
   for (const tag of bucket.tags) {
     const mod = mapTag(tag);
     if (mod.transformLicense) {
-      out = mod.transformLicense(out, bucket.packages);
+      out = mod.transformLicense(out, packages);
     }
   }
   return out;
@@ -153,10 +156,11 @@ export function applyTextTransforms(
  * We just abuse this phase to hack the copyrights field.
  */
 export function applyCopyrightTransforms(text: string, bucket: LicenseBucket) {
+  const packages = bucketPackagesCompat(bucket.packages);
   for (const tag of bucket.tags) {
     const mod = mapTag(tag);
     if (mod.transformCopyright) {
-      for (const pkg of bucket.packages) {
+      for (const pkg of packages) {
         pkg.copyrights = pkg.copyrights
           .map(c => mod.transformCopyright!(c))
           .filter(c => c && c.length > 0);
@@ -164,6 +168,18 @@ export function applyCopyrightTransforms(text: string, bucket: LicenseBucket) {
     }
   }
   return text;
+}
+
+/**
+ * Map a t-a-g package bucket back into the format oss-a-b has previously
+ * expected; some tag logic may rely on this.
+ */
+function bucketPackagesCompat(packages: ProjectPackage[]): any[] {
+  return packages.map(p => ({
+    ...p,
+    pkg: p,
+    usage: p.extra.usage,
+  }));
 }
 
 /**
