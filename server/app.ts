@@ -1,4 +1,4 @@
-// Copyright 2017 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+// Copyright 2017-2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
 // SPDX-License-Identifier: Apache-2.0
 
 import 'core-js/shim';
@@ -15,6 +15,7 @@ import * as winston from 'winston';
 import { router as apiRoutes } from './api/routes';
 import auth from './auth';
 import { config, load } from './config';
+import { globalCustomMiddleware } from './custom';
 import { connect } from './db';
 
 // install a crash handler to log errors
@@ -52,6 +53,9 @@ if (config.server.cors) {
 // auth
 app.use(passport.initialize());
 auth.initialize(app, passport);
+
+// optional custom middleware
+app.use(globalCustomMiddleware);
 
 // api/logic
 app.use('/api', apiRoutes);

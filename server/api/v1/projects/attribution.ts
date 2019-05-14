@@ -136,7 +136,6 @@ export function applyTextTransforms(
   text: string,
   bucket: LicenseBucket
 ): string {
-  console.log(bucket);
   let out = text;
   // re-map the `usage` key back to top-level for compatibility
   const packages = bucketPackagesCompat(bucket.packages);
