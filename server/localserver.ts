@@ -5,6 +5,17 @@
 // tslint:disable:no-var-requires no-console
 
 import winston = require('winston');
+winston.configure({
+  transports: [new winston.transports.Console()],
+  format: winston.format.combine(
+    winston.format.timestamp(),
+    winston.format.errors({ stack: true }),
+    winston.format.colorize(),
+    winston.format.printf(
+      info => `[${info.timestamp} ${info.level}] ${info.message}`
+    )
+  ),
+});
 
 if (process.env.NODE_ENV === 'development') {
   winston.level = 'debug';

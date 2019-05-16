@@ -20,7 +20,7 @@ export async function canValidate(req) {
     return true;
   }
 
-  winston.warn('User %s cannot validate package metadata', user);
+  winston.warn(`User ${user} cannot validate package metadata`);
   return false;
 }
 

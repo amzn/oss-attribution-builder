@@ -129,7 +129,7 @@ router.post(
       db.verifyPackage(packageId, verified),
     ]);
 
-    winston.info('Package %s verified (%s) by %s', packageId, verified, user);
+    winston.info(`Package ${packageId} verified (${verified}) by ${user}`);
     return { packageId };
   })
 );
@@ -191,14 +191,13 @@ export async function storePackage(
       createdBy
     );
     winston.info(
-      'Created a new package revision with ID %s (previous revision at %s) by %s',
-      newId,
-      packageId ? packageId : '[none]',
-      createdBy
+      `Created a new package revision with ID ${newId} (previous revision at ${
+        packageId ? packageId : '[none]'
+      }) by ${createdBy}`
     );
   } else {
     newId = packageId;
-    winston.info('Package %s has no submitted modifications', packageId);
+    winston.info(`Package ${packageId} has no submitted modifications`);
   }
 
   return newId;

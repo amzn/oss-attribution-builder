@@ -38,7 +38,7 @@ function loadLicenses(): LicenseMap {
       })
     );
   }
-  winston.info('Loaded %s SPDX licenses', licenseMap.size);
+  winston.info(`Loaded ${licenseMap.size} SPDX licenses`);
 
   // then load known/custom license data
   // overwriting SPDX is OK
@@ -50,7 +50,7 @@ function loadLicenses(): LicenseMap {
       licenseMap.set(id, processKnownLicense(id, spdxData));
     }
   }
-  winston.info('Loaded %s total licenses', licenseMap.size);
+  winston.info(`Loaded ${licenseMap.size} total licenses`);
 
   return Immutable.fromJS(licenseMap);
 }
@@ -62,9 +62,9 @@ function processKnownLicense(id: string, spdxData: any) {
 
   // overwriting an SPDX license?
   if (spdxData.hasOwnProperty(id)) {
-    winston.info('Overwriting SPDX license %s', id);
+    winston.info(`Overwriting SPDX license ${id}`);
     if (info.text === true) {
-      winston.info('Re-using %s license text', id);
+      winston.info(`Re-using ${id} license text`);
       text = spdxData[id].licenseText;
       tags.push('spdx'); // restore spdx tag if opting in to text
     }

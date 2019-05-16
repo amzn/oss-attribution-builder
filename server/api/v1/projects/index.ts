@@ -101,7 +101,7 @@ export async function createProject(
     user
   );
 
-  winston.info('Project %s created by %s', projectId, user);
+  winston.info(`Project ${projectId} created by ${user}`);
   return { projectId };
 }
 
@@ -182,7 +182,7 @@ export async function patchProject(
 
   await db.patchProject(projectId, mappedChanges, user);
 
-  winston.info('Project %s modified by %s', projectId, user);
+  winston.info(`Project ${projectId} modified by ${user}`);
   return { projectId };
 }
 
@@ -246,7 +246,7 @@ export async function attachPackage(
 
   // finally, return the updated/inserted package ID
   const addedPackageId = usageInfo.package_id;
-  winston.info('Attached package %s to project %s', addedPackageId, projectId);
+  winston.info(`Attached package ${addedPackageId} to project ${projectId}`);
   return { packageId: addedPackageId };
 }
 
@@ -275,7 +275,7 @@ export async function detachPackage(
   });
 
   await db.updatePackagesUsed(projectId, newUsage, user);
-  winston.info('Detached package %s from project %s', packageId, projectId);
+  winston.info(`Detached package ${packageId} from project ${projectId}`);
   return { projectId };
 }
 
@@ -308,12 +308,7 @@ export async function replacePackage(
   }
 
   await db.updatePackagesUsed(projectId, usage, user);
-  winston.info(
-    'Replaced package %s -> %s on project %s',
-    oldId,
-    newId,
-    projectId
-  );
+  winston.info(`Replaced package ${oldId} -> ${newId} on project ${projectId}`);
   return { projectId };
 }
 
@@ -493,10 +488,7 @@ export async function cloneProject(
   await db.updatePackagesUsed(projectId, originalProject.packages_used, user);
 
   winston.info(
-    'Project %s cloned from %s by %s',
-    projectId,
-    originalProjectId,
-    user
+    `Project ${projectId} cloned from ${originalProjectId} by ${user}`
   );
   return { projectId };
 }
