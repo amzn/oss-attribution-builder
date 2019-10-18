@@ -1,4 +1,4 @@
-FROM node:8 as build
+FROM node:12 as build
 WORKDIR /build
 
 COPY ./package.json ./package-lock.json ./
@@ -8,7 +8,7 @@ COPY ./ ./
 RUN NODE_ENV=production npm run build
 
 
-FROM node:8
+FROM node:12
 ENV NODE_ENV production
 CMD ["node", "./server/localserver.js"]
 WORKDIR /opt/app
