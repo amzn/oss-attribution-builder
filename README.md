@@ -9,7 +9,7 @@ OSS Attribution Builder is a website that helps teams create attribution documen
 1. Install [Docker](https://www.docker.com/)
 2. Clone this repository
 3. Run `docker-compose up`
-4. Visit http://localhost:2424/
+4. Visit http://localhost:8000/
    * The demo uses HTTP basic auth. Enter any username and password. Use `admin` to test out admin functionality.
 
 ## Using the Website
