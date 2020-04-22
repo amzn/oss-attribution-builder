@@ -14,7 +14,7 @@ config.database = {
   port: 5432,
   database: 'postgres',
   user: 'postgres',
-  password: () => null,
+  password: () => 'oss-attribution-builder-postgres',
   ssl: null,
 };
 

@@ -11,6 +11,9 @@ services:
     - USER
   database:
     image: postgres
+    environment:
+      # don't do this in production -- this works for test/dev
+      POSTGRES_PASSWORD: oss-attribution-builder-postgres
     volumes:
     - ./docs/schema.sql:/docker-entrypoint-initdb.d/init.sql
   selenium:

@@ -7,3 +7,6 @@ services:
     - 5432:5432
     volumes:
     - ./docs/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      # don't do this in production -- this works for test/dev
+      POSTGRES_PASSWORD: oss-attribution-builder-postgres
