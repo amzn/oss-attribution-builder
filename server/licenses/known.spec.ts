@@ -4,8 +4,8 @@
 import { List } from 'immutable';
 import { licenses } from './index';
 
-describe('known licenses', function() {
-  it('declare required properties', function() {
+describe('known licenses', function () {
+  it('declare required properties', function () {
     for (const [name, data] of (licenses as any).entries()) {
       const license = name;
       expect(license).toBeDefined();
@@ -21,7 +21,7 @@ describe('known licenses', function() {
     }
   });
 
-  it('used tags must exist', function() {
+  it('used tags must exist', function () {
     for (const data of (licenses as any).values()) {
       for (const tag of data.get('tags')) {
         require(`./tags/${tag}`);

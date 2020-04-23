@@ -126,7 +126,7 @@ export async function getProject(
     plannedRelease: project.planned_release,
     contacts: project.contacts,
     acl: project.acl,
-    packagesUsed: project.packages_used.map(usage => ({
+    packagesUsed: project.packages_used.map((usage) => ({
       ...usage,
       package_id: undefined,
       packageId: usage.package_id,
@@ -238,7 +238,7 @@ export async function attachPackage(
   // re-submitting means "edit". note that if the package details
   // were changed (instead of just usage info) then a new package
   // ID will have been created, and the old one won't get removed.
-  const used = project.packages_used.filter(u => u.package_id !== packageId); // *not* newId
+  const used = project.packages_used.filter((u) => u.package_id !== packageId); // *not* newId
   used.push(usageInfo);
 
   // submit the update
@@ -270,7 +270,7 @@ export async function detachPackage(
   const user = auth.extractRequestUser(req);
   const project: db.DbProject = res.locals.project;
 
-  const newUsage = project.packages_used.filter(item => {
+  const newUsage = project.packages_used.filter((item) => {
     return item.package_id !== packageId;
   });
 
@@ -399,7 +399,7 @@ export async function listRenderedDocuments(
 ) {
   const docs = await documentdb.findDocumentsForProject(req.params.projectId);
   return {
-    documents: docs.map(d => ({
+    documents: docs.map((d) => ({
       id: d.doc_id,
       projectVersion: d.project_version,
       createdOn: d.created_on,
@@ -551,15 +551,17 @@ export async function getRefInfo(
 
   // first, fetch all projects from our refs
   const project: db.DbProject = res.locals.project;
-  const refs = (await db.getProjectRefs(Object.keys(project.refs))).map(p => ({
-    projectId: p.project_id,
-    title: p.title,
-    version: p.version,
-    packageIds: p.packages_used.map(usage => usage.package_id),
-  }));
+  const refs = (await db.getProjectRefs(Object.keys(project.refs))).map(
+    (p) => ({
+      projectId: p.project_id,
+      title: p.title,
+      version: p.version,
+      packageIds: p.packages_used.map((usage) => usage.package_id),
+    })
+  );
 
   // then, figure out which projects reference us
-  const reverseRefs = (await db.getProjectsRefReverse(projectId)).map(p => ({
+  const reverseRefs = (await db.getProjectsRefReverse(projectId)).map((p) => ({
     projectId: p.project_id,
     title: p.title,
     version: p.version,
@@ -611,7 +613,7 @@ export async function listProjectChanges(
 ) {
   const changes = await getProjectAuditLog(req.params.projectId);
   return {
-    changes: changes.map(c => ({
+    changes: changes.map((c) => ({
       id: c.id,
       projectId: c.project_id,
       who: c.who,

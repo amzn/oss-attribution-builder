@@ -89,7 +89,7 @@ class PackageFields extends React.Component<Props, State> {
     for (const license of licenses) {
       // gather tag presentation data
       const { shortText, longText, fixedText } = license.tags
-        .map(name => tags[name].presentation || {})
+        .map((name) => tags[name].presentation || {})
         .reduce(
           (acc, curr) => ({
             shortText: acc.shortText.concat(
@@ -176,7 +176,7 @@ class PackageFields extends React.Component<Props, State> {
   };
 
   mapPackageCompletions = () => {
-    return this.props.completions.map(item => {
+    return this.props.completions.map((item) => {
       return {
         value: item.packageId,
         label: `${item.name} (${item.version})`,
@@ -248,7 +248,7 @@ class PackageFields extends React.Component<Props, State> {
     }
   };
 
-  handleChange = e => {
+  handleChange = (e) => {
     const val = e.target.value;
     this.propagateState({
       pkg: {

@@ -51,7 +51,7 @@ class PackageEditor extends Component<Props, Partial<State>> {
     };
   }
 
-  handleSubmit = async e => {
+  handleSubmit = async (e) => {
     e.preventDefault();
 
     // do nothing if no package entered
@@ -94,11 +94,11 @@ class PackageEditor extends Component<Props, Partial<State>> {
     onCompleted();
   };
 
-  handlePkgChanged = pkg => {
+  handlePkgChanged = (pkg) => {
     this.setState({ pkg });
   };
 
-  handleUsageChanged = usage => {
+  handleUsageChanged = (usage) => {
     this.setState({ usage });
   };
 
@@ -117,13 +117,15 @@ class PackageEditor extends Component<Props, Partial<State>> {
     let questions = {};
     const license = pkg && pkg.license && licenses.get(pkg.license);
     if (license) {
-      questions = license.tags.map(name => tags[name].questions || {}).reduce(
-        (acc, curr) => ({
-          ...acc,
-          ...curr,
-        }),
-        {}
-      );
+      questions = license.tags
+        .map((name) => tags[name].questions || {})
+        .reduce(
+          (acc, curr) => ({
+            ...acc,
+            ...curr,
+          }),
+          {}
+        );
     } else {
       // default questions via the "unknown" tag
       questions = (tags.unknown && tags.unknown.questions) || {};

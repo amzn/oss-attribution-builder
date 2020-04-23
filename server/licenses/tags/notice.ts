@@ -22,9 +22,7 @@ export function transformLicense(original, packages) {
     const copyright = pkg.copyrights[0];
 
     const indented = copyright.replace(/^|\n/g, '\n    ');
-    const notice = `* For ${
-      pkg.name
-    } see also this required NOTICE:${indented}`;
+    const notice = `* For ${pkg.name} see also this required NOTICE:${indented}`;
     notices.push(notice);
   }
 

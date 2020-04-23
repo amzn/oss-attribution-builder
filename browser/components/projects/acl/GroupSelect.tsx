@@ -25,7 +25,7 @@ export default function GroupSelect(props: Props) {
 }
 
 function mapGroups(groups) {
-  return groups.map(group => {
+  return groups.map((group) => {
     const firstColon = group.indexOf(':');
     if (firstColon === -1) {
       return {

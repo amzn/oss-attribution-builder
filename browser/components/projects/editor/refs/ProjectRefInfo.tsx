@@ -51,7 +51,7 @@ class ProjectRefInfo extends React.Component<Props, {}> {
       return <small className="text-muted">Loading</small>;
     }
 
-    return Object.keys(project.refs).map(targetProjectId =>
+    return Object.keys(project.refs).map((targetProjectId) =>
       this.renderRef(targetProjectId)
     );
   }

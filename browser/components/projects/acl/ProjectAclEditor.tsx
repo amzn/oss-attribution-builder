@@ -35,24 +35,23 @@ class ProjectAclEditor extends React.Component<Props, State> {
 
   static getSortedAcl = (acl: WebProject['acl']) =>
     Object.keys(acl)
-      .map(key => ({ level: acl[key], resource: key }))
-      .sort(
-        (a, b) =>
-          AccessLevelStrength[a.level] < AccessLevelStrength[b.level] ? 1 : -1
+      .map((key) => ({ level: acl[key], resource: key }))
+      .sort((a, b) =>
+        AccessLevelStrength[a.level] < AccessLevelStrength[b.level] ? 1 : -1
       );
 
   changeLevel = (i: number, level: AccessLevel) => {
     this.setState({
-      sortedAcl: this.state.sortedAcl.map(
-        (key, j) => (i === j ? { ...key, level } : key)
+      sortedAcl: this.state.sortedAcl.map((key, j) =>
+        i === j ? { ...key, level } : key
       ),
     });
   };
 
   changeResource = (i: number, resource: string) => {
     this.setState({
-      sortedAcl: this.state.sortedAcl.map(
-        (key, j) => (i === j ? { ...key, resource } : key)
+      sortedAcl: this.state.sortedAcl.map((key, j) =>
+        i === j ? { ...key, resource } : key
       ),
     });
   };
@@ -69,7 +68,7 @@ class ProjectAclEditor extends React.Component<Props, State> {
     });
   };
 
-  save = async e => {
+  save = async (e) => {
     e.preventDefault();
     const {
       dispatch,
@@ -116,8 +115,8 @@ class ProjectAclEditor extends React.Component<Props, State> {
                 key={i}
                 level={row.level}
                 resource={row.resource}
-                onLevelChange={val => this.changeLevel(i, val)}
-                onResourceChange={val => this.changeResource(i, val)}
+                onLevelChange={(val) => this.changeLevel(i, val)}
+                onResourceChange={(val) => this.changeResource(i, val)}
                 onDelete={() => this.deleteEntry(i)}
               />
             ))}
@@ -151,7 +150,7 @@ class ProjectAclEditor extends React.Component<Props, State> {
                 </tr>
               </thead>
               <tbody>
-                {Object.keys(globalACL).map(key => (
+                {Object.keys(globalACL).map((key) => (
                   <tr key={key}>
                     <td>{globalACL[key]}</td>
                     <td>{key}</td>
@@ -184,7 +183,7 @@ function AclRow(props: AclRowProps) {
         <select
           className="form-control"
           value={props.level}
-          onChange={e => props.onLevelChange(e.target.value as AccessLevel)}
+          onChange={(e) => props.onLevelChange(e.target.value as AccessLevel)}
         >
           <option value="owner">Owner</option>
           <option value="editor">Editor</option>
@@ -196,7 +195,7 @@ function AclRow(props: AclRowProps) {
           type="text"
           className="form-control"
           value={props.resource}
-          onChange={e => props.onResourceChange(e.target.value)}
+          onChange={(e) => props.onResourceChange(e.target.value)}
         />
       </td>
       <td>

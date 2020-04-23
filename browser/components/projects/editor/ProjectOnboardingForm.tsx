@@ -26,7 +26,7 @@ class ProjectOnboardingForm extends Component<Props, State> {
     };
   }
 
-  handleSubmit = e => {
+  handleSubmit = (e) => {
     const { dispatch } = this.props;
     e.preventDefault();
 

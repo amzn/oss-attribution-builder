@@ -24,7 +24,7 @@ router.post(
       const query = req.body.query;
       const packages = await db.searchPackages(query, 25);
       return {
-        results: packages.map(pkg => ({
+        results: packages.map((pkg) => ({
           packageId: pkg.package_id,
           name: pkg.name,
           version: pkg.version,
@@ -47,7 +47,7 @@ router.get(
   asyncApi(async (req, res) => {
     await assertCanValidate(req);
     const results = await db.getUnverifiedPackages(25);
-    const queue = results.map(item => ({
+    const queue = results.map((item) => ({
       packageId: item.package_id,
       name: item.name,
       version: item.version,

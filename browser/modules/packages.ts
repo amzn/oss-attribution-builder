@@ -32,7 +32,7 @@ export default function reducer(state = initial, action: any = {}): State {
   switch (action.type) {
     case RECEIVE_PACKAGE_SEARCH_RESULTS: {
       const newPackages = {};
-      action.results.forEach(pkg => {
+      action.results.forEach((pkg) => {
         newPackages[pkg.packageId] = pkg;
       });
       return {
@@ -94,8 +94,8 @@ export function receiveVerificationQueue(results) {
  * Search packages.
  */
 export function searchPackages(query) {
-  return dispatch => {
-    return reqJSON('/api/v1/packages/', { query }).then(json =>
+  return (dispatch) => {
+    return reqJSON('/api/v1/packages/', { query }).then((json) =>
       dispatch(receivePackageSearchResults(json))
     );
   };
@@ -106,10 +106,10 @@ export function searchPackages(query) {
  */
 export function fetchPackage(packageId: number, extended = false) {
   const q = extended ? '?extended=1' : '';
-  return dispatch => {
+  return (dispatch) => {
     return fetchAuth(`/api/v1/packages/${packageId}${q}`)
-      .then(response => response.json())
-      .then(json => dispatch(receivePackage(json)));
+      .then((response) => response.json())
+      .then((json) => dispatch(receivePackage(json)));
   };
 }
 
@@ -121,11 +121,11 @@ export function verifyPackage(
   verified: boolean,
   comments: string
 ) {
-  return dispatch => {
+  return (dispatch) => {
     return reqJSON(`/api/v1/packages/${packageId}/verify`, {
       verified,
       comments,
-    }).then(json => dispatch(fetchPackage(packageId)));
+    }).then((json) => dispatch(fetchPackage(packageId)));
   };
 }
 
@@ -133,9 +133,11 @@ export function verifyPackage(
  * Admin action: get the queue of packages that need verification love.
  */
 export function fetchVerificationQueue() {
-  return dispatch => {
-    return reqJSON('/api/v1/packages/verification', undefined, 'GET').then(
-      json => dispatch(receiveVerificationQueue(json))
-    );
+  return (dispatch) => {
+    return reqJSON(
+      '/api/v1/packages/verification',
+      undefined,
+      'GET'
+    ).then((json) => dispatch(receiveVerificationQueue(json)));
   };
 }

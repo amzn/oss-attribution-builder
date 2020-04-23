@@ -10,7 +10,7 @@ interface Props {
   match: match<any>;
 }
 
-const Landing: React.SFC<Props> = props => {
+const Landing: React.SFC<Props> = (props) => {
   return (
     <div className="card bg-warning mb-2">
       <div className="card-header">Not Found</div>

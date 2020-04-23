@@ -29,7 +29,7 @@ export default class DetatchButton extends React.Component<Props, State> {
     };
   }
 
-  clicked = e => {
+  clicked = (e) => {
     const { mode } = this.state;
     if (mode === ConfirmState.Initial) {
       this.setState({ mode: ConfirmState.Lockout });
@@ -51,8 +51,9 @@ export default class DetatchButton extends React.Component<Props, State> {
 
     return (
       <button
-        className={`btn ${className || ''} ${mode === ConfirmState.Confirm &&
-          'btn-danger'}`}
+        className={`btn ${className || ''} ${
+          mode === ConfirmState.Confirm && 'btn-danger'
+        }`}
         onClick={this.clicked}
         disabled={mode === ConfirmState.Lockout}
       >

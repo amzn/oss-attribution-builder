@@ -8,10 +8,10 @@ import { TagModule } from './interfaces';
 
 const tagsDir = path.join(__dirname, 'tags');
 
-describe('license tags', function() {
+describe('license tags', function () {
   const modules: TagModule[] = [];
 
-  beforeAll(function(done) {
+  beforeAll(function (done) {
     fs.readdir(tagsDir, (err, files) => {
       if (err) {
         throw err;
@@ -27,7 +27,7 @@ describe('license tags', function() {
     });
   });
 
-  it('may export a questions object', function() {
+  it('may export a questions object', function () {
     for (const mod of modules) {
       if (mod.questions == undefined) {
         continue;

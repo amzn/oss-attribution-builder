@@ -113,20 +113,14 @@ export function receiveAttributionDoc(data) {
 
 export function receiveRefInfo(info) {
   // turn these arrays into objects
-  const refs = info.refs.reduce(
-    (acc, curr) => {
-      acc[curr.projectId] = curr;
-      return acc;
-    },
-    {} as any
-  );
-  const reverseRefs = info.reverseRefs.reduce(
-    (acc, curr) => {
-      acc[curr.projectId] = curr;
-      return acc;
-    },
-    {} as any
-  );
+  const refs = info.refs.reduce((acc, curr) => {
+    acc[curr.projectId] = curr;
+    return acc;
+  }, {} as any);
+  const reverseRefs = info.reverseRefs.reduce((acc, curr) => {
+    acc[curr.projectId] = curr;
+    return acc;
+  }, {} as any);
   return {
     type: RECEIVE_PROJECT_REF_INFO,
     refs,
@@ -140,7 +134,7 @@ export function receiveRefInfo(info) {
  * Fetch projects. Updates state & dispatches when complete.
  */
 export function fetchProjects(queryString) {
-  return async dispatch => {
+  return async (dispatch) => {
     const response = await fetchAuth(`/api/v1/projects/${queryString}`);
     const json = await response.json();
     return dispatch(receiveProjects(json));
@@ -151,7 +145,7 @@ export function fetchProjects(queryString) {
  * Fetch a single project by ID.
  */
 export function fetchProjectDetail(projectId) {
-  return async dispatch => {
+  return async (dispatch) => {
     const response = await fetchAuth(`/api/v1/projects/${projectId}`);
     const json = await response.json();
     return dispatch(receiveProjectDetail(json));
@@ -162,7 +156,7 @@ export function fetchProjectDetail(projectId) {
  * Submit a new project with some initial details.
  */
 export function createProject(details: Partial<WebProject>) {
-  return async dispatch => {
+  return async (dispatch) => {
     const json = await reqJSON('/api/v1/projects/new', details);
     return history.push(`/projects/${json.projectId}`);
   };
@@ -172,7 +166,7 @@ export function createProject(details: Partial<WebProject>) {
  * Patch a project with a set of updates.
  */
 export function patchProject(projectId, changes: Partial<WebProject>) {
-  return async dispatch => {
+  return async (dispatch) => {
     await reqJSON(`/api/v1/projects/${projectId}`, changes, 'PATCH');
     return dispatch(fetchProjectDetail(projectId));
   };
@@ -182,7 +176,7 @@ export function patchProject(projectId, changes: Partial<WebProject>) {
  * Attach a (new or existing) package to a project. Reloads the project on completion.
  */
 export function attachPackageToProject(projectId, packageInfo) {
-  return async dispatch => {
+  return async (dispatch) => {
     await reqJSON(`/api/v1/projects/${projectId}/attach`, packageInfo);
     return dispatch(fetchProjectDetail(projectId));
   };
@@ -192,7 +186,7 @@ export function attachPackageToProject(projectId, packageInfo) {
  * Remove a package from a project. Does not delete the package.
  */
 export function detachPackageFromProject(projectId: string, packageId: number) {
-  return async dispatch => {
+  return async (dispatch) => {
     await reqJSON(`/api/v1/projects/${projectId}/detach`, { packageId });
     return dispatch(fetchProjectDetail(projectId));
   };
@@ -203,7 +197,7 @@ export function replacePackageForProject(
   oldId: number,
   newId: number
 ) {
-  return async dispatch => {
+  return async (dispatch) => {
     await reqJSON(`/api/v1/projects/${projectId}/replace`, { oldId, newId });
     return dispatch(fetchProjectDetail(projectId));
   };
@@ -213,7 +207,7 @@ export function replacePackageForProject(
  * Request an attribution document and any warnings it generates.
  */
 export function buildAttributionDoc(projectId) {
-  return async dispatch => {
+  return async (dispatch) => {
     const response = await fetchAuth(`/api/v1/projects/${projectId}/build`);
     const json = await response.json();
     return dispatch(receiveAttributionDoc(json));
@@ -224,7 +218,7 @@ export function buildAttributionDoc(projectId) {
  * Permanently store an attribution document.
  */
 export function storeAttributionDoc(projectId) {
-  return async dispatch => {
+  return async (dispatch) => {
     const json = await reqJSON(`/api/v1/projects/${projectId}/build`);
     return downloadText(`THIRD-PARTY-LICENSES_${projectId}.txt`, json.text);
   };
@@ -237,7 +231,7 @@ export function cloneProject(
   projectId: string,
   newDetails: Pick<WebProject, 'title' | 'version' | 'acl'>
 ) {
-  return async dispatch => {
+  return async (dispatch) => {
     const json = await reqJSON(
       `/api/v1/projects/${projectId}/clone`,
       newDetails
@@ -255,7 +249,7 @@ export function createRef(
   type: 'includes' | 'related',
   comment: string
 ) {
-  return async dispatch => {
+  return async (dispatch) => {
     await reqJSON(`/api/v1/projects/${projectId}/refs`, {
       targetProjectId,
       type,
@@ -270,7 +264,7 @@ export function createRef(
  * Fetch information about refs on the given project
  */
 export function getRefInfo(projectId: string) {
-  return async dispatch => {
+  return async (dispatch) => {
     const refInfo = await reqJSON(
       `/api/v1/projects/${projectId}/refs`,
       undefined,
@@ -284,7 +278,7 @@ export function getRefInfo(projectId: string) {
  * Delete/disassociate a project reference
  */
 export function deleteRef(projectId: string, targetProjectId: string) {
-  return async dispatch => {
+  return async (dispatch) => {
     await reqJSON(
       `/api/v1/projects/${projectId}/refs/${targetProjectId}`,
       undefined,

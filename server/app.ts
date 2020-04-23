@@ -19,7 +19,7 @@ import { globalCustomMiddleware } from './custom';
 import { connect } from './db';
 
 // install a crash handler to log errors
-process.on('uncaughtException', err => {
+process.on('uncaughtException', (err) => {
   winston.error('FATAL exception: ' + err);
   winston.error(err.stack);
   process.exit(99);
@@ -73,7 +73,7 @@ app.use('/', (req, res) => {
 /**
  * Load app configuration, initialize, and listen.
  */
-export const start = async function(port, hostname) {
+export const start = async function (port, hostname) {
   winston.info('Starting up...');
 
   // wait for configuration to resolve

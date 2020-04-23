@@ -5,7 +5,7 @@ import * as React from 'react';
 import { BaseProps, BaseWidget } from './index';
 
 export default class SelectWidget extends BaseWidget<BaseProps> {
-  private handleChange = e => {
+  private handleChange = (e) => {
     const val = this.coerceType(e.target.value);
     this.props.onChange(val);
   };

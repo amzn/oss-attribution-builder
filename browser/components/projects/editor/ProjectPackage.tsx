@@ -54,7 +54,7 @@ class ProjectPackage extends React.Component<Props, State> {
     );
   };
 
-  showDelta = e => {
+  showDelta = (e) => {
     const { dispatch, packages, usage } = this.props;
 
     // at this point, we have the extra section already, so fetch the lastest revision

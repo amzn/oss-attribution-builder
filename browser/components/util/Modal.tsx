@@ -41,7 +41,7 @@ export default class Modal extends React.Component<Props, State> {
   };
 
   buttonActionCreator = (actionName: string) => {
-    return event => {
+    return (event) => {
       this.setState({
         invokedAction: actionName,
       });
@@ -57,7 +57,7 @@ export default class Modal extends React.Component<Props, State> {
         className="modal fade show"
         role="dialog"
         id="error-modal"
-        ref={r => {
+        ref={(r) => {
           if (r) {
             this.self = r;
           }

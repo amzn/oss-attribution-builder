@@ -27,7 +27,7 @@ class PackageVerificationQueue extends Component<Props, {}> {
       <table className="table">
         <caption>Packages needing verification, in order of popularity</caption>
         <tbody>
-          {queue.map(pkg => (
+          {queue.map((pkg) => (
             <tr key={pkg.packageId}>
               <td>
                 <Link to={`/packages/verify/${pkg.packageId}`}>

@@ -65,7 +65,7 @@ class PackageCard extends Component<Props, {}> {
     return (
       <div
         className="card package-card mb-2"
-        ref={r => {
+        ref={(r) => {
           if (r) {
             this.ref = r;
           }
@@ -100,10 +100,9 @@ class PackageCard extends Component<Props, {}> {
         <div className="card-footer">
           <pre style={preStyle}>{pkg.copyright}</pre>
 
-          {pkg.licenseText != undefined &&
-            pkg.licenseText !== '' && (
-              <pre style={preStyle}>{pkg.licenseText}</pre>
-            )}
+          {pkg.licenseText != undefined && pkg.licenseText !== '' && (
+            <pre style={preStyle}>{pkg.licenseText}</pre>
+          )}
         </div>
       </div>
     );

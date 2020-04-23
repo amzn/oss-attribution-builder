@@ -5,7 +5,7 @@ import * as mockery from 'mockery';
 
 import { AccessLevel } from './interfaces';
 
-describe('projects auth', function() {
+describe('projects auth', function () {
   let mock: any;
   let assertProjectAccess: any;
   let effectivePermission: any;
@@ -31,7 +31,7 @@ describe('projects auth', function() {
     };
   }
 
-  beforeEach(function() {
+  beforeEach(function () {
     mockery.enable({ useCleanCache: true, warnOnUnregistered: false });
 
     mock = {
@@ -39,7 +39,7 @@ describe('projects auth', function() {
         getGroups: jasmine
           .createSpy('getGroups')
           .and.returnValue(Promise.resolve(['a-nobody'])),
-        extractRequestUser: req => req.user.user,
+        extractRequestUser: (req) => req.user.user,
       },
       config: {
         admin: {
@@ -59,12 +59,12 @@ describe('projects auth', function() {
     effectivePermission = auth.effectivePermission;
   });
 
-  afterEach(function() {
+  afterEach(function () {
     mockery.deregisterAll();
     mockery.disable();
   });
 
-  it('should allow owners to edit', async function(done) {
+  it('should allow owners to edit', async function (done) {
     const req = makeReq();
     const proj = makeProj();
     mock.auth.getGroups = jasmine
@@ -78,7 +78,7 @@ describe('projects auth', function() {
     done();
   });
 
-  it('should allow legal contact to view', async function(done) {
+  it('should allow legal contact to view', async function (done) {
     const req = makeReq();
     const proj = makeProj();
     req.user.user = 'lawyer';
@@ -90,7 +90,7 @@ describe('projects auth', function() {
     done();
   });
 
-  it('should allow admins to edit', async function(done) {
+  it('should allow admins to edit', async function (done) {
     const req = makeReq();
     const proj = makeProj();
 
@@ -105,7 +105,7 @@ describe('projects auth', function() {
     }
 
     // ...as you also need to set the header
-    req.get = h => (h === 'X-Admin' ? '1' : undefined);
+    req.get = (h) => (h === 'X-Admin' ? '1' : undefined);
     try {
       await assertProjectAccess(req, proj, 'owner');
     } catch (e) {
@@ -116,7 +116,7 @@ describe('projects auth', function() {
     done();
   });
 
-  it('should block anyone else', async function(done) {
+  it('should block anyone else', async function (done) {
     const req = makeReq();
     const proj = makeProj();
 
@@ -129,8 +129,8 @@ describe('projects auth', function() {
     done();
   });
 
-  describe('effectivePermission', function() {
-    it('should return undefined for a single-entry ACL that does not match', async function(done) {
+  describe('effectivePermission', function () {
+    it('should return undefined for a single-entry ACL that does not match', async function (done) {
       const req = makeReq();
       const proj = makeProj();
       const level = await effectivePermission(req, proj);
@@ -138,7 +138,7 @@ describe('projects auth', function() {
       done();
     });
 
-    it('should return an access level for a single-entry ACL that does match', async function(done) {
+    it('should return an access level for a single-entry ACL that does match', async function (done) {
       const req = makeReq();
       const proj = makeProj();
       mock.auth.getGroups = jasmine
@@ -149,7 +149,7 @@ describe('projects auth', function() {
       done();
     });
 
-    it('should return a stronger level for multiple matching ACLs', async function(done) {
+    it('should return a stronger level for multiple matching ACLs', async function (done) {
       const req = makeReq();
       const proj = makeProj();
       proj.acl.wallet = 'viewer';
@@ -162,7 +162,7 @@ describe('projects auth', function() {
       done();
     });
 
-    it('should return a lower level when the higher does not match', async function(done) {
+    it('should return a lower level when the higher does not match', async function (done) {
       const req = makeReq();
       const proj = makeProj();
       proj.acl.wallet = 'viewer';

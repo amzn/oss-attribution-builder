@@ -33,8 +33,8 @@ export function searchPackages(
     .trim()
     .replace(/[^\w\s]+/u, '')
     .split(/\s+/u)
-    .filter(t => t.length > 0)
-    .map(t => `'${t}':*`)
+    .filter((t) => t.length > 0)
+    .map((t) => `'${t}':*`)
     .join(' & ');
 
   // two queries here:

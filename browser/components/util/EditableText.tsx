@@ -84,7 +84,7 @@ export default class EditableText extends Component<Props, State> {
       defaultValue: this.props.value,
       className: 'form-control',
       onBlur: this.save,
-      onKeyPress: e => (e.key === 'Enter' ? this.save(e) : undefined),
+      onKeyPress: (e) => (e.key === 'Enter' ? this.save(e) : undefined),
       required: true,
       style: {
         width: '100%',

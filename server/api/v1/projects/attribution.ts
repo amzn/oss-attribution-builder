@@ -31,7 +31,7 @@ export async function addProjectPackages(
   builder: DocBuilder
 ) {
   // optimization: fetch all package ids at once, then organize into a map
-  const packageIds = project.packages_used.map(usage => usage.package_id);
+  const packageIds = project.packages_used.map((usage) => usage.package_id);
   const packageList = await packagedb.getPackages(packageIds);
   const packages: Map<number, packagedb.Package> = packageList.reduce(
     (map, pkg) => {
@@ -82,7 +82,7 @@ export function getWarnings(builder: DocBuilder): ValidationResult[] {
   const warnings: ValidationResult[] = [];
 
   for (const [key, bucket] of Object.entries(usedLicenses)) {
-    const mappedTags = bucket.tags.map(t => mapTag(t));
+    const mappedTags = bucket.tags.map((t) => mapTag(t));
 
     for (const mod of mappedTags) {
       // validate tag usage against a license
@@ -123,7 +123,7 @@ function appendWarnings(
   add: ValidationResult[],
   extra: { [k: string]: any }
 ) {
-  add.map(w => ({ ...w, ...extra })).forEach(w => existing.push(w));
+  add.map((w) => ({ ...w, ...extra })).forEach((w) => existing.push(w));
   existing.concat(add);
 }
 
@@ -167,8 +167,8 @@ export function applyCopyrightTransforms(text: string, bucket: LicenseBucket) {
         const clonedPackage = packagesCompatClone[i];
         // write the changed copyright back to the original, not the clone
         bucket.packages[i].copyrights = clonedPackage.copyrights
-          .map(c => mod.transformCopyright!(c))
-          .filter(c => c && c.length > 0);
+          .map((c) => mod.transformCopyright!(c))
+          .filter((c) => c && c.length > 0);
       }
     }
   }
@@ -180,7 +180,7 @@ export function applyCopyrightTransforms(text: string, bucket: LicenseBucket) {
  * expected; some tag logic may rely on this.
  */
 function bucketPackagesCompat(packages: ProjectPackage[]): any[] {
-  return packages.map(p => ({
+  return packages.map((p) => ({
     ...p,
     pkg: p,
     usage: p.extra.usage,

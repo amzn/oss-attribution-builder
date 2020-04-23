@@ -8,7 +8,7 @@ type Handler = (req: Request, res: Response) => Promise<any>;
 export function asyncApi(handler: Handler) {
   return (req, res, next) => {
     handler(req, res)
-      .then(obj => {
+      .then((obj) => {
         if (obj == undefined) {
           res.status(404).send({ error: 'Object not found' });
         } else {

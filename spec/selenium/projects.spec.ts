@@ -9,25 +9,22 @@ import build, { CustomDriver } from './driver';
 const projectName = 'Automated Test Project ' + new Date().getTime();
 const packageName = 'ZZZ Automated Test Package ' + new Date().getTime();
 
-describe('project management', function() {
+describe('project management', function () {
   let driver: CustomDriver;
-  beforeAll(async function() {
+  beforeAll(async function () {
     driver = await build();
-    await driver
-      .manage()
-      .timeouts()
-      .implicitlyWait(1000);
+    await driver.manage().timeouts().implicitlyWait(1000);
   });
-  afterAll(async function() {
+  afterAll(async function () {
     await driver.quit();
   });
 
-  it('loads the form', async function() {
+  it('loads the form', async function () {
     driver.getRelative('/projects/new');
     await driver.wait(until.elementLocated(By.id('onboarding-form')));
   });
 
-  it('shows an error with invalid values', async function() {
+  it('shows an error with invalid values', async function () {
     // fill out the form
     driver.findElement(By.id('title')).sendKeys(projectName);
     driver.findElement(By.id('version')).sendKeys('0.0.0-integration-test');
@@ -68,7 +65,7 @@ describe('project management', function() {
     await driver.sleep(1000); // modal animation
   });
 
-  it('accepts a corrected form and loads the project', async function() {
+  it('accepts a corrected form and loads the project', async function () {
     // correct the BLL field & submit
     const bllField = driver.findElement(By.id('legalContact'));
     bllField.clear();
@@ -84,7 +81,7 @@ describe('project management', function() {
     expect(headerText).toContain(projectName);
   });
 
-  it('has editable fields', async function() {
+  it('has editable fields', async function () {
     driver.findElement(By.css('#project-open-sourcing .EditableText')).click();
     driver
       .findElement(
@@ -98,13 +95,13 @@ describe('project management', function() {
     );
   });
 
-  it('does not yet have a build button', async function() {
+  it('does not yet have a build button', async function () {
     // implicit wait WILL get triggered here, even though we don't really want it
     const present = await driver.findElements(By.id('build-buttons'));
     expect(present.length).toEqual(0);
   });
 
-  it('can fill out the add package form', async function() {
+  it('can fill out the add package form', async function () {
     driver.findElement(By.id('add-package')).click();
 
     // fancy dropdown
@@ -140,7 +137,7 @@ describe('project management', function() {
     await driver.sleep(0);
   });
 
-  it('gets an error about the url', async function() {
+  it('gets an error about the url', async function () {
     driver
       .findElement(By.css('#add-package-form button[type="submit"]'))
       .click();
@@ -156,7 +153,7 @@ describe('project management', function() {
     await driver.sleep(1000); // modal animation
   });
 
-  it('can successfully add a package', async function() {
+  it('can successfully add a package', async function () {
     const field = await driver.findElement(By.id('packageWebsite'));
     field.clear();
     field.sendKeys('http://example.com');
@@ -169,7 +166,7 @@ describe('project management', function() {
     await driver.wait(until.elementTextContains(ele, packageName), 1000);
   });
 
-  it('can delete that package', async function() {
+  it('can delete that package', async function () {
     driver.findElement(By.className('package-remove-button')).click();
     driver.findElement(By.css('.package-remove-button.btn-danger')).click();
     await driver.wait(async () => {
@@ -179,7 +176,7 @@ describe('project management', function() {
     });
   });
 
-  it('can re-add the package', async function() {
+  it('can re-add the package', async function () {
     driver.findElement(By.id('add-package')).click();
 
     // fancy dropdown again
@@ -221,7 +218,7 @@ describe('project management', function() {
     await driver.wait(until.elementTextContains(ele, packageName), 1000);
   });
 
-  it('can edit a package', async function() {
+  it('can edit a package', async function () {
     driver.findElement(By.className('package-edit-button')).click();
 
     // add in more to the comment
@@ -238,7 +235,7 @@ describe('project management', function() {
     await driver.wait(until.elementTextContains(ele, 'really'), 1000);
   });
 
-  it('can preview the document', async function() {
+  it('can preview the document', async function () {
     driver.findElement(By.css('#build-buttons a')).click();
     const ele = await driver.findElement(
       By.css('#attribution-document-text pre')

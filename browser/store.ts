@@ -7,13 +7,13 @@ import { setGeneralError } from './modules/common';
 import app from './reducers';
 
 // capture and show errors on the UI for server actions
-const errorHandler = inst => next => action => {
+const errorHandler = (inst) => (next) => (action) => {
   const result = next(action);
 
   // is this a thunk/promise action?
   if (typeof action === 'function') {
     // check the promise for an error, and dispatch that
-    result.catch(error => {
+    result.catch((error) => {
       inst.dispatch(setGeneralError(error));
       throw error;
     });
@@ -22,16 +22,17 @@ const errorHandler = inst => next => action => {
 };
 
 // enable thunk/promise actions
-const thunk = inst => next => action => {
+const thunk = (inst) => (next) => (action) => {
   if (typeof action === 'function') {
     return action(inst.dispatch, inst.getState);
   }
   return next(action);
 };
 
-const createStoreWithMiddleware = applyMiddleware(errorHandler, thunk)(
-  createStore
-);
+const createStoreWithMiddleware = applyMiddleware(
+  errorHandler,
+  thunk
+)(createStore);
 
 const store = createStoreWithMiddleware(app);
 

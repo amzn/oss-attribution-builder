@@ -74,7 +74,7 @@ export default class UsageFields extends React.Component<Props, State> {
               id="packageComments"
               className="form-control"
               value={usage.notes}
-              onChange={e => this.handleChange('notes', e.target.value)}
+              onChange={(e) => this.handleChange('notes', e.target.value)}
             />
           </div>
         </div>

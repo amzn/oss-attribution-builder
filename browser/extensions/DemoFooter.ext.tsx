@@ -5,7 +5,7 @@ import * as React from 'react';
 
 import { register } from '../ext';
 
-register('footer', props => {
+register('footer', (props) => {
   return (
     <div className="mt-5 pt-3 border-top">
       <div className="alert alert-light">

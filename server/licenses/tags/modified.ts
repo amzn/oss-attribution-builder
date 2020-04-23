@@ -4,7 +4,10 @@
 export const questions = {
   modified: {
     label: 'Modified',
-    options: [[false, 'Unmodified'], [true, 'Changes made']],
+    options: [
+      [false, 'Unmodified'],
+      [true, 'Changes made'],
+    ],
     type: 'boolean',
     widget: 'radio',
     required: true,

@@ -14,8 +14,8 @@ export default class PackageCardUsage extends Component<Props, {}> {
     const { notes } = this.props;
 
     const usage = Object.keys(this.props)
-      .filter(prop => !['packageId', 'notes'].includes(prop))
-      .map(prop => `${prop}: ${this.props[prop]}`)
+      .filter((prop) => !['packageId', 'notes'].includes(prop))
+      .map((prop) => `${prop}: ${this.props[prop]}`)
       .join('; ');
 
     return (

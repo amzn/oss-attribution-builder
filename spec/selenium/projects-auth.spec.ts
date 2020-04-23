@@ -8,20 +8,17 @@ import build, { CustomDriver } from './driver';
 
 const projectName = 'ACL Test ' + new Date().getTime();
 
-describe('project authentication', function() {
+describe('project authentication', function () {
   let driver: CustomDriver;
-  beforeAll(async function() {
+  beforeAll(async function () {
     driver = await build();
-    await driver
-      .manage()
-      .timeouts()
-      .implicitlyWait(1000);
+    await driver.manage().timeouts().implicitlyWait(1000);
   });
-  afterAll(async function() {
+  afterAll(async function () {
     await driver.quit();
   });
 
-  it('bootstraps a project', async function() {
+  it('bootstraps a project', async function () {
     driver.getRelative('/projects/new');
     driver.wait(until.elementLocated(By.id('onboarding-form')));
 
@@ -54,13 +51,13 @@ describe('project authentication', function() {
     expect(headerText).toContain(projectName);
   });
 
-  it('can load the acl editor', async function() {
+  it('can load the acl editor', async function () {
     driver.findElement(By.id('tools-dropdown-toggle')).click();
     driver.findElement(By.css('a[href$="/acl"]')).click();
     await driver.wait(until.elementLocated(By.id('project-acl-editor')));
   });
 
-  it('wont let a person disown a project', async function() {
+  it('wont let a person disown a project', async function () {
     const input = driver.findElement(
       By.xpath('//form//tbody/tr[1]//input[@type="text"]')
     );
@@ -83,7 +80,7 @@ describe('project authentication', function() {
     await input.sendKeys('self:selenium');
   });
 
-  it('can add some friends to the list', async function() {
+  it('can add some friends to the list', async function () {
     driver.findElement(By.id('acl-add')).click();
     const select2 = driver.findElement(By.xpath('//form//tbody/tr[2]//select'));
     const input2 = driver.findElement(
@@ -111,7 +108,7 @@ describe('project authentication', function() {
     await driver.findElement(By.css('button[type="submit"]')).click();
   });
 
-  it('cannot edit acl as editor', async function() {
+  it('cannot edit acl as editor', async function () {
     // switch users and return
     driver.wait(until.elementLocated(By.id('project-heading')));
     const projectUrl = await driver.getCurrentUrl();
@@ -129,7 +126,7 @@ describe('project authentication', function() {
     await driver.findElement(By.css('#project-heading .EditableText'));
   });
 
-  it('cannot edit project as viewer', async function() {
+  it('cannot edit project as viewer', async function () {
     const projectUrl = await driver.getCurrentUrl();
     driver.setUser('fake-viewer');
     await driver.get(projectUrl);

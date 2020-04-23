@@ -49,9 +49,9 @@ export function receiveLicenses(data) {
 /*** Bound action creators ***/
 
 export function fetchLicenses() {
-  return dispatch => {
+  return (dispatch) => {
     return fetchAuth('/api/v1/licenses/')
-      .then(response => response.json())
-      .then(json => dispatch(receiveLicenses(json)));
+      .then((response) => response.json())
+      .then((json) => dispatch(receiveLicenses(json)));
   };
 }

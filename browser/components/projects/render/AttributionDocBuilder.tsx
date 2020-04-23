@@ -43,7 +43,7 @@ class AttributionDocBuilder extends Component<Props, State> {
    * Create an on-click handler that will highlight an annotation
    * based on a warning structure.
    */
-  bindWarning = warning => {
+  bindWarning = (warning) => {
     const { annotations } = this.props.attributionDoc;
 
     // XXX: this aint hella efficient
@@ -59,7 +59,7 @@ class AttributionDocBuilder extends Component<Props, State> {
       return () => undefined;
     }
 
-    return event => {
+    return (event) => {
       this.setState({ highlights: [found] });
     };
   };

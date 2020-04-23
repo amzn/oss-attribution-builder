@@ -56,7 +56,7 @@ class ProjectView extends Component<Props, State> {
 
   makeChangeEvent = (fieldName: string, bool?: boolean, extended?: string) => {
     const { dispatch, project } = this.props;
-    return value => {
+    return (value) => {
       if (bool) {
         value = value === 'true';
       }
@@ -190,17 +190,16 @@ class ProjectView extends Component<Props, State> {
         {this.renderUsedPackages()}
         {this.renderPackageEditor()}
 
-        {!showPackageEditor &&
-          this.getPackageCount() > 0 && (
-            <div className="pull-right" id="build-buttons">
-              <Link
-                to={`/projects/${project.projectId}/build`}
-                className="btn btn-success btn-lg"
-              >
-                Build Attribution Document
-              </Link>
-            </div>
-          )}
+        {!showPackageEditor && this.getPackageCount() > 0 && (
+          <div className="pull-right" id="build-buttons">
+            <Link
+              to={`/projects/${project.projectId}/build`}
+              className="btn btn-success btn-lg"
+            >
+              Build Attribution Document
+            </Link>
+          </div>
+        )}
       </>
     );
   }
@@ -410,7 +409,7 @@ class ProjectView extends Component<Props, State> {
     }
 
     if (editPackageId != undefined) {
-      const usage = packagesUsed.find(x => x.packageId === editPackageId);
+      const usage = packagesUsed.find((x) => x.packageId === editPackageId);
       const pkg = packages[editPackageId];
       return (
         <PackageEditor

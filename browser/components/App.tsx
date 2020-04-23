@@ -34,7 +34,7 @@ class App extends React.Component<Props, {}> {
     dispatch(fetchSiteInfo());
   }
 
-  dismissError = actionName => {
+  dismissError = (actionName) => {
     const { dispatch } = this.props;
     dispatch(setGeneralError(undefined));
   };
@@ -58,7 +58,7 @@ class App extends React.Component<Props, {}> {
 
     return (
       <Modal title={title} onDismiss={this.dismissError}>
-        {buttonAction => (
+        {(buttonAction) => (
           <>
             <div className="modal-body">
               <p>

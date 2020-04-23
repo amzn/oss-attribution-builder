@@ -33,7 +33,7 @@ export default class TextAnnotator extends Component<Props, {}> {
 
     const highlightedLines = this.getHighlightedLines();
 
-    const mapLines = lines => {
+    const mapLines = (lines) => {
       let firstHighlight = false;
 
       return lines.map((a, i) => {

@@ -41,7 +41,7 @@ export default class PackageVerificationMark extends Component<Props, {}> {
     ) {
       return (
         <span
-          ref={r => {
+          ref={(r) => {
             if (r) {
               this.self = r;
             }
@@ -87,7 +87,7 @@ export default class PackageVerificationMark extends Component<Props, {}> {
   render() {
     return (
       <span
-        ref={r => {
+        ref={(r) => {
           if (r) {
             this.self = r;
           }

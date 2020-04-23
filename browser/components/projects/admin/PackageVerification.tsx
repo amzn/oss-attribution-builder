@@ -79,7 +79,7 @@ class PackageVerification extends Component<Props, State> {
 
   validate = () => {
     this.allChecked = ['website', 'license', 'copyright']
-      .map(x => this.state[`verify_${x}`])
+      .map((x) => this.state[`verify_${x}`])
       .reduce((a, b) => a && b, true);
 
     return this.allChecked || this.state.comments.trim().length > 0;

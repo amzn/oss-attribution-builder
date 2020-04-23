@@ -41,17 +41,17 @@ class CloneProject extends React.Component<Props, State> {
     };
   }
 
-  onTitleChange = e => {
+  onTitleChange = (e) => {
     this.setState({ newTitle: e.target.value });
   };
-  onVersionChange = e => {
+  onVersionChange = (e) => {
     this.setState({ newVersion: e.target.value });
   };
-  onKeepPermissionsChange = e => {
+  onKeepPermissionsChange = (e) => {
     this.setState({ keepPermissions: e.target.checked });
   };
 
-  cloneSubmit = e => {
+  cloneSubmit = (e) => {
     const {
       dispatch,
       project,

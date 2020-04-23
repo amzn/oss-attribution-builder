@@ -127,7 +127,7 @@ export async function attachPackage(req, res, next) {
     const license = licenses.get(req.body.license);
     const tags = license ? license.get('tags').toArray() : ['unknown'];
     const questions: TagQuestions = tags
-      .map(name => mapTag(name).questions || {})
+      .map((name) => mapTag(name).questions || {})
       .reduce(
         (acc, curr) => ({
           ...acc,
@@ -146,7 +146,7 @@ export async function attachPackage(req, res, next) {
       // validate it's a valid option if supplied
       const answer = req.body.usage[key];
       if (answer && q.options) {
-        const accepted = q.options.map(o => o[0]);
+        const accepted = q.options.map((o) => o[0]);
         if (!accepted.includes(answer)) {
           throw new RequestError(
             `Answer to question "${q.label}" is not valid`
@@ -263,7 +263,7 @@ function isValid(object, field) {
  * Reject a promise if it resolves to null (or undefined).
  */
 function rejectEmptyPromise(p, err) {
-  return p.then(x => {
+  return p.then((x) => {
     if (x == undefined) {
       return Promise.reject(new RequestError(err));
     }

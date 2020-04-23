@@ -12,7 +12,7 @@ winston.configure({
     winston.format.errors({ stack: true }),
     winston.format.colorize(),
     winston.format.printf(
-      info => `[${info.timestamp} ${info.level}] ${info.message}`
+      (info) => `[${info.timestamp} ${info.level}] ${info.message}`
     )
   ),
 });
@@ -33,4 +33,4 @@ app
       `Server running on port ${config.server.port} [${process.env.NODE_ENV}]`
     );
   })
-  .catch(err => console.error(err));
+  .catch((err) => console.error(err));
