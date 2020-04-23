@@ -26,6 +26,9 @@
   "bin": {
     "oss-attribution-builder": "build/server/localserver.js"
   },
+  "prettier": {
+    "singleQuote": true
+  },
   "devDependencies": {
     "@types/body-parser": "1.16.4",
     "@types/bootstrap": "^3.3.39",
@@ -61,7 +64,7 @@
     "nodemon": "^2.0.3",
     "pg-monitor": "^0.8.5",
     "popper.js": "^1.14.3",
-    "prettier": "^1.14.3",
+    "prettier": "^2.0.5",
     "react": "^16.3.2",
     "react-dom": "^16.13.1",
     "react-redux": "^5.0.7",
