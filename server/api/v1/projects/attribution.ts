@@ -155,12 +155,18 @@ export function applyTextTransforms(
  * We just abuse this phase to hack the copyrights field.
  */
 export function applyCopyrightTransforms(text: string, bucket: LicenseBucket) {
-  const packages = bucketPackagesCompat(bucket.packages);
+  // note: bucketPackagesCompat creates a clone of bucket.packages,
+  // so if any changes need to be made they need to be applied back to
+  // bucket.packages and not its clone.
+  // https://github.com/amzn/oss-attribution-builder/issues/33
+  const packagesCompatClone = bucketPackagesCompat(bucket.packages);
   for (const tag of bucket.tags) {
     const mod = mapTag(tag);
     if (mod.transformCopyright) {
-      for (const pkg of packages) {
-        pkg.copyrights = pkg.copyrights
+      for (let i = 0; i < packagesCompatClone.length; i++) {
+        const clonedPackage = packagesCompatClone[i];
+        // write the changed copyright back to the original, not the clone
+        bucket.packages[i].copyrights = clonedPackage.copyrights
           .map(c => mod.transformCopyright!(c))
           .filter(c => c && c.length > 0);
       }
