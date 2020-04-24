@@ -14,6 +14,7 @@ import * as ProjectActions from '../../../modules/projects';
 import ExtensionPoint from '../../../util/ExtensionPoint';
 import PackageFields, { PkgOutput } from './PackageFields';
 import UsageFields from './UsageFields';
+import { TagQuestions } from '../../../../server/licenses/interfaces';
 
 interface OwnProps {
   initialPackage?: PkgOutput;
@@ -77,6 +78,9 @@ class PackageEditor extends Component<Props, Partial<State>> {
       usage,
     } = this.state;
 
+    const questions = this.getQuestions();
+    const prunedUsage = this.pruneUnusedUsage(usage!, questions);
+
     await dispatch(
       ProjectActions.attachPackageToProject(projectId, {
         packageId,
@@ -86,7 +90,7 @@ class PackageEditor extends Component<Props, Partial<State>> {
         copyright,
         license,
         licenseText,
-        usage,
+        usage: prunedUsage,
       })
     );
 
@@ -102,22 +106,13 @@ class PackageEditor extends Component<Props, Partial<State>> {
     this.setState({ usage });
   };
 
-  render() {
-    const {
-      initialPackage,
-      initialUsage,
-      licenses,
-      project,
-      tags,
-    } = this.props;
-    const { pkg, usage } = this.state;
+  getQuestions = () => {
+    const { pkg } = this.state;
+    const { licenses, tags } = this.props;
 
-    // XXX: move this out of the render path?
-    // collect questions from tags
-    let questions = {};
     const license = pkg && pkg.license && licenses.get(pkg.license);
     if (license) {
-      questions = license.tags
+      return license.tags
         .map((name) => tags[name].questions || {})
         .reduce(
           (acc, curr) => ({
@@ -128,8 +123,39 @@ class PackageEditor extends Component<Props, Partial<State>> {
         );
     } else {
       // default questions via the "unknown" tag
-      questions = (tags.unknown && tags.unknown.questions) || {};
+      return (tags.unknown && tags.unknown.questions) || {};
     }
+  };
+
+  /**
+   * Drop unused question responses.
+   *
+   * This prevents "hidden" values from getting stuck on packages, which otherwise
+   * get stored and appear on the package cards. It's less confusing to *not* store
+   * what isn't seen.
+   */
+  pruneUnusedUsage = (
+    usage: Partial<PackageUsage>,
+    questions: TagQuestions
+  ) => {
+    const out: Partial<PackageUsage> = {
+      packageId: usage.packageId,
+      notes: usage.notes,
+    };
+    for (const question of Object.keys(questions)) {
+      out[question] = usage[question];
+    }
+    return out;
+  };
+
+  render() {
+    const { initialPackage, initialUsage, project, licenses } = this.props;
+    const { pkg, usage } = this.state;
+
+    // XXX: move this out of the render path?
+    // collect questions from tags
+    const license = pkg && pkg.license && licenses.get(pkg.license);
+    const questions = this.getQuestions();
 
     return (
       <form
