@@ -1,4 +1,5 @@
 # OSS Attribution Builder
+[![Build Status](https://travis-ci.com/amzn/oss-attribution-builder.svg?branch=master)](https://travis-ci.org/amzn/oss-attribution-builder)
 
 OSS Attribution Builder is a website that helps teams create attribution documents for software products. An attribution document is a text file, web page, or screen in just about every software application that lists the software components used and their licenses. They're often in the About screens, and are sometimes labeled "Open Source Notices", "Credits", or other similar jargon.
 
