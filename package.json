@@ -92,7 +92,7 @@
     "immutable": "^3.7.6",
     "moment": "^2.22.1",
     "mz": "^2.4.0",
-    "node-fetch": "^1.6.3",
+    "node-fetch": "^2.6.1",
     "passport": "^0.4.0",
     "pg-promise": "^6.3.8",
     "source-map-support": "^0.4.0",
