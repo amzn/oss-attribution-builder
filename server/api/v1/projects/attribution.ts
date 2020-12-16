@@ -81,7 +81,8 @@ export function getWarnings(builder: DocBuilder): ValidationResult[] {
   const { usedLicenses } = builder.summary;
   const warnings: ValidationResult[] = [];
 
-  for (const [key, bucket] of Object.entries(usedLicenses)) {
+  for (const [key, bucketValue] of Object.entries(usedLicenses)) {
+    const bucket: any = bucketValue;
     const mappedTags = bucket.tags.map((t) => mapTag(t));
 
     for (const mod of mappedTags) {

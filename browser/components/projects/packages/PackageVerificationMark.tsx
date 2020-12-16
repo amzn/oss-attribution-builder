@@ -21,11 +21,11 @@ export default class PackageVerificationMark extends Component<Props, {}> {
   private self?: HTMLElement;
 
   componentDidMount() {
-    $(this.self).tooltip();
+    $(this.self as any).tooltip();
   }
 
   componentDidUpdate() {
-    $(this.self)
+    $(this.self as any)
       .find('[data-toggle="popover"]')
       .popover({ placement: 'bottom', container: 'body', trigger: 'click' });
   }

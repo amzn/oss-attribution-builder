@@ -19,7 +19,7 @@ import { globalCustomMiddleware } from './custom';
 import { connect } from './db';
 
 // install a crash handler to log errors
-process.on('uncaughtException', (err) => {
+process.on('uncaughtException', (err: Record<string, any>) => {
   winston.error('FATAL exception: ' + err);
   winston.error(err.stack);
   process.exit(99);

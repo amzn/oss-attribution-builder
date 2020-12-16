@@ -410,7 +410,7 @@ class ProjectView extends Component<Props, State> {
 
     if (editPackageId != undefined) {
       const usage = packagesUsed.find((x) => x.packageId === editPackageId);
-      const pkg = packages[editPackageId];
+      const pkg = packages[editPackageId as any];
       return (
         <PackageEditor
           initialPackage={pkg}

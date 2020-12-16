@@ -27,11 +27,11 @@ export default class Modal extends React.Component<Props, State> {
     // for some reason (bug in BS4.b2?) clicking the backdrop instead of close
     // causes the modal to hang and not re-open. test this before removing
     // 'static' below.
-    $(this.self).modal({ backdrop: 'static' });
+    $(this.self as Record<string, any>).modal({ backdrop: 'static' });
   }
 
   hideModal = () => {
-    $(this.self)
+    $(this.self as Record<string, any>)
       .modal('hide')
       .on('hidden.bs.modal' as any, this.onDismiss);
   };
