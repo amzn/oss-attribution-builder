@@ -429,7 +429,7 @@ export async function getRenderedDocument(
   const {
     params: { projectId, documentId },
   } = req;
-  const doc = await documentdb.getAttributionDocument(projectId, documentId);
+  const doc = await documentdb.getAttributionDocument(projectId, parseInt(documentId));
   if (doc == undefined) {
     return;
   }

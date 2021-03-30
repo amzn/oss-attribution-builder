@@ -69,7 +69,7 @@ router.get(
         query: { extended },
       } = req;
 
-      const pkg = await db.getPackage(packageId);
+      const pkg = await db.getPackage(parseInt(packageId));
       if (pkg == undefined) {
         return undefined;
       }
@@ -78,7 +78,7 @@ router.get(
       const extra = {} as any;
       if (extended) {
         // look up verifications
-        const verifications = await db.getPackageVerifications(packageId);
+        const verifications = await db.getPackageVerifications(parseInt(packageId));
         if (verifications.length > 0) {
           const v = verifications[0];
           extra.verification = {
@@ -126,7 +126,7 @@ router.post(
 
     await Promise.all([
       db.addVerification(packageId, user, comments),
-      db.verifyPackage(packageId, verified),
+      db.verifyPackage(parseInt(packageId), verified),
     ]);
 
     winston.info(`Package ${packageId} verified (${verified}) by ${user}`);

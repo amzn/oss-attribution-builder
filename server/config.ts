@@ -6,7 +6,7 @@
  * environment, or the default configuration if not specified.
  */
 
-const name = process.env.CONFIG_NAME || 'default';
+const name = process.env.CONFIG_NAME ? process.env.CONFIG_NAME : 'default';
 // tslint:disable-next-line:no-var-requires
 const actual = require(`../config/${name}.js`);
 

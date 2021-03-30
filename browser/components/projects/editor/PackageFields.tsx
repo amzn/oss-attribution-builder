@@ -317,7 +317,7 @@ class PackageFields extends React.Component<Props, State> {
             options={this.mapPackageCompletions()}
             optionRenderer={this.packageOptionRenderer as any}
             valueRenderer={this.packageOptionRenderer as any}
-            onInputChange={this.searchPackages}
+            onInputChange={this.searchPackages as any}
             filterOptions={this.filterPackageList}
             onChange={this.handlePackageChange as any}
           />
